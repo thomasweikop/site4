@@ -1,21 +1,55 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
+  weight: ["500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "NIS2 | Weikop",
+  metadataBase: new URL("https://nis.weikop.me"),
+  title: "Gratis NIS2 Compliance Scan | Weikop",
   description:
-    "Praktisk hjælp til NIS2: scope-afklaring, ledelsesbriefing, gapanalyse, roadmap og beredskab.",
+    "Er din virksomhed klar til NIS2? Få et hurtigt første billede af score, gaps og næste skridt med Weikops gratis NIS2 compliance scan.",
+  applicationName: "Weikop NIS2",
+  keywords: [
+    "NIS2",
+    "NIS2 scan",
+    "NIS2 compliance scan",
+    "cybersikkerhed",
+    "gapanalyse",
+    "NIS2 krav Danmark",
+    "NIS2 compliance",
+  ],
+  creator: "Weikop",
+  publisher: "Weikop",
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    title: "Gratis NIS2 Compliance Scan | Weikop",
+    description:
+      "Få et hurtigt første billede af jeres NIS2-score, de største gaps og de næste prioriterede skridt.",
+    type: "website",
+    url: "https://nis.weikop.me",
+    locale: "da_DK",
+    siteName: "Weikop NIS2",
+  },
+  alternates: {
+    canonical: "/",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#efe7db",
 };
 
 export default function RootLayout({
@@ -24,11 +58,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="da"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full font-sans text-slate-100">{children}</body>
+    <html lang="da" className={`${manrope.variable} ${cormorant.variable} h-full antialiased`}>
+      <body className="min-h-full bg-page font-sans text-ink">{children}</body>
     </html>
   );
 }

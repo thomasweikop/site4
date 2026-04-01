@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SITE4
 
-## Getting Started
+Landing page for Weikop's NIS2 offer, built with Next.js 16 App Router.
 
-First, run the development server:
+## Local development
+
+Install dependencies and start the dev server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app runs on `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy flow
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The intended deployment path is:
 
-## Learn More
+1. Code lives in GitHub.
+2. Vercel is connected directly to the GitHub repository.
+3. Every push to the deployed branch triggers a new Vercel deployment.
+4. The contact form sends leads through MailerSend in the deployed environment.
 
-To learn more about Next.js, take a look at the following resources:
+This repo now includes two guardrails for that flow:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `.github/workflows/ci.yml` runs lint + build on pushes and pull requests.
+- `scripts/validate-env.mjs` blocks Vercel builds if the required MailerSend/contact env vars are missing.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Required environment variables
 
-## Deploy on Vercel
+Copy `.env.example` to `.env.local` for local work.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Required on Vercel:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `MAILERSEND_API_TOKEN`
+- `MAILERSEND_FROM_EMAIL`
+- `NIS2_CONTACT_EMAIL`
+
+Optional fallback / legacy variables still supported by the mail helper:
+
+- `INVITE_FROM_EMAIL`
+- `RESEND_API_KEY`
+
+## Vercel setup checklist
+
+In Vercel Project Settings:
+
+1. Connect the correct GitHub repository.
+2. Confirm the production branch is the branch you actually deploy from.
+3. Add the required environment variables for `Production`.
+4. Add the same environment variables for `Preview` if preview deployments should also send mail correctly.
+5. Redeploy after any environment variable change.
+
+## Notes
+
+- A local repo remote is not configured in this workspace right now, so GitHub linkage still needs to be connected on your machine or in the hosted repo settings.
+- `npm run build` skips deploy-env validation outside Vercel, but Vercel builds will fail fast if MailerSend/contact configuration is missing.

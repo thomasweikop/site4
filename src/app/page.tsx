@@ -1,257 +1,537 @@
 import Link from "next/link";
+import {
+  ANSWER_OPTIONS,
+  SCAN_QUESTIONS,
+  SCORE_BANDS,
+  SCORE_RULES,
+  WEIGHTED_TOPICS,
+} from "@/lib/nis2Scan";
 import Nis2LeadForm from "./Nis2LeadForm";
 
-const DELIVERY_CARDS = [
+const TRUST_POINTS = [
   {
-    eyebrow: "Scope",
-    title: "Afklaring af omfang og ansvar",
-    text: "Vi hjælper jer med at få styr på hvilke enheder, systemer, leverandører og ledelsesbeslutninger der faktisk skal med i NIS2-arbejdet.",
+    title: "10 spørgsmål",
+    text: "Et hurtigt første billede af governance, risiko, beredskab og adgangsstyring.",
   },
   {
-    eyebrow: "Gap-analyse",
-    title: "Fra diffuse krav til konkret prioritering",
-    text: "I får en praktisk gennemgang af hvor I står nu, hvad der mangler, og hvad der bør løses først for at reducere reel risiko.",
+    title: "Ja / Delvist / Nej",
+    text: "Scanningen er bygget til at være hurtig nok til travle ledere og IT-ansvarlige.",
   },
   {
-    eyebrow: "Roadmap",
-    title: "En plan der kan eksekveres",
-    text: "Vi omsætter kravene til et roadmap med ansvar, rækkefølge og realistiske næste skridt for både ledelse og drift.",
+    title: "Score + gap-analyse",
+    text: "I får både en procent, de største mangler og de første anbefalede næste skridt.",
   },
 ];
 
-const OFFER_ITEMS = [
-  "Ledelsesbriefing og beslutningsoplæg",
-  "NIS2 scope-afklaring og modenhedsbillede",
-  "Gapanalyse på processer, leverandører og beredskab",
-  "Prioriteret handlingsplan for de næste 30, 60 og 90 dage",
-  "Sparring på politikker, hændelser og dokumentation",
-  "Praktisk hjælp til at komme fra compliance-snak til reel gennemførsel",
+const PROBLEM_POINTS = [
+  {
+    title: "De fleste ved ikke om de reelt er klar",
+    text: "NIS2 er blevet et must-have emne, men mange virksomheder mangler stadig et hurtigt og troværdigt første overblik.",
+  },
+  {
+    title: "Kompleksiteten gør beslutninger langsomme",
+    text: "Ledelse, IT og drift taler ofte forbi hinanden, fordi kravene ikke er oversat til et konkret modenhedsbillede.",
+  },
+  {
+    title: "Der er penge og drift på spil",
+    text: "Når gaps ikke bliver synlige tidligt, vokser både regulatorisk risiko, kunde-pres og sandsynligheden for dyre fejlprioriteringer.",
+  },
 ];
 
-const TARGET_GROUPS = [
-  "Virksomheder der tror de kan være omfattet, men mangler overblik",
-  "Ledelser der vil have et klart billede af ansvar, risiko og næste beslutning",
-  "IT- og sikkerhedsansvarlige der mangler struktur, prioritering og et realistisk roadmap",
-  "Organisationer der vil være klar før kunder, bestyrelse eller revisor begynder at presse på",
-];
-
-const PROCESS_STEPS = [
+const HOW_IT_WORKS = [
   {
     step: "01",
-    title: "Kort afklaringsmøde",
-    text: "Vi afklarer hurtigt jeres situation, modenhed og hvad der haster mest.",
+    title: "Svar på 10 spørgsmål",
+    text: "MVP’en bruger et simpelt format med svarene Ja, Delvist eller Nej.",
   },
   {
     step: "02",
-    title: "Analyse af nuværende setup",
-    text: "Vi gennemgår organisation, systemlandskab, leverandører og de vigtigste governance-punkter.",
+    title: "Få en vægtet score",
+    text: "Alle svar tæller, men kritiske områder som risikovurdering, incident response og MFA vægtes højere.",
   },
   {
     step: "03",
-    title: "Prioriteret leverance",
-    text: "I får et konkret output der kan bruges med det samme, ikke bare generel rådgivning.",
+    title: "Se jeres største gaps",
+    text: "I får et første billede af hvor risikoen er høj, og hvilke emner der bør prioriteres først.",
   },
   {
     step: "04",
-    title: "Videre eksekvering",
-    text: "Vi kan enten overlade planen til jer eller hjælpe videre med de næste arbejdspakker.",
+    title: "Få hjælp hvis I vil videre",
+    text: "Når scanen er færdig, kan næste step være rådgivning, teknologi eller implementering.",
+  },
+];
+
+const REPORT_PREVIEW = [
+  {
+    title: "Compliance score",
+    text: "Fx 62% compliant med tydelig statusfarve og kort forklaring.",
+  },
+  {
+    title: "Største gaps",
+    text: "Fx manglende incident response plan, svag overvågning og delvis leverandørstyring.",
+  },
+  {
+    title: "Hvad betyder det?",
+    text: "En kort vurdering af drift, regulatorisk pres og sandsynlige prioriteringsfejl.",
+  },
+  {
+    title: "Plan",
+    text: "De første konkrete handlinger, fx politikker, MFA, overvågning og leverandøroverblik.",
+  },
+];
+
+const TARGET_SEGMENTS = [
+  "Virksomheder med 50–500 ansatte som er tæt nok på NIS2 til at mærke presset nu.",
+  "Brancher som energi, transport, sundhed, finans/fintech og SaaS/IT.",
+  "CFO, IT-chef, CISO eller COO som skal forstå både risiko, indsats og budget.",
+  "Teams der mangler et første beslutningsgrundlag før de køber rådgivning eller teknologi.",
+];
+
+const MATCH_CATEGORIES = [
+  {
+    title: "Rådgivning",
+    text: "Når virksomheden først skal have afklaret scope, governance og krav.",
+  },
+  {
+    title: "Teknologi",
+    text: "Når gaps peger på logging, IAM, SIEM, overvågning eller andre konkrete kontroller.",
+  },
+  {
+    title: "Implementering",
+    text: "Når der er brug for hjælp til at omsætte score og gaps til reel fremdrift.",
   },
 ];
 
 const FAQ_ITEMS = [
   {
-    question: "Kan I afgøre om vi er omfattet?",
+    question: "Er scanen en juridisk afgørelse af om vi er omfattet?",
     answer:
-      "Vi kan hjælpe jer med en praktisk scope-afklaring og pege på de vigtigste forhold der bør vurderes. Den endelige juridiske vurdering bør altid forankres rigtigt hos jer.",
+      "Nej. MVP’en er et hurtigt modenheds- og gap-billede. Den kan pege på hvor I bør starte, men den erstatter ikke en egentlig juridisk vurdering.",
   },
   {
-    question: "Er det her kun for store virksomheder?",
+    question: "Hvor lang tid tager scanen?",
     answer:
-      "Nej. Mange mellemstore virksomheder bliver ramt indirekte gennem kunder, leverandørkrav, bestyrelse eller kontrakter længe før de føler sig helt klar.",
+      "Målet er 2–3 minutter. Formatet er bevidst enkelt, så travle ledere og IT-ansvarlige kan gennemføre den uden forberedelse.",
   },
   {
-    question: "Kan I hjælpe uden at overtage det hele?",
+    question: "Hvad sker der efter scoren?",
     answer:
-      "Ja. Vi kan både lave et afklaringsforløb, en målrettet gapanalyse eller hjælpe på de dele hvor jeres team mangler fart og struktur.",
+      "I får et første output med score, største gaps og anbefalede næste skridt. Derefter kan I vælge om I vil have en intro til at lukke de vigtigste huller.",
   },
 ];
+
+type SectionHeadingProps = {
+  eyebrow: string;
+  title: string;
+  text: string;
+  inverse?: boolean;
+};
 
 function SectionHeading({
   eyebrow,
   title,
   text,
-}: {
-  eyebrow: string;
-  title: string;
-  text: string;
-}) {
+  inverse = false,
+}: SectionHeadingProps) {
   return (
     <div className="max-w-3xl">
-      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-300">
+      <p
+        className={`text-xs font-semibold uppercase tracking-[0.28em] ${
+          inverse ? "text-[#e8d7b4]" : "text-ember"
+        }`}
+      >
         {eyebrow}
       </p>
-      <h2 className="mt-3 text-3xl font-black tracking-tight text-white md:text-5xl">
+      <h2
+        className={`mt-4 text-balance font-display text-4xl leading-none md:text-6xl ${
+          inverse ? "text-white" : "text-ink"
+        }`}
+      >
         {title}
       </h2>
-      <p className="mt-4 text-base leading-7 text-slate-300 md:text-lg">{text}</p>
+      <p className={`mt-5 max-w-2xl text-lg leading-8 ${inverse ? "text-white/75" : "text-soft"}`}>
+        {text}
+      </p>
     </div>
   );
 }
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
-      <section className="relative overflow-hidden border-b border-white/8">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.22),transparent_26%),radial-gradient(circle_at_80%_20%,_rgba(59,130,246,0.18),transparent_20%),linear-gradient(180deg,#020617,#0f172a)]" />
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-300/50 to-transparent" />
+    <main className="overflow-hidden bg-page text-ink">
+      <section className="relative border-b border-line">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(197,93,60,0.16),transparent_28%),radial-gradient(circle_at_86%_8%,_rgba(183,138,58,0.14),transparent_18%),linear-gradient(180deg,rgba(255,250,242,0.88),rgba(239,231,219,0.48))]" />
+        <div className="absolute left-[-6rem] top-24 h-64 w-64 rounded-full bg-[rgba(197,93,60,0.12)] blur-3xl motion-safe:animate-[drift_14s_ease-in-out_infinite]" />
+        <div className="absolute right-[-4rem] top-10 h-72 w-72 rounded-full bg-[rgba(183,138,58,0.12)] blur-3xl motion-safe:animate-[drift_18s_ease-in-out_infinite]" />
 
-        <div className="relative mx-auto max-w-7xl px-6 pb-18 pt-8 md:px-8 md:pb-24 lg:px-10 lg:pt-10">
+        <div className="relative mx-auto max-w-7xl px-6 pb-20 pt-8 md:px-8 lg:px-10 lg:pb-24">
           <div className="flex items-center justify-between gap-4">
-            <Link href="/" className="text-lg font-black tracking-[0.18em] text-white">
-              WEIKOP NIS2
+            <Link href="/" className="text-lg font-extrabold tracking-[0.2em] text-ink">
+              WEIKOP
             </Link>
-            <div className="hidden items-center gap-6 text-sm font-semibold text-slate-300 md:flex">
-              <a href="#ydelser" className="transition hover:text-white">
-                Ydelser
+
+            <div className="hidden items-center gap-6 text-sm font-semibold text-soft md:flex">
+              <a href="#hvordan" className="transition hover:text-ink">
+                Hvordan
               </a>
-              <a href="#proces" className="transition hover:text-white">
-                Proces
+              <a href="#spoergsmaal" className="transition hover:text-ink">
+                Spørgsmål
               </a>
-              <a href="#kontakt" className="transition hover:text-white">
+              <a href="#score" className="transition hover:text-ink">
+                Score
+              </a>
+              <a href="#kontakt" className="transition hover:text-ink">
                 Kontakt
               </a>
             </div>
           </div>
 
-          <div className="mt-16 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+          <div className="mt-16 grid gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:items-start">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-sky-300">
-                Praktisk NIS2-rådgivning
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-ember">
+                MVP: gratis NIS2 compliance scan
               </p>
-              <h1 className="mt-5 max-w-4xl text-5xl font-black tracking-tight text-white md:text-7xl">
-                Få styr på NIS2 uden at drukne i compliance-støj.
+              <h1 className="mt-6 max-w-5xl text-balance font-display text-6xl leading-none text-ink md:text-7xl lg:text-[5.45rem]">
+                Er din virksomhed klar til NIS2?
               </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300 md:text-xl">
-                Vi hjælper jer med at afklare scope, lukke de vigtigste gaps og få en plan der kan
-                bruges i drift, ledelse og bestyrelse. Kort sagt: mindre usikkerhed, bedre
-                prioritering og hurtigere fremdrift.
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-soft md:text-xl">
+                Få et hurtigt første billede af hvor tæt I er på NIS2, hvad der mangler, og hvilke
+                næste skridt der giver mest mening først.
               </p>
-
-              <div className="mt-8 flex flex-wrap gap-3 text-sm font-semibold">
-                <span className="rounded-full border border-white/12 bg-white/6 px-4 py-2 text-slate-200">
-                  Ledelsesbriefing
-                </span>
-                <span className="rounded-full border border-white/12 bg-white/6 px-4 py-2 text-slate-200">
-                  Gap-analyse
-                </span>
-                <span className="rounded-full border border-white/12 bg-white/6 px-4 py-2 text-slate-200">
-                  Roadmap og prioritering
-                </span>
-              </div>
 
               <div className="mt-10 flex flex-wrap gap-4">
-                <a
-                  href="#kontakt"
-                  className="inline-flex rounded-full bg-sky-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-200"
+                <Link
+                  href="/scan"
+                  className="inline-flex rounded-full bg-ember px-7 py-3 text-sm font-semibold text-white transition hover:bg-[#a94f34]"
                 >
-                  Book afklaringsmøde
-                </a>
+                  Start gratis scan
+                </Link>
                 <a
-                  href="#ydelser"
-                  className="inline-flex rounded-full border border-white/12 bg-white/6 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/12"
+                  href="#spoergsmaal"
+                  className="inline-flex rounded-full border border-line bg-white/60 px-7 py-3 text-sm font-semibold text-ink transition hover:bg-white"
                 >
-                  Se hvad vi hjælper med
+                  Se de 10 spørgsmål
                 </a>
+              </div>
+
+              <div className="mt-12 grid gap-4 md:grid-cols-3">
+                {TRUST_POINTS.map((item) => (
+                  <article
+                    key={item.title}
+                    className="rounded-[1.75rem] border border-line bg-white/70 p-5 shadow-[var(--shadow)]"
+                  >
+                    <p className="text-sm font-bold text-ink">{item.title}</p>
+                    <p className="mt-3 text-sm leading-6 text-soft">{item.text}</p>
+                  </article>
+                ))}
               </div>
             </div>
 
-            <div className="grid gap-4">
-              <div className="rounded-[30px] border border-white/12 bg-white/6 p-5 shadow-[0_24px_80px_rgba(2,6,23,0.32)] backdrop-blur">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-300">
-                  Hurtigt overblik
-                </p>
-                <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-2xl bg-slate-950/55 p-4">
-                    <p className="text-sm font-semibold text-white">Ledelse</p>
-                    <p className="mt-2 text-sm leading-6 text-slate-300">
-                      Hvad er jeres ansvar, og hvilke beslutninger bør træffes først?
+            <div className="relative lg:pt-6">
+              <div className="absolute -left-4 top-16 hidden h-28 w-28 rounded-[2rem] border border-line bg-paper lg:block lg:rotate-6" />
+
+              <div className="relative rounded-[2.2rem] border border-line bg-surface/95 p-6 shadow-[var(--shadow)] md:p-7">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-ember">
+                      Scan preview
                     </p>
+                    <p className="mt-2 text-lg font-bold text-ink">Sådan føles MVP’en</p>
                   </div>
-                  <div className="rounded-2xl bg-slate-950/55 p-4">
-                    <p className="text-sm font-semibold text-white">Drift</p>
-                    <p className="mt-2 text-sm leading-6 text-slate-300">
-                      Hvilke processer, leverandører og sikkerhedsgaps skaber størst risiko nu?
-                    </p>
-                  </div>
-                  <div className="rounded-2xl bg-slate-950/55 p-4 sm:col-span-2">
-                    <p className="text-sm font-semibold text-white">Leverance</p>
-                    <p className="mt-2 text-sm leading-6 text-slate-300">
-                      En prioriteret plan, ikke bare et langt dokument. I får noget der kan bruges i
-                      næste møde, næste sprint og næste ledelsesbeslutning.
-                    </p>
+                  <div className="rounded-full border border-line bg-page px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-soft">
+                    Spørgsmål 7 / 10
                   </div>
                 </div>
-              </div>
 
-              <div className="rounded-[30px] border border-sky-300/25 bg-sky-300/10 p-5 shadow-[0_24px_80px_rgba(56,189,248,0.14)]">
-                <p className="text-sm font-semibold text-white">Typisk første leverance</p>
-                <ul className="mt-4 grid gap-3 text-sm text-slate-100">
-                  <li className="rounded-2xl bg-slate-950/40 px-4 py-3">
-                    Scope og ansvar på én side
-                  </li>
-                  <li className="rounded-2xl bg-slate-950/40 px-4 py-3">
-                    Top-10 gaps med prioritering
-                  </li>
-                  <li className="rounded-2xl bg-slate-950/40 px-4 py-3">
-                    30/60/90-dages roadmap
-                  </li>
-                </ul>
+                <div className="mt-6 rounded-[1.9rem] bg-sage p-6 text-white">
+                  <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#e8d7b4]">
+                    Live eksempel
+                  </p>
+                  <h3 className="mt-3 max-w-md font-display text-4xl leading-none">
+                    Bruger I MFA på kritiske systemer og administrative konti?
+                  </h3>
+
+                <div className="mt-6 grid gap-3">
+                    {ANSWER_OPTIONS.map((answer) => (
+                      <div
+                        key={answer.value}
+                        className="rounded-[1.4rem] border border-white/10 bg-white/7 px-4 py-4 text-sm font-semibold text-white/85"
+                      >
+                        {answer.label}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-5 rounded-[1.7rem] border border-line bg-page p-5">
+                  <div className="flex items-end justify-between gap-4">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-ember">
+                        Eksempel på output
+                      </p>
+                      <p className="mt-2 text-5xl font-black tracking-tight text-ink">62%</p>
+                    </div>
+                    <div className="rounded-full border border-[#dfc58e] bg-[#f4ead2] px-4 py-2 text-sm font-semibold text-[#6b4e1d]">
+                      Delvist compliant
+                    </div>
+                  </div>
+
+                  <div className="mt-5 h-3 overflow-hidden rounded-full bg-[#e5d9c8]">
+                    <div className="h-full w-[62%] rounded-full bg-ember" />
+                  </div>
+
+                  <div className="mt-5 grid gap-3">
+                    <div className="rounded-[1.2rem] border border-line bg-white/75 px-4 py-3 text-sm text-soft">
+                      ❌ Ingen incident response plan
+                    </div>
+                    <div className="rounded-[1.2rem] border border-line bg-white/75 px-4 py-3 text-sm text-soft">
+                      ❌ Manglende sikkerhedsovervågning
+                    </div>
+                    <div className="rounded-[1.2rem] border border-line bg-white/75 px-4 py-3 text-sm text-soft">
+                      ⚠️ Delvis leverandørstyring
+                    </div>
+                  </div>
+                </div>
+
+                <p className="mt-5 text-sm leading-6 text-soft">
+                  Scanen er nu klar som første MVP og bruger vægtede svar til at gøre resultatet
+                  mere realistisk end en flad ja/nej-quiz.
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="ydelser" className="px-6 py-18 md:px-8 md:py-24 lg:px-10">
+      <section className="px-6 py-18 md:px-8 md:py-24 lg:px-10">
         <div className="mx-auto max-w-7xl">
           <SectionHeading
-            eyebrow="Ydelser"
-            title="Det her hjælper vi jer med først."
-            text="Vi fokuserer på det der skaber ro, beslutningskraft og reel fremdrift. Ikke på at producere mest mulig dokumentation for dokumentationens skyld."
+            eyebrow="Hvorfor det virker"
+            title="NIS2 er en stærk MVP, fordi efterspørgslen allerede er tvungen."
+            text="Det her er interessant nu, fordi det kombinerer høj usikkerhed, høj kompleksitet og et budgetområde som virksomheder ikke kan ignorere særlig længe."
           />
 
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {DELIVERY_CARDS.map((card) => (
+            {PROBLEM_POINTS.map((item) => (
               <article
-                key={card.title}
-                className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_80px_rgba(2,6,23,0.16)]"
+                key={item.title}
+                className="rounded-[2rem] border border-line bg-white/72 p-6 shadow-[var(--shadow)]"
               >
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-300">
-                  {card.eyebrow}
-                </p>
-                <h3 className="mt-3 text-2xl font-bold text-white">{card.title}</h3>
-                <p className="mt-4 text-base leading-7 text-slate-300">{card.text}</p>
+                <h3 className="text-2xl font-bold text-ink">{item.title}</h3>
+                <p className="mt-4 text-base leading-7 text-soft">{item.text}</p>
               </article>
             ))}
           </div>
+        </div>
+      </section>
 
-          <div className="mt-8 rounded-[30px] border border-white/10 bg-white/[0.04] p-6 md:p-8">
-            <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-300">
-                  Leverancer
-                </p>
-                <h3 className="mt-3 text-3xl font-black tracking-tight text-white">
-                  Praktiske outputs I faktisk kan bruge.
-                </h3>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {OFFER_ITEMS.map((item) => (
+      <section id="hvordan" className="border-y border-line bg-sage px-6 py-18 text-white md:px-8 md:py-24 lg:px-10">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeading
+            eyebrow="Sådan virker det"
+            title="Et simpelt flow: scan, score, gaps, næste skridt."
+            text="MVP’en skal ikke ligne en tung compliance-platform. Den skal hurtigt give et troværdigt første billede, som gør det nemmere at tage næste beslutning."
+            inverse
+          />
+
+          <div className="mt-10 grid gap-5 lg:grid-cols-4">
+            {HOW_IT_WORKS.map((item) => (
+              <article
+                key={item.step}
+                className="rounded-[2rem] border border-white/10 bg-white/7 p-6 shadow-[0_30px_80px_rgba(8,16,13,0.16)]"
+              >
+                <p className="text-sm font-semibold text-[#e8d7b4]">{item.step}</p>
+                <h3 className="mt-4 text-2xl font-bold text-white">{item.title}</h3>
+                <p className="mt-4 text-base leading-7 text-white/75">{item.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="spoergsmaal" className="px-6 py-18 md:px-8 md:py-24 lg:px-10">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeading
+            eyebrow="De 10 spørgsmål"
+            title="Spørgsmålene er korte, realistiske og lette at svare på."
+            text="Vi starter med de emner der giver mest signal i et første scan: governance, risiko, incident response, adgang, leverandører og test."
+          />
+
+          <div className="mt-10 grid gap-4 lg:grid-cols-2">
+            {SCAN_QUESTIONS.map((item) => (
+              <article
+                key={item.id}
+                className="rounded-[1.7rem] border border-line bg-white/72 p-5 shadow-[var(--shadow)]"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-ember">
+                      {item.category}
+                    </p>
+                    <h3 className="mt-2 text-lg font-bold leading-7 text-ink">{item.question}</h3>
+                  </div>
+                  <div className="rounded-full border border-line bg-page px-3 py-1 text-xs font-semibold text-soft">
+                    {item.id}
+                  </div>
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {ANSWER_OPTIONS.map((answer) => (
+                    <span
+                      key={answer.value}
+                      className="rounded-full border border-line bg-page px-4 py-2 text-sm font-semibold text-soft"
+                    >
+                      {answer.label}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="score" className="border-y border-line bg-paper px-6 py-18 md:px-8 md:py-24 lg:px-10">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeading
+            eyebrow="Scoremodel"
+            title="Simpel nok til en MVP. Stærk nok til at føles troværdig."
+            text="Pointmodellen er let at forstå, men nogle områder tæller mere, så outputtet føles mere realistisk end en flad ja/nej-quiz."
+          />
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
+            <div className="rounded-[2rem] border border-line bg-white/80 p-6 shadow-[var(--shadow)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-ember">
+                Point pr. svar
+              </p>
+              <div className="mt-5 grid gap-3">
+                {SCORE_RULES.map((rule) => (
                   <div
-                    key={item}
-                    className="rounded-2xl border border-white/8 bg-slate-950/45 px-4 py-4 text-sm font-semibold text-slate-100"
+                    key={rule.label}
+                    className="rounded-[1.4rem] border border-line bg-page px-4 py-4"
                   >
-                    {item}
+                    <div className="flex items-center justify-between gap-4">
+                      <p className="text-base font-bold text-ink">{rule.label}</p>
+                      <p className="text-sm font-semibold text-ember">{rule.points}</p>
+                    </div>
+                    <p className="mt-2 text-sm leading-6 text-soft">{rule.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid gap-6">
+              <div className="rounded-[2rem] border border-line bg-white/80 p-6 shadow-[var(--shadow)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-ember">
+                  Score-bånd
+                </p>
+                <div className="mt-5 grid gap-3">
+                  {SCORE_BANDS.map((band) => (
+                    <div
+                      key={band.range}
+                      className={`rounded-[1.4rem] border px-4 py-4 ${band.className}`}
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <p className="text-lg font-bold">{band.range}</p>
+                        <div className="flex flex-wrap gap-2 text-sm font-semibold">
+                          <span>{band.status}</span>
+                          <span>/</span>
+                          <span>{band.risk}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-[2rem] border border-line bg-white/80 p-6 shadow-[var(--shadow)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-ember">
+                  Vægtede spørgsmål
+                </p>
+                <div className="mt-5 grid gap-3">
+                  {WEIGHTED_TOPICS.map((item) => (
+                    <div
+                      key={item}
+                      className="rounded-[1.3rem] border border-line bg-page px-4 py-4 text-sm leading-6 text-soft"
+                    >
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-6 py-18 md:px-8 md:py-24 lg:px-10">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.88fr_1.12fr]">
+          <div>
+            <SectionHeading
+              eyebrow="Output"
+              title="Scoren er kun starten. Rapporten er det der konverterer."
+              text="Brugeren skal ikke bare se et tal. De skal også forstå hvorfor det betyder noget, og hvad de tre vigtigste næste skridt er."
+            />
+
+            <div className="mt-8 rounded-[2rem] border border-line bg-paper p-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-ember">
+                Eksempel
+              </p>
+              <p className="mt-3 max-w-xl text-balance font-display text-4xl leading-none text-ink">
+                Din score: 62% compliant
+              </p>
+              <p className="mt-4 text-base leading-7 text-soft">
+                Status: delvist compliant. Risikoen er især knyttet til beredskab, overvågning og
+                leverandørstyring.
+              </p>
+            </div>
+
+            <div className="mt-8 grid gap-3">
+              {REPORT_PREVIEW.map((item) => (
+                <div
+                  key={item.title}
+                  className="rounded-[1.7rem] border border-line bg-white/72 p-5 shadow-[var(--shadow)]"
+                >
+                  <p className="text-base font-bold text-ink">{item.title}</p>
+                  <p className="mt-3 text-sm leading-6 text-soft">{item.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-[2.2rem] border border-line bg-surface/90 p-6 shadow-[var(--shadow)] md:p-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-ember">
+              Hvem det er til
+            </p>
+            <h3 className="mt-4 text-balance font-display text-5xl leading-none text-ink">
+              Bygget til virksomheder der har brug for et første beslutningsgrundlag hurtigt.
+            </h3>
+
+            <div className="mt-8 grid gap-3">
+              {TARGET_SEGMENTS.map((item) => (
+                <div
+                  key={item}
+                  className="rounded-[1.6rem] border border-line bg-page px-5 py-4 text-base leading-7 text-soft"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 rounded-[1.8rem] bg-sage p-6 text-white">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#e8d7b4]">
+                Efter scanen
+              </p>
+              <h4 className="mt-3 text-3xl font-bold text-white">Tre naturlige match-kategorier</h4>
+
+              <div className="mt-5 grid gap-3">
+                {MATCH_CATEGORIES.map((item) => (
+                  <div
+                    key={item.title}
+                    className="rounded-[1.4rem] border border-white/10 bg-white/7 px-4 py-4"
+                  >
+                    <p className="text-base font-bold text-white">{item.title}</p>
+                    <p className="mt-2 text-sm leading-6 text-white/75">{item.text}</p>
                   </div>
                 ))}
               </div>
@@ -260,73 +540,45 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-y border-white/8 bg-white/[0.03] px-6 py-18 md:px-8 md:py-24 lg:px-10">
-        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-          <SectionHeading
-            eyebrow="Typisk kunde"
-            title="Godt match hvis I mangler klarhed og tempo."
-            text="NIS2-arbejdet går ofte i stå mellem ledelse, IT, sikkerhed og drift. Vi hjælper når der er brug for struktur, prioritering og en tydelig næste beslutning."
-          />
-
-          <div className="grid gap-3">
-            {TARGET_GROUPS.map((item) => (
-              <div
-                key={item}
-                className="rounded-2xl border border-white/8 bg-slate-950/50 px-5 py-4 text-base leading-7 text-slate-200"
-              >
-                {item}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="proces" className="px-6 py-18 md:px-8 md:py-24 lg:px-10">
-        <div className="mx-auto max-w-7xl">
-          <SectionHeading
-            eyebrow="Proces"
-            title="Et forløb der skaber fremdrift fra første uge."
-            text="Vi holder det enkelt: afklar, analysér, prioriter, eksekvér. Det gør det lettere at få både ledelse og organisation med."
-          />
-
-          <div className="mt-10 grid gap-5 lg:grid-cols-4">
-            {PROCESS_STEPS.map((step) => (
-              <article
-                key={step.step}
-                className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6 shadow-[0_20px_60px_rgba(2,6,23,0.14)]"
-              >
-                <p className="text-sm font-semibold text-sky-300">{step.step}</p>
-                <h3 className="mt-4 text-xl font-bold text-white">{step.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-300">{step.text}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="kontakt" className="border-t border-white/8 px-6 py-18 md:px-8 md:py-24 lg:px-10">
-        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+      <section id="kontakt" className="border-t border-line px-6 py-18 md:px-8 md:py-24 lg:px-10">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
             <SectionHeading
               eyebrow="Kontakt"
-              title="Book en kort NIS2-afklaring."
-              text="Fortæl kort hvor I står, så vender vi tilbage med et konkret forslag til næste skridt. Første samtale bruges på afklaring, ikke på generisk salgssnak."
+              title="Når scoren peger på gaps, er næste skridt at få dem lukket i den rigtige rækkefølge."
+              text="Brug formularen hvis du vil have hjælp til at omsætte scanen til rådgivning, teknologi eller en mere konkret handlingsplan."
             />
+
+            <div className="mt-8 rounded-[2rem] border border-line bg-paper p-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-ember">
+                Efter scoren
+              </p>
+              <p className="mt-3 max-w-xl text-balance font-display text-4xl leading-none text-ink">
+                Brug resultatet som et beslutningsgrundlag, ikke bare som et tal.
+              </p>
+              <p className="mt-4 text-base leading-7 text-soft">
+                Det bedste output opstår, når score, gaps og næste skridt bliver omsat til en reel
+                prioritering for ledelse, IT og sikkerhedsansvarlige.
+              </p>
+            </div>
 
             <div className="mt-8 grid gap-3">
               {FAQ_ITEMS.map((item) => (
                 <div
                   key={item.question}
-                  className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"
+                  className="rounded-[1.7rem] border border-line bg-white/70 p-5 shadow-[var(--shadow)]"
                 >
-                  <p className="text-base font-semibold text-white">{item.question}</p>
-                  <p className="mt-2 text-sm leading-6 text-slate-300">{item.answer}</p>
+                  <p className="text-base font-bold text-ink">{item.question}</p>
+                  <p className="mt-3 text-sm leading-6 text-soft">{item.answer}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <Nis2LeadForm />
+          <Nis2LeadForm
+            sourceTag="NIS2 landing lead"
+            description="Skriv kort hvor I står, og hvad I gerne vil have afklaret efter scanen. Vi bruger det til at vende tilbage med et mere konkret næste skridt."
+          />
         </div>
       </section>
     </main>
