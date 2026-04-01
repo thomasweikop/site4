@@ -120,10 +120,6 @@ export default function ScanExperience() {
     setCurrentIndex((index) => Math.max(0, index - 1));
   }
 
-  function jumpTo(index: number) {
-    setCurrentIndex(index);
-  }
-
   function restart() {
     setProfile({});
     setAnswers({});
@@ -331,7 +327,7 @@ export default function ScanExperience() {
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[1fr_0.84fr]">
+    <div className="mx-auto max-w-4xl">
       <div className="rounded-[2.2rem] border border-line bg-white/94 p-6 shadow-[var(--shadow)] md:p-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -509,86 +505,6 @@ export default function ScanExperience() {
                 ? "Se mit resultat"
                 : "Næste spørgsmål"}
           </button>
-        </div>
-      </div>
-
-      <div className="space-y-6">
-        <div className="rounded-[2rem] border border-line bg-white/92 p-6 shadow-[var(--shadow)]">
-          <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-ember">
-            Oversigt
-          </p>
-          <div className="mt-5 grid gap-3">
-            <div className="rounded-[1.3rem] border border-line bg-[#f4f7fb] px-4 py-4">
-              <p className="text-sm font-bold text-ink">Profil</p>
-              <p className="mt-2 text-sm leading-6 text-soft">
-                Vælg størrelse, branche og rolle før selve spørgsmålene starter.
-              </p>
-            </div>
-            <div className="grid grid-cols-5 gap-2">
-              {SCAN_QUESTIONS.map((question, index) => {
-                const answer = answers[question.id];
-
-                return (
-                  <button
-                    key={question.id}
-                    type="button"
-                    onClick={() => jumpTo(index)}
-                    disabled={!profileComplete}
-                    className={classNames(
-                      "flex h-11 items-center justify-center rounded-full border text-sm font-semibold transition",
-                      index === currentIndex &&
-                        "border-ember bg-[#e8f6ff] text-ink",
-                      index !== currentIndex &&
-                        answer &&
-                        "border-[#bdd6f0] bg-[#eaf4ff] text-[#154d73]",
-                      index !== currentIndex &&
-                        !answer &&
-                        "border-line bg-[#f4f7fb] text-soft hover:bg-white",
-                      !profileComplete &&
-                        "cursor-not-allowed opacity-45 hover:bg-[#f4f7fb]",
-                    )}
-                  >
-                    {question.id}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-[2rem] border border-line bg-white/92 p-6 shadow-[var(--shadow)]">
-          <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-ember">
-            Sådan scorer vi
-          </p>
-          <div className="mt-5 grid gap-3">
-            {ANSWER_OPTIONS.map((option) => (
-              <div
-                key={option.value}
-                className="rounded-[1.3rem] border border-line bg-[#f4f7fb] px-4 py-4"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-bold text-ink">{option.label}</p>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ember">
-                    {option.pointsLabel}
-                  </p>
-                </div>
-                <p className="mt-2 text-sm leading-6 text-soft">
-                  {option.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-[2rem] border border-line bg-sage p-6 text-white shadow-[0_30px_80px_rgba(8,17,34,0.22)]">
-          <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-[#9bd1ff]">
-            Hint
-          </p>
-          <p className="mt-4 text-base leading-7 text-white/80">
-            Risikovurdering, incident response og MFA tæller ekstra i scoren,
-            fordi de ofte er de tydeligste indikatorer på reel modenhed i en
-            tidlig screening.
-          </p>
         </div>
       </div>
     </div>

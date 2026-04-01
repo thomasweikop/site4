@@ -15,10 +15,10 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://nis.weikop.me"),
-  title: "Gratis NIS2 Compliance Scan | Weikop",
+  title: "Gratis NIS2 Compliance Scan | ComplyCheck",
   description:
-    "Er din virksomhed klar til NIS2? Få et hurtigt første billede af score, gaps og næste skridt med Weikops gratis NIS2 compliance scan.",
-  applicationName: "Weikop NIS2",
+    "Er din virksomhed klar til NIS2? Få et hurtigt første billede af score, gaps og næste skridt med ComplyChecks gratis NIS2 compliance scan.",
+  applicationName: "ComplyCheck",
   keywords: [
     "NIS2",
     "NIS2 scan",
@@ -28,20 +28,20 @@ export const metadata: Metadata = {
     "NIS2 krav Danmark",
     "NIS2 compliance",
   ],
-  creator: "Weikop",
-  publisher: "Weikop",
+  creator: "ComplyCheck",
+  publisher: "ComplyCheck",
   robots: {
     index: true,
     follow: true,
   },
   openGraph: {
-    title: "Gratis NIS2 Compliance Scan | Weikop",
+    title: "Gratis NIS2 Compliance Scan | ComplyCheck",
     description:
       "Få et hurtigt første billede af jeres NIS2-score, de største gaps og de næste prioriterede skridt.",
     type: "website",
     url: "https://nis.weikop.me",
     locale: "da_DK",
-    siteName: "Weikop NIS2",
+    siteName: "ComplyCheck",
   },
   alternates: {
     canonical: "/",

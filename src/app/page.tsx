@@ -7,13 +7,8 @@ import {
   SCORE_RULES,
   WEIGHTED_TOPICS,
 } from "@/lib/nis2Scan";
+import BrandWordmark from "@/components/BrandWordmark";
 import Nis2LeadForm from "./Nis2LeadForm";
-
-const HERO_PILLS = [
-  "2-3 minutter",
-  "10 spørgsmål",
-  "Score + gaps + næste skridt",
-];
 
 const BENEFIT_POINTS = [
   "Få et hurtigt første billede af hvor I står på NIS2.",
@@ -122,7 +117,7 @@ export default function Home() {
       <section className="relative min-h-[94svh] overflow-hidden border-b border-white/10 bg-sage">
         <Image
           src="/pic7.jpg"
-          alt="Hero-billede for Weikop NIS2 scan."
+          alt="Hero-billede for ComplyCheck NIS2 scan."
           fill
           priority
           sizes="100vw"
@@ -133,12 +128,7 @@ export default function Home() {
 
         <div className="relative mx-auto flex min-h-[94svh] max-w-7xl flex-col px-6 pb-12 pt-6 md:px-8 lg:px-10">
           <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 rounded-[1.6rem] border border-white/10 bg-white/10 px-4 py-3 text-white shadow-[0_24px_70px_rgba(5,9,20,0.24)] backdrop-blur-md">
-            <Link
-              href="/"
-              className="text-sm font-extrabold uppercase tracking-[0.28em] text-white"
-            >
-              WEIKOP
-            </Link>
+            <BrandWordmark inverse />
 
             <div className="hidden items-center gap-7 text-sm font-semibold text-white/78 md:flex">
               <a href="#hvordan" className="transition hover:text-white">
@@ -191,16 +181,6 @@ export default function Home() {
                 </a>
               </div>
 
-              <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-                {HERO_PILLS.map((item) => (
-                  <span
-                    key={item}
-                    className="rounded-full border border-white/12 bg-white/10 px-4 py-2 text-sm font-semibold text-white/80 backdrop-blur"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
             </div>
           </div>
         </div>
