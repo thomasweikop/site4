@@ -14,8 +14,8 @@ export default function ScanPage() {
     <main className="overflow-hidden bg-page text-ink">
       <section className="relative overflow-hidden bg-sage">
         <Image
-          src="/hero-spiral-staircase.png"
-          alt="Spiraltrappe set oppefra som hero-baggrund for scan-flowet."
+          src="/pic7.jpg"
+          alt="Hero-baggrund for scan-flowet."
           fill
           priority
           sizes="100vw"

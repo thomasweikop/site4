@@ -121,8 +121,8 @@ export default function Home() {
     <main className="overflow-hidden bg-page text-ink">
       <section className="relative min-h-[94svh] overflow-hidden border-b border-white/10 bg-sage">
         <Image
-          src="/hero-spiral-staircase.png"
-          alt="Spiraltrappe set oppefra, brugt som hero-billede for Weikop NIS2 scan."
+          src="/pic7.jpg"
+          alt="Hero-billede for Weikop NIS2 scan."
           fill
           priority
           sizes="100vw"
