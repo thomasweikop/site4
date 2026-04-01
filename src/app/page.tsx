@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   ANSWER_OPTIONS,
@@ -8,115 +9,70 @@ import {
 } from "@/lib/nis2Scan";
 import Nis2LeadForm from "./Nis2LeadForm";
 
-const TRUST_POINTS = [
-  {
-    title: "10 spørgsmål",
-    text: "Et hurtigt første billede af governance, risiko, beredskab og adgangsstyring.",
-  },
-  {
-    title: "Ja / Delvist / Nej",
-    text: "Scanningen er bygget til at være hurtig nok til travle ledere og IT-ansvarlige.",
-  },
-  {
-    title: "Score + gap-analyse",
-    text: "I får både en procent, de største mangler og de første anbefalede næste skridt.",
-  },
+const HERO_PILLS = [
+  "2-3 minutter",
+  "10 spørgsmål",
+  "Score + gaps + næste skridt",
 ];
 
-const PROBLEM_POINTS = [
-  {
-    title: "De fleste ved ikke om de reelt er klar",
-    text: "NIS2 er blevet et must-have emne, men mange virksomheder mangler stadig et hurtigt og troværdigt første overblik.",
-  },
-  {
-    title: "Kompleksiteten gør beslutninger langsomme",
-    text: "Ledelse, IT og drift taler ofte forbi hinanden, fordi kravene ikke er oversat til et konkret modenhedsbillede.",
-  },
-  {
-    title: "Der er penge og drift på spil",
-    text: "Når gaps ikke bliver synlige tidligt, vokser både regulatorisk risiko, kunde-pres og sandsynligheden for dyre fejlprioriteringer.",
-  },
+const BENEFIT_POINTS = [
+  "Få et hurtigt første billede af hvor I står på NIS2.",
+  "Se hvor governance, beredskab og adgangsstyring halter mest.",
+  "Skab et bedre grundlag for at prioritere rådgivning, teknologi og budget.",
 ];
 
 const HOW_IT_WORKS = [
   {
     step: "01",
     title: "Svar på 10 spørgsmål",
-    text: "MVP’en bruger et simpelt format med svarene Ja, Delvist eller Nej.",
+    text: "Formatet er hurtigt og bevidst enkelt, så ledelse og IT kan gennemføre uden forberedelse.",
   },
   {
     step: "02",
     title: "Få en vægtet score",
-    text: "Alle svar tæller, men kritiske områder som risikovurdering, incident response og MFA vægtes højere.",
+    text: "Risikovurdering, incident response og MFA tæller mere, så resultatet føles mere realistisk.",
   },
   {
     step: "03",
-    title: "Se jeres største gaps",
-    text: "I får et første billede af hvor risikoen er høj, og hvilke emner der bør prioriteres først.",
+    title: "Se de største gaps",
+    text: "I får et første billede af hvilke kontroller der bør prioriteres før resten.",
   },
   {
     step: "04",
-    title: "Få hjælp hvis I vil videre",
-    text: "Når scanen er færdig, kan næste step være rådgivning, teknologi eller implementering.",
+    title: "Brug det som næste skridt",
+    text: "Resultatet bliver et mere konkret afsæt for rådgivning, implementering eller intern prioritering.",
   },
 ];
 
 const REPORT_PREVIEW = [
-  {
-    title: "Compliance score",
-    text: "Fx 62% compliant med tydelig statusfarve og kort forklaring.",
-  },
-  {
-    title: "Største gaps",
-    text: "Fx manglende incident response plan, svag overvågning og delvis leverandørstyring.",
-  },
-  {
-    title: "Hvad betyder det?",
-    text: "En kort vurdering af drift, regulatorisk pres og sandsynlige prioriteringsfejl.",
-  },
-  {
-    title: "Plan",
-    text: "De første konkrete handlinger, fx politikker, MFA, overvågning og leverandøroverblik.",
-  },
+  "Score med tydelig status og risikoniveau.",
+  "Gap-analyse på de vigtigste mangler.",
+  "Kort forklaring af hvad resultatet betyder i praksis.",
+  "Forslag til første handlingspunkter og næste skridt.",
 ];
 
 const TARGET_SEGMENTS = [
-  "Virksomheder med 50–500 ansatte som er tæt nok på NIS2 til at mærke presset nu.",
+  "Virksomheder med 50-500 ansatte, hvor presset fra NIS2 allerede er mærkbart.",
   "Brancher som energi, transport, sundhed, finans/fintech og SaaS/IT.",
-  "CFO, IT-chef, CISO eller COO som skal forstå både risiko, indsats og budget.",
+  "CFO, IT-chef, CISO eller COO som skal forstå risiko, indsats og budget hurtigt.",
   "Teams der mangler et første beslutningsgrundlag før de køber rådgivning eller teknologi.",
-];
-
-const MATCH_CATEGORIES = [
-  {
-    title: "Rådgivning",
-    text: "Når virksomheden først skal have afklaret scope, governance og krav.",
-  },
-  {
-    title: "Teknologi",
-    text: "Når gaps peger på logging, IAM, SIEM, overvågning eller andre konkrete kontroller.",
-  },
-  {
-    title: "Implementering",
-    text: "Når der er brug for hjælp til at omsætte score og gaps til reel fremdrift.",
-  },
 ];
 
 const FAQ_ITEMS = [
   {
-    question: "Er scanen en juridisk afgørelse af om vi er omfattet?",
+    question: "Er det her en juridisk afgørelse af om vi er omfattet?",
     answer:
-      "Nej. MVP’en er et hurtigt modenheds- og gap-billede. Den kan pege på hvor I bør starte, men den erstatter ikke en egentlig juridisk vurdering.",
+      "Nej. Scanen er et hurtigt modenheds- og gap-billede, som hjælper jer med at forstå hvor I bør starte. Den erstatter ikke en egentlig juridisk vurdering.",
   },
   {
     question: "Hvor lang tid tager scanen?",
     answer:
-      "Målet er 2–3 minutter. Formatet er bevidst enkelt, så travle ledere og IT-ansvarlige kan gennemføre den uden forberedelse.",
+      "Målet er 2-3 minutter. Formatet er holdt simpelt med Ja, Delvist og Nej, så den er realistisk at gennemføre for travle ledere og IT-ansvarlige.",
   },
   {
-    question: "Hvad sker der efter scoren?",
+    question: "Hvad får vi ud af resultatet?",
     answer:
-      "I får et første output med score, største gaps og anbefalede næste skridt. Derefter kan I vælge om I vil have en intro til at lukke de vigtigste huller.",
+      "I får en vægtet score, jeres største gaps og de første anbefalede næste skridt, så resultatet kan bruges som et konkret næste arbejdsdokument.",
   },
 ];
 
@@ -136,20 +92,24 @@ function SectionHeading({
   return (
     <div className="max-w-3xl">
       <p
-        className={`text-xs font-semibold uppercase tracking-[0.28em] ${
-          inverse ? "text-[#e8d7b4]" : "text-ember"
+        className={`text-xs font-extrabold uppercase tracking-[0.28em] ${
+          inverse ? "text-[#9bd1ff]" : "text-ember"
         }`}
       >
         {eyebrow}
       </p>
       <h2
-        className={`mt-4 text-balance font-display text-4xl leading-none md:text-6xl ${
+        className={`mt-4 max-w-4xl text-balance text-4xl font-extrabold tracking-[-0.04em] md:text-6xl ${
           inverse ? "text-white" : "text-ink"
         }`}
       >
         {title}
       </h2>
-      <p className={`mt-5 max-w-2xl text-lg leading-8 ${inverse ? "text-white/75" : "text-soft"}`}>
+      <p
+        className={`mt-5 max-w-2xl text-lg leading-8 ${
+          inverse ? "text-white/74" : "text-soft"
+        }`}
+      >
         {text}
       </p>
     </div>
@@ -159,197 +119,231 @@ function SectionHeading({
 export default function Home() {
   return (
     <main className="overflow-hidden bg-page text-ink">
-      <section className="relative border-b border-line">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(197,93,60,0.16),transparent_28%),radial-gradient(circle_at_86%_8%,_rgba(183,138,58,0.14),transparent_18%),linear-gradient(180deg,rgba(255,250,242,0.88),rgba(239,231,219,0.48))]" />
-        <div className="absolute left-[-6rem] top-24 h-64 w-64 rounded-full bg-[rgba(197,93,60,0.12)] blur-3xl motion-safe:animate-[drift_14s_ease-in-out_infinite]" />
-        <div className="absolute right-[-4rem] top-10 h-72 w-72 rounded-full bg-[rgba(183,138,58,0.12)] blur-3xl motion-safe:animate-[drift_18s_ease-in-out_infinite]" />
+      <section className="relative min-h-[94svh] overflow-hidden border-b border-white/10 bg-sage">
+        <Image
+          src="/hero-spiral-staircase.png"
+          alt="Spiraltrappe set oppefra, brugt som hero-billede for Weikop NIS2 scan."
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,12,25,0.34),rgba(7,12,25,0.86))]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,170,125,0.22),transparent_26%),radial-gradient(circle_at_78%_20%,rgba(111,199,255,0.16),transparent_24%)]" />
 
-        <div className="relative mx-auto max-w-7xl px-6 pb-20 pt-8 md:px-8 lg:px-10 lg:pb-24">
-          <div className="flex items-center justify-between gap-4">
-            <Link href="/" className="text-lg font-extrabold tracking-[0.2em] text-ink">
+        <div className="relative mx-auto flex min-h-[94svh] max-w-7xl flex-col px-6 pb-12 pt-6 md:px-8 lg:px-10">
+          <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 rounded-[1.6rem] border border-white/10 bg-white/10 px-4 py-3 text-white shadow-[0_24px_70px_rgba(5,9,20,0.24)] backdrop-blur-md">
+            <Link
+              href="/"
+              className="text-sm font-extrabold uppercase tracking-[0.28em] text-white"
+            >
               WEIKOP
             </Link>
 
-            <div className="hidden items-center gap-6 text-sm font-semibold text-soft md:flex">
-              <a href="#hvordan" className="transition hover:text-ink">
+            <div className="hidden items-center gap-7 text-sm font-semibold text-white/78 md:flex">
+              <a href="#hvordan" className="transition hover:text-white">
                 Hvordan
               </a>
-              <a href="#spoergsmaal" className="transition hover:text-ink">
+              <a href="#spoergsmaal" className="transition hover:text-white">
                 Spørgsmål
               </a>
-              <a href="#score" className="transition hover:text-ink">
+              <a href="#score" className="transition hover:text-white">
                 Score
               </a>
-              <a href="#kontakt" className="transition hover:text-ink">
+              <a href="#kontakt" className="transition hover:text-white">
                 Kontakt
               </a>
             </div>
+
+            <Link
+              href="/scan"
+              className="inline-flex rounded-full bg-ember px-5 py-2.5 text-sm font-extrabold text-[#081122] transition hover:bg-[#8cd8ff]"
+            >
+              Start nu
+            </Link>
           </div>
 
-          <div className="mt-16 grid gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:items-start">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-ember">
+          <div className="flex flex-1 items-center justify-center py-16">
+            <div className="mx-auto max-w-5xl text-center text-white">
+              <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-white/74">
                 MVP: gratis NIS2 compliance scan
               </p>
-              <h1 className="mt-6 max-w-5xl text-balance font-display text-6xl leading-none text-ink md:text-7xl lg:text-[5.45rem]">
+              <h1 className="mx-auto mt-8 max-w-5xl text-balance text-5xl font-extrabold tracking-[-0.05em] text-white [text-shadow:0_18px_48px_rgba(5,8,18,0.42)] md:text-7xl lg:text-[5.5rem]">
                 Er din virksomhed klar til NIS2?
               </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-soft md:text-xl">
-                Få et hurtigt første billede af hvor tæt I er på NIS2, hvad der mangler, og hvilke
-                næste skridt der giver mest mening først.
+              <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-white/82 md:text-2xl md:leading-9">
+                Få et hurtigt første billede af hvor tæt I er på NIS2, hvad der
+                mangler, og hvilke næste skridt der giver mest mening først.
               </p>
 
-              <div className="mt-10 flex flex-wrap gap-4">
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
                 <Link
                   href="/scan"
-                  className="inline-flex rounded-full bg-ember px-7 py-3 text-sm font-semibold text-white transition hover:bg-[#a94f34]"
+                  className="inline-flex rounded-full bg-ember px-8 py-4 text-base font-extrabold text-[#081122] transition hover:bg-[#8cd8ff]"
                 >
                   Start gratis scan
                 </Link>
                 <a
                   href="#spoergsmaal"
-                  className="inline-flex rounded-full border border-line bg-white/60 px-7 py-3 text-sm font-semibold text-ink transition hover:bg-white"
+                  className="inline-flex rounded-full border border-white/18 bg-white/10 px-8 py-4 text-base font-semibold text-white transition hover:bg-white/16"
                 >
                   Se de 10 spørgsmål
                 </a>
               </div>
 
-              <div className="mt-12 grid gap-4 md:grid-cols-3">
-                {TRUST_POINTS.map((item) => (
-                  <article
-                    key={item.title}
-                    className="rounded-[1.75rem] border border-line bg-white/70 p-5 shadow-[var(--shadow)]"
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+                {HERO_PILLS.map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-white/12 bg-white/10 px-4 py-2 text-sm font-semibold text-white/80 backdrop-blur"
                   >
-                    <p className="text-sm font-bold text-ink">{item.title}</p>
-                    <p className="mt-3 text-sm leading-6 text-soft">{item.text}</p>
-                  </article>
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-sage px-6 py-18 text-white md:px-8 md:py-24 lg:px-10">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
+          <SectionHeading
+            eyebrow="Hvorfor det virker"
+            title="Et roligere og stærkere udgangspunkt for jeres NIS2-arbejde."
+            text="Når kravene føles tunge og uklare, er det første behov sjældent en stor platform. Det er et hurtigt, troværdigt overblik som kan samle ledelse, IT og drift om de næste beslutninger."
+            inverse
+          />
+
+          <div className="grid gap-4">
+            {BENEFIT_POINTS.map((item) => (
+              <div
+                key={item}
+                className="flex items-start gap-4 rounded-[1.8rem] border border-white/10 bg-white/8 px-5 py-5 shadow-[0_24px_70px_rgba(5,9,20,0.18)]"
+              >
+                <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/14 text-sm text-[#9bd1ff]">
+                  ✓
+                </span>
+                <p className="text-base leading-7 text-white/82">{item}</p>
+              </div>
+            ))}
+
+            <div className="grid gap-4 md:grid-cols-3">
+              {TARGET_SEGMENTS.slice(0, 3).map((item) => (
+                <article
+                  key={item}
+                  className="rounded-[1.8rem] border border-white/10 bg-[#10192e] p-5"
+                >
+                  <p className="text-sm leading-6 text-white/72">{item}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="hvordan" className="px-6 py-18 md:px-8 md:py-24 lg:px-10">
+        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+          <div>
+            <SectionHeading
+              eyebrow="Sådan virker det"
+              title="Scanningen er bygget som en hurtig first step, ikke som tung compliance-software."
+              text="I får den samme rolige, enkle oplevelse hele vejen: spørgsmål, score, gaps og et næste skridt der faktisk kan bruges bagefter."
+            />
+
+            <div className="mt-8 grid gap-4">
+              {HOW_IT_WORKS.map((item) => (
+                <article
+                  key={item.step}
+                  className="rounded-[2rem] border border-line bg-white/88 p-6 shadow-[var(--shadow)]"
+                >
+                  <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-ember">
+                    {item.step}
+                  </p>
+                  <h3 className="mt-3 text-2xl font-extrabold tracking-[-0.03em] text-ink">
+                    {item.title}
+                  </h3>
+                  <p className="mt-3 text-base leading-7 text-soft">
+                    {item.text}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-[2.3rem] border border-line bg-white/92 p-6 shadow-[var(--shadow)] md:p-8">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-ember">
+                  Scan preview
+                </p>
+                <h3 className="mt-3 text-4xl font-extrabold tracking-[-0.04em] text-ink">
+                  Sådan føles MVP&apos;en
+                </h3>
+              </div>
+              <div className="rounded-full border border-line bg-[#f4f7fb] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-soft">
+                Spørgsmål 7 / 10
+              </div>
+            </div>
+
+            <div className="mt-6 rounded-[2rem] bg-sage p-6 text-white">
+              <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#9bd1ff]">
+                Live eksempel
+              </p>
+              <h4 className="mt-3 max-w-lg text-3xl font-extrabold tracking-[-0.04em] text-white">
+                Bruger I MFA på kritiske systemer og administrative konti?
+              </h4>
+
+              <div className="mt-6 grid gap-3">
+                {ANSWER_OPTIONS.map((answer) => (
+                  <div
+                    key={answer.value}
+                    className="rounded-[1.2rem] border border-white/10 bg-white/7 px-4 py-4 text-sm font-semibold text-white/85"
+                  >
+                    {answer.label}
+                  </div>
                 ))}
               </div>
             </div>
 
-            <div className="relative lg:pt-6">
-              <div className="absolute -left-4 top-16 hidden h-28 w-28 rounded-[2rem] border border-line bg-paper lg:block lg:rotate-6" />
-
-              <div className="relative rounded-[2.2rem] border border-line bg-surface/95 p-6 shadow-[var(--shadow)] md:p-7">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-ember">
-                      Scan preview
-                    </p>
-                    <p className="mt-2 text-lg font-bold text-ink">Sådan føles MVP’en</p>
-                  </div>
-                  <div className="rounded-full border border-line bg-page px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-soft">
-                    Spørgsmål 7 / 10
-                  </div>
-                </div>
-
-                <div className="mt-6 rounded-[1.9rem] bg-sage p-6 text-white">
-                  <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#e8d7b4]">
-                    Live eksempel
+            <div className="mt-6 rounded-[1.8rem] border border-line bg-[#f4f7fb] p-5">
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-ember">
+                    Eksempel på output
                   </p>
-                  <h3 className="mt-3 max-w-md font-display text-4xl leading-none">
-                    Bruger I MFA på kritiske systemer og administrative konti?
-                  </h3>
-
-                <div className="mt-6 grid gap-3">
-                    {ANSWER_OPTIONS.map((answer) => (
-                      <div
-                        key={answer.value}
-                        className="rounded-[1.4rem] border border-white/10 bg-white/7 px-4 py-4 text-sm font-semibold text-white/85"
-                      >
-                        {answer.label}
-                      </div>
-                    ))}
-                  </div>
+                  <p className="mt-2 text-5xl font-black tracking-[-0.05em] text-ink">
+                    62%
+                  </p>
                 </div>
-
-                <div className="mt-5 rounded-[1.7rem] border border-line bg-page p-5">
-                  <div className="flex items-end justify-between gap-4">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-ember">
-                        Eksempel på output
-                      </p>
-                      <p className="mt-2 text-5xl font-black tracking-tight text-ink">62%</p>
-                    </div>
-                    <div className="rounded-full border border-[#dfc58e] bg-[#f4ead2] px-4 py-2 text-sm font-semibold text-[#6b4e1d]">
-                      Delvist compliant
-                    </div>
-                  </div>
-
-                  <div className="mt-5 h-3 overflow-hidden rounded-full bg-[#e5d9c8]">
-                    <div className="h-full w-[62%] rounded-full bg-ember" />
-                  </div>
-
-                  <div className="mt-5 grid gap-3">
-                    <div className="rounded-[1.2rem] border border-line bg-white/75 px-4 py-3 text-sm text-soft">
-                      ❌ Ingen incident response plan
-                    </div>
-                    <div className="rounded-[1.2rem] border border-line bg-white/75 px-4 py-3 text-sm text-soft">
-                      ❌ Manglende sikkerhedsovervågning
-                    </div>
-                    <div className="rounded-[1.2rem] border border-line bg-white/75 px-4 py-3 text-sm text-soft">
-                      ⚠️ Delvis leverandørstyring
-                    </div>
-                  </div>
+                <div className="rounded-full border border-[#dfc58e] bg-[#f4ead2] px-4 py-2 text-sm font-semibold text-[#6b4e1d]">
+                  Delvist compliant
                 </div>
+              </div>
 
-                <p className="mt-5 text-sm leading-6 text-soft">
-                  Scanen er nu klar som første MVP og bruger vægtede svar til at gøre resultatet
-                  mere realistisk end en flad ja/nej-quiz.
-                </p>
+              <div className="mt-5 h-3 overflow-hidden rounded-full bg-[#dbe5f0]">
+                <div className="h-full w-[62%] rounded-full bg-ember" />
+              </div>
+
+              <div className="mt-5 grid gap-3">
+                {REPORT_PREVIEW.map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-[1.2rem] border border-line bg-white px-4 py-3 text-sm leading-6 text-soft"
+                  >
+                    {item}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="px-6 py-18 md:px-8 md:py-24 lg:px-10">
-        <div className="mx-auto max-w-7xl">
-          <SectionHeading
-            eyebrow="Hvorfor det virker"
-            title="NIS2 er en stærk MVP, fordi efterspørgslen allerede er tvungen."
-            text="Det her er interessant nu, fordi det kombinerer høj usikkerhed, høj kompleksitet og et budgetområde som virksomheder ikke kan ignorere særlig længe."
-          />
-
-          <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {PROBLEM_POINTS.map((item) => (
-              <article
-                key={item.title}
-                className="rounded-[2rem] border border-line bg-white/72 p-6 shadow-[var(--shadow)]"
-              >
-                <h3 className="text-2xl font-bold text-ink">{item.title}</h3>
-                <p className="mt-4 text-base leading-7 text-soft">{item.text}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="hvordan" className="border-y border-line bg-sage px-6 py-18 text-white md:px-8 md:py-24 lg:px-10">
-        <div className="mx-auto max-w-7xl">
-          <SectionHeading
-            eyebrow="Sådan virker det"
-            title="Et simpelt flow: scan, score, gaps, næste skridt."
-            text="MVP’en skal ikke ligne en tung compliance-platform. Den skal hurtigt give et troværdigt første billede, som gør det nemmere at tage næste beslutning."
-            inverse
-          />
-
-          <div className="mt-10 grid gap-5 lg:grid-cols-4">
-            {HOW_IT_WORKS.map((item) => (
-              <article
-                key={item.step}
-                className="rounded-[2rem] border border-white/10 bg-white/7 p-6 shadow-[0_30px_80px_rgba(8,16,13,0.16)]"
-              >
-                <p className="text-sm font-semibold text-[#e8d7b4]">{item.step}</p>
-                <h3 className="mt-4 text-2xl font-bold text-white">{item.title}</h3>
-                <p className="mt-4 text-base leading-7 text-white/75">{item.text}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="spoergsmaal" className="px-6 py-18 md:px-8 md:py-24 lg:px-10">
+      <section
+        id="spoergsmaal"
+        className="px-6 pb-18 md:px-8 md:pb-24 lg:px-10"
+      >
         <div className="mx-auto max-w-7xl">
           <SectionHeading
             eyebrow="De 10 spørgsmål"
@@ -361,16 +355,18 @@ export default function Home() {
             {SCAN_QUESTIONS.map((item) => (
               <article
                 key={item.id}
-                className="rounded-[1.7rem] border border-line bg-white/72 p-5 shadow-[var(--shadow)]"
+                className="rounded-[2rem] border border-line bg-white/90 p-5 shadow-[var(--shadow)]"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-ember">
+                    <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-ember">
                       {item.category}
                     </p>
-                    <h3 className="mt-2 text-lg font-bold leading-7 text-ink">{item.question}</h3>
+                    <h3 className="mt-2 text-lg font-extrabold leading-7 tracking-[-0.02em] text-ink">
+                      {item.question}
+                    </h3>
                   </div>
-                  <div className="rounded-full border border-line bg-page px-3 py-1 text-xs font-semibold text-soft">
+                  <div className="rounded-full border border-line bg-[#f4f7fb] px-3 py-1 text-xs font-semibold text-soft">
                     {item.id}
                   </div>
                 </div>
@@ -379,7 +375,7 @@ export default function Home() {
                   {ANSWER_OPTIONS.map((answer) => (
                     <span
                       key={answer.value}
-                      className="rounded-full border border-line bg-page px-4 py-2 text-sm font-semibold text-soft"
+                      className="rounded-full border border-line bg-[#f4f7fb] px-4 py-2 text-sm font-semibold text-soft"
                     >
                       {answer.label}
                     </span>
@@ -391,7 +387,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="score" className="border-y border-line bg-paper px-6 py-18 md:px-8 md:py-24 lg:px-10">
+      <section id="score" className="px-6 pb-18 md:px-8 md:pb-24 lg:px-10">
         <div className="mx-auto max-w-7xl">
           <SectionHeading
             eyebrow="Scoremodel"
@@ -400,39 +396,45 @@ export default function Home() {
           />
 
           <div className="mt-10 grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
-            <div className="rounded-[2rem] border border-line bg-white/80 p-6 shadow-[var(--shadow)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-ember">
+            <div className="rounded-[2.1rem] border border-line bg-white/92 p-6 shadow-[var(--shadow)]">
+              <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-ember">
                 Point pr. svar
               </p>
               <div className="mt-5 grid gap-3">
                 {SCORE_RULES.map((rule) => (
                   <div
                     key={rule.label}
-                    className="rounded-[1.4rem] border border-line bg-page px-4 py-4"
+                    className="rounded-[1.5rem] border border-line bg-[#f4f7fb] px-4 py-4"
                   >
                     <div className="flex items-center justify-between gap-4">
-                      <p className="text-base font-bold text-ink">{rule.label}</p>
-                      <p className="text-sm font-semibold text-ember">{rule.points}</p>
+                      <p className="text-base font-extrabold text-ink">
+                        {rule.label}
+                      </p>
+                      <p className="text-sm font-semibold text-ember">
+                        {rule.points}
+                      </p>
                     </div>
-                    <p className="mt-2 text-sm leading-6 text-soft">{rule.text}</p>
+                    <p className="mt-2 text-sm leading-6 text-soft">
+                      {rule.text}
+                    </p>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="grid gap-6">
-              <div className="rounded-[2rem] border border-line bg-white/80 p-6 shadow-[var(--shadow)]">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-ember">
+              <div className="rounded-[2.1rem] border border-line bg-white/92 p-6 shadow-[var(--shadow)]">
+                <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-ember">
                   Score-bånd
                 </p>
                 <div className="mt-5 grid gap-3">
                   {SCORE_BANDS.map((band) => (
                     <div
                       key={band.range}
-                      className={`rounded-[1.4rem] border px-4 py-4 ${band.className}`}
+                      className={`rounded-[1.5rem] border px-4 py-4 ${band.className}`}
                     >
                       <div className="flex flex-wrap items-center justify-between gap-3">
-                        <p className="text-lg font-bold">{band.range}</p>
+                        <p className="text-lg font-extrabold">{band.range}</p>
                         <div className="flex flex-wrap gap-2 text-sm font-semibold">
                           <span>{band.status}</span>
                           <span>/</span>
@@ -444,15 +446,15 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="rounded-[2rem] border border-line bg-white/80 p-6 shadow-[var(--shadow)]">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-ember">
+              <div className="rounded-[2.1rem] border border-line bg-white/92 p-6 shadow-[var(--shadow)]">
+                <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-ember">
                   Vægtede spørgsmål
                 </p>
                 <div className="mt-5 grid gap-3">
                   {WEIGHTED_TOPICS.map((item) => (
                     <div
                       key={item}
-                      className="rounded-[1.3rem] border border-line bg-page px-4 py-4 text-sm leading-6 text-soft"
+                      className="rounded-[1.4rem] border border-line bg-[#f4f7fb] px-4 py-4 text-sm leading-6 text-soft"
                     >
                       {item}
                     </div>
@@ -464,84 +466,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="px-6 py-18 md:px-8 md:py-24 lg:px-10">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.88fr_1.12fr]">
-          <div>
-            <SectionHeading
-              eyebrow="Output"
-              title="Scoren er kun starten. Rapporten er det der konverterer."
-              text="Brugeren skal ikke bare se et tal. De skal også forstå hvorfor det betyder noget, og hvad de tre vigtigste næste skridt er."
-            />
-
-            <div className="mt-8 rounded-[2rem] border border-line bg-paper p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-ember">
-                Eksempel
-              </p>
-              <p className="mt-3 max-w-xl text-balance font-display text-4xl leading-none text-ink">
-                Din score: 62% compliant
-              </p>
-              <p className="mt-4 text-base leading-7 text-soft">
-                Status: delvist compliant. Risikoen er især knyttet til beredskab, overvågning og
-                leverandørstyring.
-              </p>
-            </div>
-
-            <div className="mt-8 grid gap-3">
-              {REPORT_PREVIEW.map((item) => (
-                <div
-                  key={item.title}
-                  className="rounded-[1.7rem] border border-line bg-white/72 p-5 shadow-[var(--shadow)]"
-                >
-                  <p className="text-base font-bold text-ink">{item.title}</p>
-                  <p className="mt-3 text-sm leading-6 text-soft">{item.text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-[2.2rem] border border-line bg-surface/90 p-6 shadow-[var(--shadow)] md:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-ember">
-              Hvem det er til
-            </p>
-            <h3 className="mt-4 text-balance font-display text-5xl leading-none text-ink">
-              Bygget til virksomheder der har brug for et første beslutningsgrundlag hurtigt.
-            </h3>
-
-            <div className="mt-8 grid gap-3">
-              {TARGET_SEGMENTS.map((item) => (
-                <div
-                  key={item}
-                  className="rounded-[1.6rem] border border-line bg-page px-5 py-4 text-base leading-7 text-soft"
-                >
-                  {item}
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-8 rounded-[1.8rem] bg-sage p-6 text-white">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#e8d7b4]">
-                Efter scanen
-              </p>
-              <h4 className="mt-3 text-3xl font-bold text-white">Tre naturlige match-kategorier</h4>
-
-              <div className="mt-5 grid gap-3">
-                {MATCH_CATEGORIES.map((item) => (
-                  <div
-                    key={item.title}
-                    className="rounded-[1.4rem] border border-white/10 bg-white/7 px-4 py-4"
-                  >
-                    <p className="text-base font-bold text-white">{item.title}</p>
-                    <p className="mt-2 text-sm leading-6 text-white/75">{item.text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="kontakt" className="border-t border-line px-6 py-18 md:px-8 md:py-24 lg:px-10">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.85fr_1.15fr]">
+      <section id="kontakt" className="px-6 pb-22 md:px-8 md:pb-24 lg:px-10">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.86fr_1.14fr]">
           <div>
             <SectionHeading
               eyebrow="Kontakt"
@@ -549,27 +475,34 @@ export default function Home() {
               text="Brug formularen hvis du vil have hjælp til at omsætte scanen til rådgivning, teknologi eller en mere konkret handlingsplan."
             />
 
-            <div className="mt-8 rounded-[2rem] border border-line bg-paper p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-ember">
-                Efter scoren
+            <div className="mt-8 rounded-[2rem] border border-line bg-white/92 p-6 shadow-[var(--shadow)]">
+              <p className="text-sm font-extrabold uppercase tracking-[0.22em] text-ember">
+                Hvem det er til
               </p>
-              <p className="mt-3 max-w-xl text-balance font-display text-4xl leading-none text-ink">
-                Brug resultatet som et beslutningsgrundlag, ikke bare som et tal.
-              </p>
-              <p className="mt-4 text-base leading-7 text-soft">
-                Det bedste output opstår, når score, gaps og næste skridt bliver omsat til en reel
-                prioritering for ledelse, IT og sikkerhedsansvarlige.
-              </p>
+              <div className="mt-4 grid gap-3">
+                {TARGET_SEGMENTS.map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-[1.4rem] border border-line bg-[#f4f7fb] px-4 py-4 text-sm leading-6 text-soft"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="mt-8 grid gap-3">
               {FAQ_ITEMS.map((item) => (
                 <div
                   key={item.question}
-                  className="rounded-[1.7rem] border border-line bg-white/70 p-5 shadow-[var(--shadow)]"
+                  className="rounded-[1.8rem] border border-line bg-white/92 p-5 shadow-[var(--shadow)]"
                 >
-                  <p className="text-base font-bold text-ink">{item.question}</p>
-                  <p className="mt-3 text-sm leading-6 text-soft">{item.answer}</p>
+                  <p className="text-base font-extrabold tracking-[-0.02em] text-ink">
+                    {item.question}
+                  </p>
+                  <p className="mt-3 text-sm leading-6 text-soft">
+                    {item.answer}
+                  </p>
                 </div>
               ))}
             </div>

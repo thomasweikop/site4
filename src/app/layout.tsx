@@ -49,7 +49,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#efe7db",
+  themeColor: "#ebf1f7",
 };
 
 export default function RootLayout({
@@ -58,7 +58,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="da" className={`${manrope.variable} ${cormorant.variable} h-full antialiased`}>
+    <html
+      lang="da"
+      className={`${manrope.variable} ${cormorant.variable} h-full antialiased`}
+    >
       <body className="min-h-full bg-page font-sans text-ink">{children}</body>
     </html>
   );

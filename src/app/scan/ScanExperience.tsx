@@ -31,18 +31,25 @@ export default function ScanExperience() {
   const [answers, setAnswers] = useState<ScanAnswers>({});
   const [currentIndex, setCurrentIndex] = useState(-1);
 
-  const profileComplete = Boolean(profile.companySize && profile.industry && profile.role);
+  const profileComplete = Boolean(
+    profile.companySize && profile.industry && profile.role,
+  );
   const isProfileStep = currentIndex < 0;
   const isShowingResults = currentIndex >= SCAN_QUESTIONS.length;
   const answeredCount = Object.keys(answers).length;
   const currentQuestion = isProfileStep
     ? null
     : SCAN_QUESTIONS[Math.min(currentIndex, SCAN_QUESTIONS.length - 1)];
-  const currentAnswer = currentQuestion ? answers[currentQuestion.id] : undefined;
+  const currentAnswer = currentQuestion
+    ? answers[currentQuestion.id]
+    : undefined;
   const totalSteps = SCAN_QUESTIONS.length + 1;
   const progress = isShowingResults
     ? 100
-    : Math.max(8, Math.round((((Math.max(currentIndex, 0)) + 1) / totalSteps) * 100));
+    : Math.max(
+        8,
+        Math.round(((Math.max(currentIndex, 0) + 1) / totalSteps) * 100),
+      );
   const result =
     answeredCount === SCAN_QUESTIONS.length && profileComplete
       ? calculateScanResult(answers, {
@@ -63,7 +70,10 @@ export default function ScanExperience() {
     }));
   }
 
-  function setProfileValue<K extends keyof ProfileState>(key: K, value: NonNullable<ProfileState[K]>) {
+  function setProfileValue<K extends keyof ProfileState>(
+    key: K,
+    value: NonNullable<ProfileState[K]>,
+  ) {
     setProfile((current) => ({
       ...current,
       [key]: value,
@@ -132,13 +142,13 @@ export default function ScanExperience() {
     return (
       <div className="grid gap-8 lg:grid-cols-[1fr_0.96fr]">
         <div className="space-y-6">
-          <div className="rounded-[2.2rem] border border-line bg-surface p-6 shadow-[var(--shadow)] md:p-8">
+          <div className="rounded-[2.2rem] border border-line bg-white/94 p-6 shadow-[var(--shadow)] md:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.26em] text-ember">
+                <p className="text-xs font-extrabold uppercase tracking-[0.26em] text-ember">
                   Jeres resultat
                 </p>
-                <h2 className="mt-3 text-balance font-display text-5xl leading-none text-ink md:text-6xl">
+                <h2 className="mt-3 text-balance text-5xl font-extrabold tracking-[-0.05em] text-ink md:text-6xl">
                   {result.percentage}% klar til NIS2
                 </h2>
               </div>
@@ -149,9 +159,11 @@ export default function ScanExperience() {
               </div>
             </div>
 
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-soft">{result.riskSummary}</p>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-soft">
+              {result.riskSummary}
+            </p>
 
-            <div className="mt-6 h-4 overflow-hidden rounded-full bg-[#e5d9c8]">
+            <div className="mt-6 h-4 overflow-hidden rounded-full bg-[#dbe5f0]">
               <div
                 className={`h-full rounded-full ${result.band.barClassName}`}
                 style={{ width: `${result.percentage}%` }}
@@ -159,71 +171,100 @@ export default function ScanExperience() {
             </div>
 
             <div className="mt-8 grid gap-4 md:grid-cols-3">
-              <div className="rounded-[1.5rem] border border-line bg-page p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-ember">Ja</p>
-                <p className="mt-2 text-3xl font-bold text-ink">{result.breakdown.yes}</p>
-                <p className="mt-2 text-sm leading-6 text-soft">Områder der ser rimeligt dækket ud.</p>
+              <div className="rounded-[1.5rem] border border-line bg-[#f4f7fb] p-4">
+                <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-ember">
+                  Ja
+                </p>
+                <p className="mt-2 text-3xl font-bold text-ink">
+                  {result.breakdown.yes}
+                </p>
+                <p className="mt-2 text-sm leading-6 text-soft">
+                  Områder der ser rimeligt dækket ud.
+                </p>
               </div>
-              <div className="rounded-[1.5rem] border border-line bg-page p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-ember">
+              <div className="rounded-[1.5rem] border border-line bg-[#f4f7fb] p-4">
+                <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-ember">
                   Delvist
                 </p>
-                <p className="mt-2 text-3xl font-bold text-ink">{result.breakdown.partial}</p>
-                <p className="mt-2 text-sm leading-6 text-soft">Områder hvor modenheden stadig er ujævn.</p>
+                <p className="mt-2 text-3xl font-bold text-ink">
+                  {result.breakdown.partial}
+                </p>
+                <p className="mt-2 text-sm leading-6 text-soft">
+                  Områder hvor modenheden stadig er ujævn.
+                </p>
               </div>
-              <div className="rounded-[1.5rem] border border-line bg-page p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-ember">Nej</p>
-                <p className="mt-2 text-3xl font-bold text-ink">{result.breakdown.no}</p>
-                <p className="mt-2 text-sm leading-6 text-soft">Klare gaps der bør ind i den første plan.</p>
+              <div className="rounded-[1.5rem] border border-line bg-[#f4f7fb] p-4">
+                <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-ember">
+                  Nej
+                </p>
+                <p className="mt-2 text-3xl font-bold text-ink">
+                  {result.breakdown.no}
+                </p>
+                <p className="mt-2 text-sm leading-6 text-soft">
+                  Klare gaps der bør ind i den første plan.
+                </p>
               </div>
             </div>
           </div>
 
-          <div className="rounded-[2.2rem] border border-line bg-surface p-6 shadow-[var(--shadow)] md:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-ember">
+          <div className="rounded-[2.2rem] border border-line bg-white/94 p-6 shadow-[var(--shadow)] md:p-8">
+            <p className="text-xs font-extrabold uppercase tracking-[0.26em] text-ember">
               Profilkontekst
             </p>
             <div className="mt-5 grid gap-3">
               {result.profileSummary.map((item) => (
-                <div key={item} className="rounded-[1.3rem] border border-line bg-page px-4 py-4 text-sm leading-6 text-soft">
+                <div
+                  key={item}
+                  className="rounded-[1.35rem] border border-line bg-[#f4f7fb] px-4 py-4 text-sm leading-6 text-soft"
+                >
                   {item}
                 </div>
               ))}
               {result.profileInsights.map((item) => (
-                <div key={item} className="rounded-[1.3rem] border border-line bg-white px-4 py-4 text-sm leading-6 text-soft">
+                <div
+                  key={item}
+                  className="rounded-[1.35rem] border border-line bg-white px-4 py-4 text-sm leading-6 text-soft"
+                >
                   {item}
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="rounded-[2.2rem] border border-line bg-surface p-6 shadow-[var(--shadow)] md:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-ember">
+          <div className="rounded-[2.2rem] border border-line bg-white/94 p-6 shadow-[var(--shadow)] md:p-8">
+            <p className="text-xs font-extrabold uppercase tracking-[0.26em] text-ember">
               Største gaps
             </p>
             <div className="mt-6 grid gap-4">
               {result.gaps.map((gap) => (
-                <article key={gap.id} className="rounded-[1.6rem] border border-line bg-page p-5">
+                <article
+                  key={gap.id}
+                  className="rounded-[1.6rem] border border-line bg-[#f6f9fd] p-5"
+                >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-ember">
+                      <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-ember">
                         {gap.category}
                       </p>
-                      <h3 className="mt-2 text-xl font-bold text-ink">{gap.question}</h3>
+                      <h3 className="mt-2 text-xl font-extrabold tracking-[-0.02em] text-ink">
+                        {gap.question}
+                      </h3>
                     </div>
                     <div className="rounded-full border border-line bg-white px-3 py-1 text-xs font-semibold text-soft">
                       {gap.answerLabel}
                     </div>
                   </div>
 
-                  <p className="mt-4 text-sm leading-6 text-soft">{gap.recommendation}</p>
+                  <p className="mt-4 text-sm leading-6 text-soft">
+                    {gap.recommendation}
+                  </p>
                 </article>
               ))}
             </div>
           </div>
 
-          <div className="rounded-[2.2rem] border border-line bg-sage p-6 text-white shadow-[0_30px_80px_rgba(8,16,13,0.16)] md:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[#e8d7b4]">
+          <div className="rounded-[2.2rem] border border-line bg-sage p-6 text-white shadow-[0_30px_80px_rgba(8,17,34,0.22)] md:p-8">
+            <p className="text-xs font-extrabold uppercase tracking-[0.26em] text-[#9bd1ff]">
               Næste skridt
             </p>
             <div className="mt-6 grid gap-3">
@@ -240,7 +281,7 @@ export default function ScanExperience() {
             <div className="mt-6 flex flex-wrap gap-3">
               <a
                 href="#scan-help"
-                className="inline-flex rounded-full bg-white px-6 py-3 text-sm font-semibold text-sage transition hover:bg-[#f1eadf]"
+                className="inline-flex rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#081122] transition hover:bg-[#eef4ff]"
               >
                 Få hjælp til at lukke gaps
               </a>
@@ -269,18 +310,18 @@ export default function ScanExperience() {
             contextLines={contextLines}
           />
 
-          <div className="rounded-[2rem] border border-line bg-white/70 p-6 shadow-[var(--shadow)]">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-ember">
+          <div className="rounded-[2rem] border border-line bg-white/92 p-6 shadow-[var(--shadow)]">
+            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-ember">
               Godt at vide
             </p>
             <div className="mt-4 grid gap-3">
               <p className="text-sm leading-6 text-soft">
-                Scanen er et hurtigt modenhedsbillede og ikke en juridisk afgørelse af om I er
-                omfattet.
+                Scanen er et hurtigt modenhedsbillede og ikke en juridisk
+                afgørelse af om I er omfattet.
               </p>
               <p className="text-sm leading-6 text-soft">
-                Resultatet bliver mere nyttigt, når det læses sammen med jeres virksomhedstype,
-                branche og rolle.
+                Resultatet bliver mere nyttigt, når det læses sammen med jeres
+                virksomhedstype, branche og rolle.
               </p>
             </div>
           </div>
@@ -291,10 +332,10 @@ export default function ScanExperience() {
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_0.84fr]">
-      <div className="rounded-[2.2rem] border border-line bg-surface p-6 shadow-[var(--shadow)] md:p-8">
+      <div className="rounded-[2.2rem] border border-line bg-white/94 p-6 shadow-[var(--shadow)] md:p-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-ember">
+            <p className="text-xs font-extrabold uppercase tracking-[0.26em] text-ember">
               {isProfileStep
                 ? "Profil 1 / 1"
                 : `Spørgsmål ${currentIndex + 1} / ${SCAN_QUESTIONS.length}`}
@@ -304,44 +345,52 @@ export default function ScanExperience() {
             </p>
           </div>
           {!isProfileStep && currentQuestion && currentQuestion.weight > 1 ? (
-            <div className="rounded-full border border-[#dfc58e] bg-[#f4ead2] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#6b4e1d]">
+            <div className="rounded-full border border-[#c7dff6] bg-[#eef6ff] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#246287]">
               Vægtes ekstra
             </div>
           ) : null}
         </div>
 
-        <div className="mt-6 h-3 overflow-hidden rounded-full bg-[#e5d9c8]">
-          <div className="h-full rounded-full bg-ember transition-all" style={{ width: `${progress}%` }} />
+        <div className="mt-6 h-3 overflow-hidden rounded-full bg-[#dbe5f0]">
+          <div
+            className="h-full rounded-full bg-ember transition-all"
+            style={{ width: `${progress}%` }}
+          />
         </div>
 
         {isProfileStep ? (
           <div className="mt-8 space-y-8">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-ember">
+              <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-ember">
                 Profilér resultatet
               </p>
-              <h2 className="mt-4 max-w-3xl text-balance font-display text-5xl leading-none text-ink md:text-6xl">
+              <h2 className="mt-4 max-w-3xl text-balance text-5xl font-extrabold tracking-[-0.05em] text-ink md:text-6xl">
                 Før vi scorer jer, skal vi kende lidt kontekst.
               </h2>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-soft">
-                Det gør resultatet mere brugbart, fordi anbefalinger og fortolkning kan læses i lyset af jeres segment.
+                Det gør resultatet mere brugbart, fordi anbefalinger og
+                fortolkning kan læses i lyset af jeres segment.
               </p>
             </div>
 
             <div className="grid gap-6">
               <div>
-                <p className="text-sm font-semibold text-ink">Virksomhedsstørrelse</p>
+                <p className="text-sm font-semibold text-ink">
+                  Virksomhedsstørrelse
+                </p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-3">
                   {COMPANY_SIZE_OPTIONS.map((option) => (
                     <button
                       key={option.value}
                       type="button"
-                      onClick={() => setProfileValue("companySize", option.value)}
+                      onClick={() =>
+                        setProfileValue("companySize", option.value)
+                      }
                       className={classNames(
                         "rounded-[1.4rem] border px-4 py-4 text-left text-sm font-semibold transition",
                         profile.companySize === option.value
-                          ? "border-ember bg-[#f8e2da] text-ink"
-                          : "border-line bg-page text-soft hover:bg-white",
+                          ? "border-ember bg-[#e8f6ff] text-ink shadow-[0_12px_30px_rgba(109,207,255,0.22)]"
+                          : "border-line bg-[#f4f7fb] text-soft hover:bg-white",
                       )}
                     >
                       {option.label}
@@ -361,8 +410,8 @@ export default function ScanExperience() {
                       className={classNames(
                         "rounded-[1.4rem] border px-4 py-4 text-left text-sm font-semibold transition",
                         profile.industry === option.value
-                          ? "border-ember bg-[#f8e2da] text-ink"
-                          : "border-line bg-page text-soft hover:bg-white",
+                          ? "border-ember bg-[#e8f6ff] text-ink shadow-[0_12px_30px_rgba(109,207,255,0.22)]"
+                          : "border-line bg-[#f4f7fb] text-soft hover:bg-white",
                       )}
                     >
                       {option.label}
@@ -382,8 +431,8 @@ export default function ScanExperience() {
                       className={classNames(
                         "rounded-[1.4rem] border px-4 py-4 text-left text-sm font-semibold transition",
                         profile.role === option.value
-                          ? "border-ember bg-[#f8e2da] text-ink"
-                          : "border-line bg-page text-soft hover:bg-white",
+                          ? "border-ember bg-[#e8f6ff] text-ink shadow-[0_12px_30px_rgba(109,207,255,0.22)]"
+                          : "border-line bg-[#f4f7fb] text-soft hover:bg-white",
                       )}
                     >
                       {option.label}
@@ -396,10 +445,10 @@ export default function ScanExperience() {
         ) : (
           <>
             <div className="mt-8">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-ember">
+              <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-ember">
                 {currentQuestion?.category}
               </p>
-              <h2 className="mt-4 max-w-3xl text-balance font-display text-5xl leading-none text-ink md:text-6xl">
+              <h2 className="mt-4 max-w-3xl text-balance text-5xl font-extrabold tracking-[-0.05em] text-ink md:text-6xl">
                 {currentQuestion?.question}
               </h2>
             </div>
@@ -416,17 +465,21 @@ export default function ScanExperience() {
                     className={classNames(
                       "rounded-[1.6rem] border p-5 text-left transition",
                       selected
-                        ? "border-ember bg-[#f8e2da] shadow-[0_12px_30px_rgba(197,93,60,0.12)]"
-                        : "border-line bg-page hover:bg-white",
+                        ? "border-ember bg-[#e8f6ff] shadow-[0_12px_30px_rgba(109,207,255,0.22)]"
+                        : "border-line bg-[#f4f7fb] hover:bg-white",
                     )}
                   >
                     <div className="flex flex-wrap items-center justify-between gap-3">
-                      <p className="text-lg font-bold text-ink">{option.label}</p>
+                      <p className="text-lg font-extrabold tracking-[-0.02em] text-ink">
+                        {option.label}
+                      </p>
                       <div className="rounded-full border border-line bg-white px-3 py-1 text-xs font-semibold text-soft">
                         {option.pointsLabel}
                       </div>
                     </div>
-                    <p className="mt-3 text-sm leading-6 text-soft">{option.description}</p>
+                    <p className="mt-3 text-sm leading-6 text-soft">
+                      {option.description}
+                    </p>
                   </button>
                 );
               })}
@@ -439,7 +492,7 @@ export default function ScanExperience() {
             type="button"
             onClick={goBack}
             disabled={isProfileStep}
-            className="inline-flex rounded-full border border-line bg-white/70 px-6 py-3 text-sm font-semibold text-ink transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-45"
+            className="inline-flex rounded-full border border-line bg-white px-6 py-3 text-sm font-semibold text-ink transition hover:bg-[#f8fbff] disabled:cursor-not-allowed disabled:opacity-45"
           >
             Forrige
           </button>
@@ -448,7 +501,7 @@ export default function ScanExperience() {
             type="button"
             onClick={goNext}
             disabled={isProfileStep ? !profileComplete : !currentAnswer}
-            className="inline-flex rounded-full bg-ember px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#a94f34] disabled:cursor-not-allowed disabled:bg-[#c0a79d]"
+            className="inline-flex rounded-full bg-sage px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#12203d] disabled:cursor-not-allowed disabled:bg-[#8a95a8]"
           >
             {isProfileStep
               ? "Start spørgsmålene"
@@ -460,10 +513,12 @@ export default function ScanExperience() {
       </div>
 
       <div className="space-y-6">
-        <div className="rounded-[2rem] border border-line bg-white/72 p-6 shadow-[var(--shadow)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-ember">Oversigt</p>
+        <div className="rounded-[2rem] border border-line bg-white/92 p-6 shadow-[var(--shadow)]">
+          <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-ember">
+            Oversigt
+          </p>
           <div className="mt-5 grid gap-3">
-            <div className="rounded-[1.3rem] border border-line bg-page px-4 py-4">
+            <div className="rounded-[1.3rem] border border-line bg-[#f4f7fb] px-4 py-4">
               <p className="text-sm font-bold text-ink">Profil</p>
               <p className="mt-2 text-sm leading-6 text-soft">
                 Vælg størrelse, branche og rolle før selve spørgsmålene starter.
@@ -481,10 +536,16 @@ export default function ScanExperience() {
                     disabled={!profileComplete}
                     className={classNames(
                       "flex h-11 items-center justify-center rounded-full border text-sm font-semibold transition",
-                      index === currentIndex && "border-ember bg-[#f8e2da] text-ink",
-                      index !== currentIndex && answer && "border-[#b6cfb6] bg-[#dce8dc] text-sage",
-                      index !== currentIndex && !answer && "border-line bg-page text-soft hover:bg-white",
-                      !profileComplete && "cursor-not-allowed opacity-45 hover:bg-page",
+                      index === currentIndex &&
+                        "border-ember bg-[#e8f6ff] text-ink",
+                      index !== currentIndex &&
+                        answer &&
+                        "border-[#bdd6f0] bg-[#eaf4ff] text-[#154d73]",
+                      index !== currentIndex &&
+                        !answer &&
+                        "border-line bg-[#f4f7fb] text-soft hover:bg-white",
+                      !profileComplete &&
+                        "cursor-not-allowed opacity-45 hover:bg-[#f4f7fb]",
                     )}
                   >
                     {question.id}
@@ -495,32 +556,38 @@ export default function ScanExperience() {
           </div>
         </div>
 
-        <div className="rounded-[2rem] border border-line bg-white/72 p-6 shadow-[var(--shadow)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-ember">
+        <div className="rounded-[2rem] border border-line bg-white/92 p-6 shadow-[var(--shadow)]">
+          <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-ember">
             Sådan scorer vi
           </p>
           <div className="mt-5 grid gap-3">
             {ANSWER_OPTIONS.map((option) => (
-              <div key={option.value} className="rounded-[1.3rem] border border-line bg-page px-4 py-4">
+              <div
+                key={option.value}
+                className="rounded-[1.3rem] border border-line bg-[#f4f7fb] px-4 py-4"
+              >
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-bold text-ink">{option.label}</p>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ember">
                     {option.pointsLabel}
                   </p>
                 </div>
-                <p className="mt-2 text-sm leading-6 text-soft">{option.description}</p>
+                <p className="mt-2 text-sm leading-6 text-soft">
+                  {option.description}
+                </p>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="rounded-[2rem] border border-line bg-sage p-6 text-white shadow-[0_30px_80px_rgba(8,16,13,0.16)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#e8d7b4]">
+        <div className="rounded-[2rem] border border-line bg-sage p-6 text-white shadow-[0_30px_80px_rgba(8,17,34,0.22)]">
+          <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-[#9bd1ff]">
             Hint
           </p>
           <p className="mt-4 text-base leading-7 text-white/80">
-            Risikovurdering, incident response og MFA tæller ekstra i scoren, fordi de ofte er de
-            tydeligste indikatorer på reel modenhed i en tidlig screening.
+            Risikovurdering, incident response og MFA tæller ekstra i scoren,
+            fordi de ofte er de tydeligste indikatorer på reel modenhed i en
+            tidlig screening.
           </p>
         </div>
       </div>
