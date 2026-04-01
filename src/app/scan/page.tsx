@@ -54,7 +54,7 @@ export default function ScanPage() {
             <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-white/74">
               Gratis NIS2 compliance scan
             </p>
-            <h1 className="mt-6 text-balance text-5xl font-extrabold tracking-[-0.05em] text-white md:text-7xl">
+            <h1 className="mt-6 text-balance text-4xl font-extrabold tracking-[-0.05em] text-white md:text-6xl">
               Svar på 10 spørgsmål og få jeres første NIS2-score.
             </h1>
             <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-white/80 md:text-xl">

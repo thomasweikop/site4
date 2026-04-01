@@ -99,7 +99,7 @@ function SectionHeading({
         {eyebrow}
       </p>
       <h2
-        className={`mt-4 max-w-4xl text-balance text-4xl font-extrabold tracking-[-0.04em] md:text-6xl ${
+        className={`mt-4 max-w-4xl text-balance text-3xl font-extrabold tracking-[-0.04em] md:text-5xl ${
           inverse ? "text-white" : "text-ink"
         }`}
       >
@@ -168,7 +168,7 @@ export default function Home() {
               <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-white/74">
                 MVP: gratis NIS2 compliance scan
               </p>
-              <h1 className="mx-auto mt-8 max-w-5xl text-balance text-5xl font-extrabold tracking-[-0.05em] text-white [text-shadow:0_18px_48px_rgba(5,8,18,0.42)] md:text-7xl lg:text-[5.5rem]">
+              <h1 className="mx-auto mt-8 max-w-5xl text-balance text-4xl font-extrabold tracking-[-0.05em] text-white [text-shadow:0_18px_48px_rgba(5,8,18,0.42)] md:text-6xl lg:text-[4.7rem]">
                 Er din virksomhed klar til NIS2?
               </h1>
               <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-white/82 md:text-2xl md:leading-9">

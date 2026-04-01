@@ -148,7 +148,7 @@ export default function ScanExperience() {
                 <p className="text-xs font-extrabold uppercase tracking-[0.26em] text-ember">
                   Jeres resultat
                 </p>
-                <h2 className="mt-3 text-balance text-5xl font-extrabold tracking-[-0.05em] text-ink md:text-6xl">
+                <h2 className="mt-3 text-balance text-4xl font-extrabold tracking-[-0.05em] text-ink md:text-5xl">
                   {result.percentage}% klar til NIS2
                 </h2>
               </div>
@@ -364,7 +364,7 @@ export default function ScanExperience() {
               <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-ember">
                 Profilér resultatet
               </p>
-              <h2 className="mt-4 max-w-3xl text-balance text-5xl font-extrabold tracking-[-0.05em] text-ink md:text-6xl">
+              <h2 className="mt-4 max-w-3xl text-balance text-4xl font-extrabold tracking-[-0.05em] text-ink md:text-5xl">
                 Før vi scorer jer, skal vi kende lidt kontekst.
               </h2>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-soft">
@@ -448,7 +448,7 @@ export default function ScanExperience() {
               <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-ember">
                 {currentQuestion?.category}
               </p>
-              <h2 className="mt-4 max-w-3xl text-balance text-5xl font-extrabold tracking-[-0.05em] text-ink md:text-6xl">
+              <h2 className="mt-4 max-w-3xl text-balance text-4xl font-extrabold tracking-[-0.05em] text-ink md:text-5xl">
                 {currentQuestion?.question}
               </h2>
             </div>
