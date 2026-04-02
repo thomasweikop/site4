@@ -158,7 +158,6 @@ export default function Home() {
               <div className="mt-12 flex flex-wrap gap-6 text-sm text-white/66">
                 <span>10 spørgsmål</span>
                 <span>2-3 minutter</span>
-                <span>Ja / Delvist / Nej</span>
               </div>
             </div>
 
