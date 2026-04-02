@@ -33,12 +33,12 @@ const EMPTY_FORM: FormState = {
 
 export default function Nis2LeadForm({
   eyebrow = "Få hjælp",
-  title = "Vil I have hjælp til de næste skridt?",
-  description = "Skriv kort hvor I står, og hvad I gerne vil have afklaret. Vi bruger det til at vende tilbage med et mere konkret næste skridt.",
-  messageLabel = "Hvad vil I gerne have hjælp til?",
+  title = "Skal virksomheden have hjælp til de næste skridt?",
+  description = "Skriv kort hvor virksomheden står, og hvad virksomheden gerne vil have afklaret. Oplysningerne bruges til at vende tilbage med et mere konkret næste skridt.",
+  messageLabel = "Hvad skal virksomheden have hjælp til?",
   messagePlaceholder = "Fx de største gaps efter scanen, scope-afklaring, leverandørstyring eller næste prioriterede arbejdspakke.",
   submitLabel = "Bliv kontaktet",
-  successMessage = "Tak. Vi har modtaget jeres henvendelse og vender hurtigt tilbage.",
+  successMessage = "Tak. Henvendelsen er modtaget, og der vendes hurtigt tilbage.",
   helperText = "Kort afklaring først. Ingen binding. Praktisk næste skridt bagefter.",
   sourceTag = "NIS2 lead",
   contextLines = [],
@@ -164,7 +164,7 @@ export default function Nis2LeadForm({
             onChange={(event) => update("name", event.target.value)}
             required
             className="w-full border border-line bg-paper px-5 py-4 text-base text-ink outline-none transition focus:border-[#2a5a4f]"
-            placeholder="Dit navn"
+            placeholder="Navn på kontaktperson"
           />
         </div>
 

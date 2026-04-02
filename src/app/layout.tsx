@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://nis.weikop.me"),
   title: "NIS2 Screening | ComplyCheck",
   description:
-    "Få et nøgternt første billede af jeres NIS2-parathed med en kort screening, vægtet score og de mest oplagte næste skridt.",
+    "Få et nøgternt første billede af virksomhedens NIS2-parathed med en kort screening, vægtet score og de mest oplagte næste skridt.",
   applicationName: "ComplyCheck",
   keywords: [
     "NIS2",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "NIS2 Screening | ComplyCheck",
     description:
-      "Få et nøgternt første billede af jeres NIS2-parathed, de største gaps og de næste prioriterede skridt.",
+      "Få et nøgternt første billede af virksomhedens NIS2-parathed, de største gaps og de næste prioriterede skridt.",
     type: "website",
     url: "https://nis.weikop.me",
     locale: "da_DK",

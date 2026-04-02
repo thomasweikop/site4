@@ -142,7 +142,7 @@ export default function ScanExperience() {
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-                  Jeres resultat
+                  Virksomhedens resultat
                 </p>
                 <h2 className="mt-4 font-display text-4xl leading-none text-ink md:text-[3.35rem]">
                   {result.percentage}% klar til NIS2
@@ -295,12 +295,12 @@ export default function ScanExperience() {
         <div id="scan-help" className="space-y-6">
           <Nis2LeadForm
             eyebrow="Efter resultatet"
-            title="Vil I have hjælp til at lukke de største gaps?"
-            description="Send resultatet videre sammen med jeres kontaktoplysninger, så kan næste samtale tage udgangspunkt i de konkrete svagheder scanen har peget på."
-            messageLabel="Hvad vil I gerne have hjælp til først?"
+            title="Skal virksomheden have hjælp til at lukke de største gaps?"
+            description="Send resultatet videre sammen med virksomhedens kontaktoplysninger, så kan næste samtale tage udgangspunkt i de konkrete svagheder screeningen har peget på."
+            messageLabel="Hvad skal virksomheden have hjælp til først?"
             messagePlaceholder="Fx incident response, MFA, risikovurdering eller et samlet roadmap for de næste 90 dage."
             submitLabel="Bliv kontaktet om resultatet"
-            successMessage="Tak. Vi har modtaget jeres resultat og vender hurtigt tilbage."
+            successMessage="Tak. Resultatet er modtaget, og der vendes hurtigt tilbage."
             helperText="Vi tager udgangspunkt i score, profil og gaps, så næste samtale bliver mere konkret fra start."
             sourceTag="NIS2 scan result lead"
             contextLines={contextLines}
@@ -313,11 +313,11 @@ export default function ScanExperience() {
             <div className="mt-4 grid gap-3">
               <p className="text-sm leading-6 text-soft">
                 Scanen er et hurtigt modenhedsbillede og ikke en juridisk
-                afgørelse af om I er omfattet.
+                afgørelse af om virksomheden er omfattet.
               </p>
               <p className="text-sm leading-6 text-soft">
-                Resultatet bliver mere nyttigt, når det læses sammen med jeres
-                virksomhedstype, branche og rolle.
+                Resultatet bliver mere nyttigt, når det læses sammen med
+                virksomhedens størrelse, branche og rolle.
               </p>
             </div>
           </div>
@@ -361,11 +361,11 @@ export default function ScanExperience() {
                 Profilér resultatet
               </p>
               <h2 className="mt-3 max-w-3xl font-display text-4xl leading-none text-ink md:text-[2.7rem]">
-                Før vi scorer jer, skal vi kende lidt kontekst.
+                Før virksomheden scores, skal der bruges lidt kontekst.
               </h2>
               <p className="mt-4 max-w-2xl text-base leading-7 text-soft">
                 Det gør resultatet mere brugbart, fordi anbefalinger og
-                fortolkning kan læses i lyset af jeres segment.
+                fortolkning kan læses i lyset af virksomhedens segment.
               </p>
             </div>
 
@@ -417,7 +417,9 @@ export default function ScanExperience() {
               </div>
 
               <div>
-                <p className="text-sm font-semibold text-ink">Din rolle</p>
+                <p className="text-sm font-semibold text-ink">
+                  Rolle i virksomheden
+                </p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {ROLE_OPTIONS.map((option) => (
                     <button

@@ -53,7 +53,7 @@ const FAQ_ITEMS = [
   {
     question: "Hvad får vi ud af resultatet?",
     answer:
-      "I får en vægtet score, de vigtigste gaps og de første anbefalede næste skridt, så resultatet kan bruges i en reel intern drøftelse.",
+      "Virksomheden får en vægtet score, de vigtigste gaps og de første anbefalede næste skridt, så resultatet kan bruges i en reel intern drøftelse.",
   },
 ] as const;
 
@@ -80,14 +80,14 @@ function SectionHeading({
         {eyebrow}
       </p>
       <h2
-        className={`mt-4 max-w-4xl font-display text-4xl leading-none md:text-[4.2rem] ${
+        className={`mt-4 max-w-4xl font-display text-[2.7rem] leading-none md:text-[3.45rem] ${
           inverse ? "text-white" : "text-ink"
         }`}
       >
         {title}
       </h2>
       <p
-        className={`mt-5 max-w-2xl text-lg leading-8 ${inverse ? "text-white/76" : "text-soft"}`}
+        className={`mt-4 max-w-2xl text-base leading-7 ${inverse ? "text-white/76" : "text-soft"}`}
       >
         {text}
       </p>
@@ -131,11 +131,11 @@ export default function Home() {
               <p className="text-[0.72rem] font-semibold uppercase tracking-[0.3em] text-[#b9d0c2]">
                 NIS2 readiness screening
               </p>
-              <h1 className="mt-8 max-w-4xl font-display text-5xl leading-none text-white md:text-[5.7rem]">
-                Et mere formelt første billede af jeres NIS2-parathed.
+              <h1 className="mt-7 max-w-4xl font-display text-[3.55rem] leading-none text-white md:text-[4.85rem]">
+                Et mere formelt første billede af virksomhedens NIS2-parathed.
               </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-white/78 md:text-xl">
-                Få en kort og vægtet vurdering af hvor organisationen står nu,
+              <p className="mt-5 max-w-2xl text-base leading-7 text-white/78 md:text-lg">
+                Få en kort og vægtet vurdering af hvor virksomheden står nu,
                 hvilke områder der bør prioriteres først, og hvor næste
                 drøftelse bør begynde.
               </p>
@@ -143,7 +143,7 @@ export default function Home() {
               <div className="mt-10 flex flex-wrap gap-4">
                 <Link
                   href="/scan"
-                  className="inline-flex items-center gap-2 bg-white px-7 py-4 text-sm font-semibold text-[#073832] transition hover:bg-[#f2eee6]"
+                  className="inline-flex items-center gap-2 bg-white px-7 py-4 text-sm font-semibold text-ink transition hover:bg-[#f2eee6]"
                 >
                   <svg
                     viewBox="0 0 16 16"
@@ -156,7 +156,7 @@ export default function Home() {
                 </Link>
                 <a
                   href="#hvordan"
-                  className="inline-flex border border-[#18473f] bg-[#0d2d28] px-7 py-4 text-sm font-semibold text-white transition hover:bg-[#123b35]"
+                  className="inline-flex border border-white/18 bg-transparent px-7 py-4 text-sm font-semibold text-white transition hover:bg-white/6"
                 >
                   Læs hvordan det virker
                 </a>
@@ -392,7 +392,7 @@ export default function Home() {
 
           <Nis2LeadForm
             sourceTag="NIS2 landing lead"
-            description="Skriv kort hvor organisationen står, og hvad I gerne vil have afklaret efter screeningen. Vi bruger det til at vende tilbage med et mere konkret næste skridt."
+            description="Skriv kort hvor virksomheden står, og hvad virksomheden gerne vil have afklaret efter screeningen. Oplysningerne bruges til at vende tilbage med et mere konkret næste skridt."
           />
         </div>
       </section>
