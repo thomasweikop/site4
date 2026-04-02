@@ -15,9 +15,9 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://nis.weikop.me"),
-  title: "Gratis NIS2 Compliance Scan | ComplyCheck",
+  title: "NIS2 Screening | ComplyCheck",
   description:
-    "Er din virksomhed klar til NIS2? Få et hurtigt første billede af score, gaps og næste skridt med ComplyChecks gratis NIS2 compliance scan.",
+    "Få et nøgternt første billede af jeres NIS2-parathed med en kort screening, vægtet score og de mest oplagte næste skridt.",
   applicationName: "ComplyCheck",
   keywords: [
     "NIS2",
@@ -35,9 +35,9 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
-    title: "Gratis NIS2 Compliance Scan | ComplyCheck",
+    title: "NIS2 Screening | ComplyCheck",
     description:
-      "Få et hurtigt første billede af jeres NIS2-score, de største gaps og de næste prioriterede skridt.",
+      "Få et nøgternt første billede af jeres NIS2-parathed, de største gaps og de næste prioriterede skridt.",
     type: "website",
     url: "https://nis.weikop.me",
     locale: "da_DK",
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ebf1f7",
+  themeColor: "#073832",
 };
 
 export default function RootLayout({

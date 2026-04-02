@@ -101,13 +101,13 @@ export default function Nis2LeadForm({
   return (
     <form
       onSubmit={onSubmit}
-      className="rounded-[2.2rem] border border-line bg-white/92 p-6 shadow-[var(--shadow)] md:p-8"
+      className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8"
     >
       <div>
-        <p className="text-xs font-extrabold uppercase tracking-[0.26em] text-ember">
+        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
           {eyebrow}
         </p>
-        <h3 className="mt-3 text-balance text-4xl font-extrabold tracking-[-0.04em] text-ink md:text-5xl">
+        <h3 className="mt-4 text-balance font-display text-4xl leading-none text-ink md:text-[2.95rem]">
           {title}
         </h3>
         <p className="mt-4 max-w-xl text-base leading-7 text-soft">
@@ -116,8 +116,8 @@ export default function Nis2LeadForm({
       </div>
 
       {contextLines.length > 0 ? (
-        <div className="mt-6 rounded-[1.6rem] border border-line bg-[#f4f7fb] p-4">
-          <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-ember">
+        <div className="mt-6 border border-line bg-paper p-4">
+          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
             Kontekst
           </p>
           <div className="mt-3 grid gap-2">
@@ -144,7 +144,7 @@ export default function Nis2LeadForm({
             autoComplete="organization"
             value={form.company}
             onChange={(event) => update("company", event.target.value)}
-            className="w-full rounded-[1.4rem] border border-line bg-[#f8fafc] px-5 py-4 text-base text-ink outline-none transition focus:border-ember focus:ring-4 focus:ring-[#6dcfff]/20"
+            className="w-full border border-line bg-paper px-5 py-4 text-base text-ink outline-none transition focus:border-[#2a5a4f]"
             placeholder="Fx Weikop A/S"
           />
         </div>
@@ -163,7 +163,7 @@ export default function Nis2LeadForm({
             value={form.name}
             onChange={(event) => update("name", event.target.value)}
             required
-            className="w-full rounded-[1.4rem] border border-line bg-[#f8fafc] px-5 py-4 text-base text-ink outline-none transition focus:border-ember focus:ring-4 focus:ring-[#6dcfff]/20"
+            className="w-full border border-line bg-paper px-5 py-4 text-base text-ink outline-none transition focus:border-[#2a5a4f]"
             placeholder="Dit navn"
           />
         </div>
@@ -183,7 +183,7 @@ export default function Nis2LeadForm({
             value={form.email}
             onChange={(event) => update("email", event.target.value)}
             required
-            className="w-full rounded-[1.4rem] border border-line bg-[#f8fafc] px-5 py-4 text-base text-ink outline-none transition focus:border-ember focus:ring-4 focus:ring-[#6dcfff]/20"
+            className="w-full border border-line bg-paper px-5 py-4 text-base text-ink outline-none transition focus:border-[#2a5a4f]"
             placeholder="navn@virksomhed.dk"
           />
         </div>
@@ -202,7 +202,7 @@ export default function Nis2LeadForm({
             autoComplete="tel"
             value={form.phone}
             onChange={(event) => update("phone", event.target.value)}
-            className="w-full rounded-[1.4rem] border border-line bg-[#f8fafc] px-5 py-4 text-base text-ink outline-none transition focus:border-ember focus:ring-4 focus:ring-[#6dcfff]/20"
+            className="w-full border border-line bg-paper px-5 py-4 text-base text-ink outline-none transition focus:border-[#2a5a4f]"
             placeholder="Valgfrit"
           />
         </div>
@@ -219,7 +219,7 @@ export default function Nis2LeadForm({
             name="message"
             value={form.message}
             onChange={(event) => update("message", event.target.value)}
-            className="min-h-[170px] w-full rounded-[1.4rem] border border-line bg-[#f8fafc] px-5 py-4 text-base text-ink outline-none transition focus:border-ember focus:ring-4 focus:ring-[#6dcfff]/20"
+            className="min-h-[170px] w-full border border-line bg-paper px-5 py-4 text-base text-ink outline-none transition focus:border-[#2a5a4f]"
             placeholder={messagePlaceholder}
           />
         </div>
@@ -229,7 +229,7 @@ export default function Nis2LeadForm({
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex rounded-full bg-sage px-7 py-3 text-sm font-semibold text-white transition hover:bg-[#12203d] disabled:cursor-not-allowed disabled:bg-[#8a95a8]"
+          className="inline-flex bg-sage px-7 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43] disabled:cursor-not-allowed disabled:bg-[#8a95a8]"
         >
           {pending ? "Sender..." : submitLabel}
         </button>

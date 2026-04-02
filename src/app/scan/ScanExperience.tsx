@@ -138,18 +138,18 @@ export default function ScanExperience() {
     return (
       <div className="grid gap-8 lg:grid-cols-[1fr_0.96fr]">
         <div className="space-y-6">
-          <div className="rounded-[2.2rem] border border-line bg-white/94 p-6 shadow-[var(--shadow)] md:p-8">
+          <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.26em] text-ember">
+                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
                   Jeres resultat
                 </p>
-                <h2 className="mt-3 text-balance text-4xl font-extrabold tracking-[-0.05em] text-ink md:text-5xl">
+                <h2 className="mt-4 font-display text-4xl leading-none text-ink md:text-[3.35rem]">
                   {result.percentage}% klar til NIS2
                 </h2>
               </div>
               <div
-                className={`rounded-full border px-4 py-2 text-sm font-semibold ${result.band.className}`}
+                className={`border px-4 py-2 text-sm font-semibold ${result.band.className}`}
               >
                 {result.band.status}
               </div>
@@ -159,7 +159,7 @@ export default function ScanExperience() {
               {result.riskSummary}
             </p>
 
-            <div className="mt-6 h-4 overflow-hidden rounded-full bg-[#dbe5f0]">
+            <div className="mt-6 h-2 overflow-hidden bg-[#dde5df]">
               <div
                 className={`h-full rounded-full ${result.band.barClassName}`}
                 style={{ width: `${result.percentage}%` }}
@@ -167,8 +167,8 @@ export default function ScanExperience() {
             </div>
 
             <div className="mt-8 grid gap-4 md:grid-cols-3">
-              <div className="rounded-[1.5rem] border border-line bg-[#f4f7fb] p-4">
-                <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-ember">
+              <div className="border border-line bg-paper p-4">
+                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
                   Ja
                 </p>
                 <p className="mt-2 text-3xl font-bold text-ink">
@@ -178,8 +178,8 @@ export default function ScanExperience() {
                   Områder der ser rimeligt dækket ud.
                 </p>
               </div>
-              <div className="rounded-[1.5rem] border border-line bg-[#f4f7fb] p-4">
-                <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-ember">
+              <div className="border border-line bg-paper p-4">
+                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
                   Delvist
                 </p>
                 <p className="mt-2 text-3xl font-bold text-ink">
@@ -189,8 +189,8 @@ export default function ScanExperience() {
                   Områder hvor modenheden stadig er ujævn.
                 </p>
               </div>
-              <div className="rounded-[1.5rem] border border-line bg-[#f4f7fb] p-4">
-                <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-ember">
+              <div className="border border-line bg-paper p-4">
+                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
                   Nej
                 </p>
                 <p className="mt-2 text-3xl font-bold text-ink">
@@ -203,15 +203,15 @@ export default function ScanExperience() {
             </div>
           </div>
 
-          <div className="rounded-[2.2rem] border border-line bg-white/94 p-6 shadow-[var(--shadow)] md:p-8">
-            <p className="text-xs font-extrabold uppercase tracking-[0.26em] text-ember">
+          <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
               Profilkontekst
             </p>
             <div className="mt-5 grid gap-3">
               {result.profileSummary.map((item) => (
                 <div
                   key={item}
-                  className="rounded-[1.35rem] border border-line bg-[#f4f7fb] px-4 py-4 text-sm leading-6 text-soft"
+                  className="border border-line bg-paper px-4 py-4 text-sm leading-6 text-soft"
                 >
                   {item}
                 </div>
@@ -219,7 +219,7 @@ export default function ScanExperience() {
               {result.profileInsights.map((item) => (
                 <div
                   key={item}
-                  className="rounded-[1.35rem] border border-line bg-white px-4 py-4 text-sm leading-6 text-soft"
+                  className="border border-line bg-white px-4 py-4 text-sm leading-6 text-soft"
                 >
                   {item}
                 </div>
@@ -227,22 +227,22 @@ export default function ScanExperience() {
             </div>
           </div>
 
-          <div className="rounded-[2.2rem] border border-line bg-white/94 p-6 shadow-[var(--shadow)] md:p-8">
-            <p className="text-xs font-extrabold uppercase tracking-[0.26em] text-ember">
+          <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
               Største gaps
             </p>
             <div className="mt-6 grid gap-4">
               {result.gaps.map((gap) => (
                 <article
                   key={gap.id}
-                  className="rounded-[1.6rem] border border-line bg-[#f6f9fd] p-5"
+                  className="border border-line bg-paper p-5"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-ember">
+                      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
                         {gap.category}
                       </p>
-                      <h3 className="mt-2 text-xl font-extrabold tracking-[-0.02em] text-ink">
+                      <h3 className="mt-3 text-xl font-semibold text-ink">
                         {gap.question}
                       </h3>
                     </div>
@@ -259,15 +259,15 @@ export default function ScanExperience() {
             </div>
           </div>
 
-          <div className="rounded-[2.2rem] border border-line bg-sage p-6 text-white shadow-[0_30px_80px_rgba(8,17,34,0.22)] md:p-8">
-            <p className="text-xs font-extrabold uppercase tracking-[0.26em] text-[#9bd1ff]">
+          <div className="border border-line bg-sage p-6 text-white shadow-[var(--shadow)] md:p-8">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#b9d0c2]">
               Næste skridt
             </p>
             <div className="mt-6 grid gap-3">
               {result.nextSteps.map((step) => (
                 <div
                   key={step}
-                  className="rounded-[1.4rem] border border-white/10 bg-white/7 px-4 py-4 text-sm leading-6 text-white/80"
+                  className="border border-white/10 px-4 py-4 text-sm leading-6 text-white/80"
                 >
                   {step}
                 </div>
@@ -277,14 +277,14 @@ export default function ScanExperience() {
             <div className="mt-6 flex flex-wrap gap-3">
               <a
                 href="#scan-help"
-                className="inline-flex rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#081122] transition hover:bg-[#eef4ff]"
+                className="inline-flex bg-white px-6 py-3 text-sm font-semibold text-sage transition hover:bg-[#f1ece3]"
               >
                 Få hjælp til at lukke gaps
               </a>
               <button
                 type="button"
                 onClick={restart}
-                className="inline-flex rounded-full border border-white/14 bg-white/8 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/12"
+                className="inline-flex border border-white/14 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/8"
               >
                 Tag scanen igen
               </button>
@@ -306,8 +306,8 @@ export default function ScanExperience() {
             contextLines={contextLines}
           />
 
-          <div className="rounded-[2rem] border border-line bg-white/92 p-6 shadow-[var(--shadow)]">
-            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-ember">
+          <div className="border border-line bg-white p-6 shadow-[var(--shadow)]">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[#4c655d]">
               Godt at vide
             </p>
             <div className="mt-4 grid gap-3">
@@ -328,10 +328,10 @@ export default function ScanExperience() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <div className="rounded-[2.2rem] border border-line bg-white/94 p-6 shadow-[var(--shadow)] md:p-8">
+      <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.26em] text-ember">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
               {isProfileStep
                 ? "Profil 1 / 1"
                 : `Spørgsmål ${currentIndex + 1} / ${SCAN_QUESTIONS.length}`}
@@ -341,13 +341,13 @@ export default function ScanExperience() {
             </p>
           </div>
           {!isProfileStep && currentQuestion && currentQuestion.weight > 1 ? (
-            <div className="rounded-full border border-[#c7dff6] bg-[#eef6ff] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#246287]">
+            <div className="border border-[#d8ddd2] bg-[#f0f2ec] px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#50635c]">
               Vægtes ekstra
             </div>
           ) : null}
         </div>
 
-        <div className="mt-6 h-3 overflow-hidden rounded-full bg-[#dbe5f0]">
+        <div className="mt-6 h-2 overflow-hidden bg-[#dde5df]">
           <div
             className="h-full rounded-full bg-ember transition-all"
             style={{ width: `${progress}%` }}
@@ -357,10 +357,10 @@ export default function ScanExperience() {
         {isProfileStep ? (
           <div className="mt-8 space-y-8">
             <div>
-              <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-ember">
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[#4c655d]">
                 Profilér resultatet
               </p>
-              <h2 className="mt-4 max-w-3xl text-balance text-4xl font-extrabold tracking-[-0.05em] text-ink md:text-5xl">
+              <h2 className="mt-4 max-w-3xl font-display text-4xl leading-none text-ink md:text-[3.15rem]">
                 Før vi scorer jer, skal vi kende lidt kontekst.
               </h2>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-soft">
@@ -383,10 +383,10 @@ export default function ScanExperience() {
                         setProfileValue("companySize", option.value)
                       }
                       className={classNames(
-                        "rounded-[1.4rem] border px-4 py-4 text-left text-sm font-semibold transition",
+                        "border px-4 py-4 text-left text-sm font-semibold transition",
                         profile.companySize === option.value
-                          ? "border-ember bg-[#e8f6ff] text-ink shadow-[0_12px_30px_rgba(109,207,255,0.22)]"
-                          : "border-line bg-[#f4f7fb] text-soft hover:bg-white",
+                          ? "border-[#2a5a4f] bg-[#eff3ec] text-ink"
+                          : "border-line bg-paper text-soft hover:bg-white",
                       )}
                     >
                       {option.label}
@@ -404,10 +404,10 @@ export default function ScanExperience() {
                       type="button"
                       onClick={() => setProfileValue("industry", option.value)}
                       className={classNames(
-                        "rounded-[1.4rem] border px-4 py-4 text-left text-sm font-semibold transition",
+                        "border px-4 py-4 text-left text-sm font-semibold transition",
                         profile.industry === option.value
-                          ? "border-ember bg-[#e8f6ff] text-ink shadow-[0_12px_30px_rgba(109,207,255,0.22)]"
-                          : "border-line bg-[#f4f7fb] text-soft hover:bg-white",
+                          ? "border-[#2a5a4f] bg-[#eff3ec] text-ink"
+                          : "border-line bg-paper text-soft hover:bg-white",
                       )}
                     >
                       {option.label}
@@ -425,10 +425,10 @@ export default function ScanExperience() {
                       type="button"
                       onClick={() => setProfileValue("role", option.value)}
                       className={classNames(
-                        "rounded-[1.4rem] border px-4 py-4 text-left text-sm font-semibold transition",
+                        "border px-4 py-4 text-left text-sm font-semibold transition",
                         profile.role === option.value
-                          ? "border-ember bg-[#e8f6ff] text-ink shadow-[0_12px_30px_rgba(109,207,255,0.22)]"
-                          : "border-line bg-[#f4f7fb] text-soft hover:bg-white",
+                          ? "border-[#2a5a4f] bg-[#eff3ec] text-ink"
+                          : "border-line bg-paper text-soft hover:bg-white",
                       )}
                     >
                       {option.label}
@@ -441,10 +441,10 @@ export default function ScanExperience() {
         ) : (
           <>
             <div className="mt-8">
-              <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-ember">
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[#4c655d]">
                 {currentQuestion?.category}
               </p>
-              <h2 className="mt-4 max-w-3xl text-balance text-4xl font-extrabold tracking-[-0.05em] text-ink md:text-5xl">
+              <h2 className="mt-4 max-w-3xl font-display text-4xl leading-none text-ink md:text-[3.15rem]">
                 {currentQuestion?.question}
               </h2>
             </div>
@@ -459,17 +459,17 @@ export default function ScanExperience() {
                     type="button"
                     onClick={() => setAnswer(option.value)}
                     className={classNames(
-                      "rounded-[1.6rem] border p-5 text-left transition",
+                      "border p-5 text-left transition",
                       selected
-                        ? "border-ember bg-[#e8f6ff] shadow-[0_12px_30px_rgba(109,207,255,0.22)]"
-                        : "border-line bg-[#f4f7fb] hover:bg-white",
+                        ? "border-[#2a5a4f] bg-[#eff3ec]"
+                        : "border-line bg-paper hover:bg-white",
                     )}
                   >
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <p className="text-lg font-extrabold tracking-[-0.02em] text-ink">
                         {option.label}
                       </p>
-                      <div className="rounded-full border border-line bg-white px-3 py-1 text-xs font-semibold text-soft">
+                      <div className="border border-line bg-white px-3 py-1 text-xs font-semibold text-soft">
                         {option.pointsLabel}
                       </div>
                     </div>
@@ -488,7 +488,7 @@ export default function ScanExperience() {
             type="button"
             onClick={goBack}
             disabled={isProfileStep}
-            className="inline-flex rounded-full border border-line bg-white px-6 py-3 text-sm font-semibold text-ink transition hover:bg-[#f8fbff] disabled:cursor-not-allowed disabled:opacity-45"
+            className="inline-flex border border-line bg-white px-6 py-3 text-sm font-semibold text-ink transition hover:bg-paper disabled:cursor-not-allowed disabled:opacity-45"
           >
             Forrige
           </button>
@@ -497,7 +497,7 @@ export default function ScanExperience() {
             type="button"
             onClick={goNext}
             disabled={isProfileStep ? !profileComplete : !currentAnswer}
-            className="inline-flex rounded-full bg-sage px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#12203d] disabled:cursor-not-allowed disabled:bg-[#8a95a8]"
+            className="inline-flex bg-sage px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43] disabled:cursor-not-allowed disabled:bg-[#8a95a8]"
           >
             {isProfileStep
               ? "Start spørgsmålene"

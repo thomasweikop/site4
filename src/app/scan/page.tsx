@@ -12,58 +12,61 @@ export const metadata: Metadata = {
 
 export default function ScanPage() {
   return (
-    <main className="overflow-hidden bg-page text-ink">
-      <section className="relative overflow-hidden bg-sage">
-        <Image
-          src="/pic7.jpg"
-          alt="Hero-baggrund for scan-flowet."
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,12,25,0.42),rgba(7,12,25,0.86))]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,170,125,0.18),transparent_24%),radial-gradient(circle_at_76%_16%,rgba(111,199,255,0.14),transparent_22%)]" />
-
-        <div className="relative mx-auto max-w-7xl px-6 pb-32 pt-6 md:px-8 lg:px-10">
-          <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 rounded-[1.6rem] border border-white/10 bg-white/10 px-4 py-3 text-white shadow-[0_24px_70px_rgba(5,9,20,0.24)] backdrop-blur-md">
+    <main className="bg-page text-ink">
+      <section className="bg-sage text-white">
+        <div className="mx-auto max-w-7xl px-6 md:px-8 lg:px-10">
+          <header className="flex items-center justify-between gap-6 py-7">
             <BrandWordmark inverse />
 
-            <div className="hidden items-center gap-7 text-sm font-semibold text-white/78 md:flex">
+            <div className="hidden items-center gap-8 text-sm font-semibold text-white/74 lg:flex">
               <Link href="/" className="transition hover:text-white">
                 Forside
               </Link>
-              <span className="rounded-full bg-white px-4 py-2 text-[#081122]">
-                Scan
+              <span className="border border-white/16 px-4 py-2 text-white">
+                Screening
               </span>
             </div>
 
             <Link
               href="/"
-              className="inline-flex rounded-full border border-white/14 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/16"
+              className="inline-flex border border-white/18 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/8"
             >
               Tilbage
             </Link>
-          </div>
+          </header>
 
-          <div className="mx-auto mt-18 max-w-4xl py-10 text-center text-white md:mt-20 md:py-14">
-            <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-white/74">
-              Gratis NIS2 compliance scan
-            </p>
-            <h1 className="mt-6 text-balance text-4xl font-extrabold tracking-[-0.05em] text-white md:text-6xl">
-              Svar på 10 spørgsmål og få jeres første NIS2-score.
-            </h1>
-            <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-white/80 md:text-xl">
-              Formatet er simpelt, men scoren er vægtet, så I hurtigt kan se
-              hvor risikoen er størst, og hvilke næste skridt der bør komme
-              først.
-            </p>
+          <div className="grid gap-10 pb-16 pt-8 lg:grid-cols-[1fr_0.82fr] lg:items-center lg:pb-18">
+            <div className="max-w-3xl">
+              <p className="text-[0.72rem] font-semibold uppercase tracking-[0.3em] text-[#b9d0c2]">
+                NIS2 screening
+              </p>
+              <h1 className="mt-7 max-w-4xl font-display text-5xl leading-none text-white md:text-[5rem]">
+                Svar på 10 spørgsmål og få et første, vægtet modenhedsbillede.
+              </h1>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-white/78">
+                Formatet er kort og operativt. Formålet er at skabe et brugbart
+                første overblik, som kan danne grundlag for den videre interne
+                eller eksterne vurdering.
+              </p>
+            </div>
 
+            <div className="overflow-hidden border border-white/10 bg-[#0d2d28]">
+              <div className="aspect-[4/3]">
+                <Image
+                  src="/pic7.jpg"
+                  alt="Bygninger set nedefra, brugt som hero-billede for screeningssiden."
+                  width={1000}
+                  height={666}
+                  priority
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="relative z-10 -mt-16 px-6 pb-20 md:px-8 md:pb-24 lg:px-10">
+      <section className="px-6 py-14 md:px-8 md:py-16 lg:px-10">
         <div className="mx-auto max-w-5xl">
           <ScanExperience />
         </div>

@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --page: #ebf1f7;
-  --paper: #f7fbff;
-  --surface: rgba(255, 255, 255, 0.92);
-  --surface-strong: #dde7f2;
-  --ink: #121b31;
-  --soft: #61718b;
-  --line: #d4ddec;
-  --sage: #081122;
-  --sage-soft: #dce9f6;
-  --ember: #6dcfff;
-  --gold: #8b9db7;
-  --shadow: 0 28px 72px rgba(17, 29, 52, 0.12);
+  --page: #f3f0e9;
+  --paper: #faf7f1;
+  --surface: #ffffff;
+  --surface-strong: #eff3ec;
+  --ink: #123a35;
+  --soft: #62716b;
+  --line: #d6ddd5;
+  --sage: #073832;
+  --sage-soft: #e5ece5;
+  --ember: #2a5a4f;
+  --gold: #877b63;
+  --shadow: 0 10px 28px rgba(18, 58, 53, 0.05);
 }
 
 @theme inline {
@@ -28,7 +28,7 @@
   --color-ember: var(--ember);
   --color-gold: var(--gold);
   --font-sans: var(--font-manrope);
-  --font-display: var(--font-manrope);
+  --font-display: var(--font-cormorant);
 }
 
 * {
@@ -41,18 +41,7 @@ html {
 
 body {
   min-height: 100vh;
-  background:
-    radial-gradient(
-      circle at top left,
-      rgba(109, 207, 255, 0.15),
-      transparent 22%
-    ),
-    radial-gradient(
-      circle at 82% 4%,
-      rgba(126, 144, 183, 0.12),
-      transparent 18%
-    ),
-    linear-gradient(180deg, #f4f8fc 0%, #ebf1f7 100%);
+  background: #f3f0e9;
   color: var(--ink);
   font-family: var(--font-manrope), sans-serif;
 }
@@ -63,7 +52,7 @@ a {
 }
 
 ::selection {
-  background: rgba(109, 207, 255, 0.28);
+  background: rgba(7, 56, 50, 0.16);
   color: var(--ink);
 }
 
