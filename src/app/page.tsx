@@ -132,7 +132,7 @@ export default function Home() {
                 NIS2 readiness screening
               </p>
               <h1 className="mt-7 max-w-4xl font-display text-[3.55rem] leading-none text-white md:text-[4.85rem]">
-                Et mere formelt første billede af virksomhedens NIS2-parathed.
+                Test virksomhedens NIS2 niveau
               </h1>
               <p className="mt-5 max-w-2xl text-base leading-7 text-white/78 md:text-lg">
                 Få en kort og vægtet vurdering af hvor virksomheden står nu,
