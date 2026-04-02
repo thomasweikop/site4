@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import {
   clearScanDraft,
   createReportSession,
-  loadScanDraft,
+  parseDraftStorageValue,
+  readDraftStorageValue,
   saveScanDraft,
 } from "@/lib/nis2Session";
 import {
@@ -41,11 +42,12 @@ export default function ScanExperience() {
     () => true,
     () => false,
   );
-  const storedDraft = useSyncExternalStore(
+  const draftStorageValue = useSyncExternalStore(
     NOOP_SUBSCRIBE,
-    loadScanDraft,
-    () => null,
+    readDraftStorageValue,
+    () => "",
   );
+  const storedDraft = parseDraftStorageValue(draftStorageValue);
   const [profileState, setProfileState] = useState<ProfileState | null>(null);
   const [answersState, setAnswersState] = useState<ScanAnswers | null>(null);
   const [currentIndexState, setCurrentIndexState] = useState<number | null>(

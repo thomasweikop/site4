@@ -7,8 +7,9 @@ import Nis2ReportView from "@/components/Nis2ReportView";
 import ReportUnlockForm from "@/components/ReportUnlockForm";
 import {
   getSessionReport,
-  getStoredReportSession,
   markReportUnlocked,
+  parseSessionsStorageValue,
+  readSessionsStorageValue,
   type StoredReportSession,
   type UnlockLead,
 } from "@/lib/nis2Session";
@@ -27,11 +28,15 @@ export default function ResultExperience({
     () => true,
     () => false,
   );
-  const storedSession = useSyncExternalStore(
+  const sessionsStorageValue = useSyncExternalStore(
     NOOP_SUBSCRIBE,
-    () => getStoredReportSession(sessionId),
-    () => null,
+    readSessionsStorageValue,
+    () => "[]",
   );
+  const storedSession =
+    parseSessionsStorageValue(sessionsStorageValue).find(
+      (candidate) => candidate.id === sessionId,
+    ) ?? null;
   const [sessionOverride, setSessionOverride] =
     useState<StoredReportSession | null>(null);
   const session = sessionOverride ?? storedSession;

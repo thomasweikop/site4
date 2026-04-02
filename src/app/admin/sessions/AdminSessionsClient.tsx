@@ -5,7 +5,8 @@ import { useState, useSyncExternalStore } from "react";
 import {
   deleteStoredReportSession,
   getSessionReport,
-  listStoredReportSessions,
+  parseSessionsStorageValue,
+  readSessionsStorageValue,
 } from "@/lib/nis2Session";
 
 const NOOP_SUBSCRIBE = () => () => {};
@@ -16,14 +17,14 @@ export default function AdminSessionsClient() {
     () => true,
     () => false,
   );
-  const [revision, setRevision] = useState(0);
-  const sessions = useSyncExternalStore(
+  const [, forceRefresh] = useState(0);
+  const sessionsStorageValue = useSyncExternalStore(
     NOOP_SUBSCRIBE,
-    () => {
-      void revision;
-      return listStoredReportSessions();
-    },
-    () => [],
+    readSessionsStorageValue,
+    () => "[]",
+  );
+  const sessions = parseSessionsStorageValue(sessionsStorageValue).sort((left, right) =>
+    right.updatedAt.localeCompare(left.updatedAt),
   );
 
   if (!clientReady) {
@@ -94,7 +95,7 @@ export default function AdminSessionsClient() {
                 type="button"
                 onClick={() => {
                   deleteStoredReportSession(session.id);
-                  setRevision((value) => value + 1);
+                  forceRefresh((value) => value + 1);
                 }}
                 className="inline-flex border border-line bg-white px-4 py-2 text-sm font-semibold text-soft transition hover:bg-paper"
               >

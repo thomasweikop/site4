@@ -51,36 +51,16 @@ function safeParse<T>(value: string | null): T | null {
   }
 }
 
-function readSessions() {
+export function readDraftStorageValue() {
   if (!canUseStorage()) {
-    return [] as StoredReportSession[];
+    return "";
   }
 
-  const sessions = safeParse<StoredReportSession[]>(
-    window.localStorage.getItem(SESSION_STORAGE_KEY),
-  );
-
-  if (!Array.isArray(sessions)) {
-    return [] as StoredReportSession[];
-  }
-
-  return sessions;
+  return window.localStorage.getItem(DRAFT_STORAGE_KEY) ?? "";
 }
 
-function writeSessions(sessions: StoredReportSession[]) {
-  if (!canUseStorage()) {
-    return;
-  }
-
-  window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessions));
-}
-
-export function loadScanDraft() {
-  if (!canUseStorage()) {
-    return null;
-  }
-
-  const draft = safeParse<ScanDraft>(window.localStorage.getItem(DRAFT_STORAGE_KEY));
+export function parseDraftStorageValue(value: string) {
+  const draft = safeParse<ScanDraft>(value);
 
   if (!draft) {
     return null;
@@ -92,6 +72,40 @@ export function loadScanDraft() {
     currentIndex: Number.isFinite(draft.currentIndex) ? draft.currentIndex : -1,
     updatedAt: draft.updatedAt ?? new Date().toISOString(),
   } satisfies ScanDraft;
+}
+
+export function readSessionsStorageValue() {
+  if (!canUseStorage()) {
+    return "[]";
+  }
+
+  return window.localStorage.getItem(SESSION_STORAGE_KEY) ?? "[]";
+}
+
+export function parseSessionsStorageValue(value: string) {
+  const sessions = safeParse<StoredReportSession[]>(value);
+
+  if (!Array.isArray(sessions)) {
+    return [] as StoredReportSession[];
+  }
+
+  return sessions;
+}
+
+function readSessions() {
+  return parseSessionsStorageValue(readSessionsStorageValue());
+}
+
+function writeSessions(sessions: StoredReportSession[]) {
+  if (!canUseStorage()) {
+    return;
+  }
+
+  window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessions));
+}
+
+export function loadScanDraft() {
+  return parseDraftStorageValue(readDraftStorageValue());
 }
 
 export function saveScanDraft(draft: Omit<ScanDraft, "updatedAt">) {
