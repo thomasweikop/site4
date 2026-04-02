@@ -143,7 +143,7 @@ export default function Home() {
               <div className="mt-10 flex flex-wrap gap-4">
                 <Link
                   href="/scan"
-                  className="inline-flex items-center gap-2 bg-white px-7 py-4 text-sm font-semibold text-ink transition hover:bg-[#f2eee6]"
+                  className="inline-flex items-center gap-2 border border-[#d8ddd2] bg-white px-7 py-4 text-sm font-semibold !text-[#073832] transition hover:bg-[#f2eee6]"
                 >
                   <svg
                     viewBox="0 0 16 16"
