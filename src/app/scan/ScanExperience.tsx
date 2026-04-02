@@ -132,6 +132,12 @@ export default function ScanExperience() {
       `Score: ${result.percentage}%`,
       `Status: ${result.band.status}`,
       `Risiko: ${result.band.risk}`,
+      ...result.reportSections,
+      ...result.blockers.map((blocker) => `Blocker: ${blocker.question}`),
+      ...result.partnerRecommendations.map(
+        (partner) =>
+          `Partnerprofil: ${partner.label} (${partner.directoryCount} match i kataloget)`,
+      ),
       ...result.gaps.map((gap) => `Gap: ${gap.question} (${gap.answerLabel})`),
     ];
 
@@ -157,6 +163,9 @@ export default function ScanExperience() {
 
             <p className="mt-5 max-w-2xl text-lg leading-8 text-soft">
               {result.riskSummary}
+            </p>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-soft">
+              {result.executiveSummary}
             </p>
 
             <div className="mt-6 h-2 overflow-hidden bg-[#dde5df]">
@@ -201,6 +210,57 @@ export default function ScanExperience() {
                 </p>
               </div>
             </div>
+
+            <div className="mt-8">
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
+                Fire dimensioner
+              </p>
+              <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                {result.dimensions.map((dimension) => (
+                  <div
+                    key={dimension.key}
+                    className="border border-line bg-paper p-4"
+                  >
+                    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
+                      {dimension.label}
+                    </p>
+                    <p className="mt-3 text-3xl font-bold text-ink">
+                      {dimension.percentage}%
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-ink">
+                      {dimension.status}
+                    </p>
+                    <p className="mt-3 text-sm leading-6 text-soft">
+                      {dimension.summary}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {result.blockers.length > 0 ? (
+              <div className="mt-8">
+                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
+                  Kritiske blockers
+                </p>
+                <div className="mt-4 grid gap-3">
+                  {result.blockers.map((blocker) => (
+                    <div
+                      key={blocker.id}
+                      className="border border-[#e0a291] bg-[#f8e5df] p-4"
+                    >
+                      <p className="text-sm font-semibold text-ink">
+                        {blocker.question}
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-soft">
+                        Denne blocker påvirker routing direkte og trækker
+                        anbefalingerne mod {blocker.vendorTypes.join(" / ")}.
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
@@ -224,6 +284,76 @@ export default function ScanExperience() {
                   {item}
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
+                  Anbefalede partnerprofiler
+                </p>
+                <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-ink">
+                  Match baseret på score, dimensioner og gaps
+                </h3>
+              </div>
+              <div className="border border-line bg-paper px-4 py-2 text-sm font-medium text-soft">
+                {result.vendorDirectoryCount} profiler i kataloget
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-4">
+              {result.partnerRecommendations.map((partner) => {
+                return (
+                  <article
+                    key={partner.type}
+                    className="border border-line bg-paper p-5"
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
+                          {partner.label}
+                        </p>
+                        <h3 className="mt-3 text-lg font-semibold text-ink">
+                          {partner.primaryVendor?.name ?? partner.summary}
+                        </h3>
+                      </div>
+                      <div className="border border-line bg-white px-3 py-1 text-xs font-semibold text-soft">
+                        Fit score {partner.fitScore}
+                      </div>
+                    </div>
+
+                    <p className="mt-4 text-sm leading-6 text-soft">
+                      {partner.rationale}
+                    </p>
+
+                    <p className="mt-4 text-sm leading-6 text-soft">
+                      {partner.primaryVendor?.recommendedRole ??
+                        partner.summary}
+                    </p>
+
+                    {partner.primaryVendor?.website ? (
+                      <a
+                        href={partner.primaryVendor.website}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-4 inline-flex border border-line bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-[#f7f4ed]"
+                      >
+                        Besøg {partner.primaryVendor.name}
+                      </a>
+                    ) : null}
+
+                    <p className="mt-4 text-sm leading-6 text-soft">
+                      Alternative match i kataloget:{" "}
+                      {partner.sampleVendors
+                        .slice(1)
+                        .map((vendor) => vendor.name)
+                        .join(", ") ||
+                        `${partner.directoryCount - 1} andre profiler i denne kategori.`}
+                    </p>
+                  </article>
+                );
+              })}
             </div>
           </div>
 

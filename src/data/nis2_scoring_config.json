@@ -1,0 +1,199 @@
+{
+  "version": "2.0",
+  "questions": [
+    {
+      "id": "Q1",
+      "category": "Governance",
+      "label": "Is there a named owner for cybersecurity / NIS2 with executive sponsorship?",
+      "dimensions": ["Governance"],
+      "answers": {
+        "No": 0,
+        "Partial": 5,
+        "Yes": 10
+      },
+      "weight": 1.5,
+      "critical_blocker": false
+    },
+    {
+      "id": "Q2",
+      "category": "Policies",
+      "label": "Do you have approved information security policies and standards that are reviewed at least annually?",
+      "dimensions": ["Governance"],
+      "answers": {
+        "No": 0,
+        "Partial": 5,
+        "Yes": 10
+      },
+      "weight": 1.0,
+      "critical_blocker": false
+    },
+    {
+      "id": "Q3",
+      "category": "Risk assessment",
+      "label": "Have you completed a documented cyber risk assessment in the last 12 months?",
+      "dimensions": ["Governance", "Compliance"],
+      "answers": {
+        "No": 0,
+        "Partial": 5,
+        "Yes": 10
+      },
+      "weight": 2.0,
+      "critical_blocker": true
+    },
+    {
+      "id": "Q4",
+      "category": "Supplier security",
+      "label": "Do you assess critical suppliers and maintain documented security requirements / due diligence?",
+      "dimensions": ["Compliance"],
+      "answers": {
+        "No": 0,
+        "Partial": 5,
+        "Yes": 10
+      },
+      "weight": 1.5,
+      "critical_blocker": false
+    },
+    {
+      "id": "Q5",
+      "category": "Incident response",
+      "label": "Do you have an incident response process, reporting workflow and named responsibilities for major incidents?",
+      "dimensions": ["Operational", "Compliance"],
+      "answers": {
+        "No": 0,
+        "Partial": 5,
+        "Yes": 10
+      },
+      "weight": 2.0,
+      "critical_blocker": true
+    },
+    {
+      "id": "Q6",
+      "category": "Logging & monitoring",
+      "label": "Are critical systems centrally logged and monitored with alerting?",
+      "dimensions": ["Technical"],
+      "answers": {
+        "No": 0,
+        "Partial": 5,
+        "Yes": 10
+      },
+      "weight": 1.5,
+      "critical_blocker": false
+    },
+    {
+      "id": "Q7",
+      "category": "Identity & MFA",
+      "label": "Is MFA enforced on critical systems and privileged access controlled?",
+      "dimensions": ["Technical"],
+      "answers": {
+        "No": 0,
+        "Partial": 5,
+        "Yes": 10
+      },
+      "weight": 2.0,
+      "critical_blocker": true
+    },
+    {
+      "id": "Q8",
+      "category": "Asset & access inventory",
+      "label": "Do you maintain an inventory of critical assets, systems, accounts and owners?",
+      "dimensions": ["Technical"],
+      "answers": {
+        "No": 0,
+        "Partial": 5,
+        "Yes": 10
+      },
+      "weight": 1.5,
+      "critical_blocker": false
+    },
+    {
+      "id": "Q9",
+      "category": "Training & awareness",
+      "label": "Do employees receive regular security awareness and role-based training?",
+      "dimensions": ["Operational"],
+      "answers": {
+        "No": 0,
+        "Partial": 5,
+        "Yes": 10
+      },
+      "weight": 1.0,
+      "critical_blocker": false
+    },
+    {
+      "id": "Q10",
+      "category": "Testing & continuity",
+      "label": "Do you test continuity, backups, recovery and key controls at least annually?",
+      "dimensions": ["Operational", "Compliance"],
+      "answers": {
+        "No": 0,
+        "Partial": 5,
+        "Yes": 10
+      },
+      "weight": 1.5,
+      "critical_blocker": false
+    }
+  ],
+  "dimensions": {
+    "Governance": {
+      "questions": ["Q1", "Q2", "Q3"],
+      "weights": {
+        "Q1": 1.5,
+        "Q2": 1.0,
+        "Q3": 2.0
+      }
+    },
+    "Technical": {
+      "questions": ["Q6", "Q7", "Q8"],
+      "weights": {
+        "Q6": 1.5,
+        "Q7": 2.0,
+        "Q8": 1.5
+      }
+    },
+    "Operational": {
+      "questions": ["Q5", "Q9", "Q10"],
+      "weights": {
+        "Q5": 2.0,
+        "Q9": 1.0,
+        "Q10": 1.5
+      }
+    },
+    "Compliance": {
+      "questions": ["Q3", "Q4", "Q5", "Q10"],
+      "weights": {
+        "Q3": 1.0,
+        "Q4": 1.5,
+        "Q5": 1.0,
+        "Q10": 1.5
+      }
+    }
+  },
+  "thresholds": {
+    "overall": {
+      "critical": [0, 39],
+      "high": [40, 59],
+      "medium": [60, 79],
+      "low": [80, 100]
+    },
+    "dimension_red_below": 60
+  },
+  "critical_blockers": ["Q3", "Q5", "Q7"],
+  "vendor_type_priority": {
+    "Governance": ["Legal", "GRC"],
+    "Technical": ["Technical", "SOC"],
+    "Operational": ["SOC", "GRC", "Technical"],
+    "Compliance": ["Audit", "GRC", "Legal"]
+  },
+  "ranking_formula": {
+    "base_vendor_score": 0.45,
+    "type_fit": 0.2,
+    "size_fit": 0.1,
+    "sector_fit": 0.1,
+    "critical_blocker_fit": 0.1,
+    "commercial_fit": 0.05
+  },
+  "output": {
+    "primary_recommendations": 3,
+    "show_partner_type_explanation": true,
+    "show_30_60_90_plan": true
+  }
+}
