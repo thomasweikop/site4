@@ -50,6 +50,8 @@ export default function ReportUnlockForm({
             (dimension) => `${dimension.label}: ${dimension.percentage}%`,
           ),
           blockers: result.blockers.map((blocker) => blocker.question),
+          executiveSummary: result.executiveSummary,
+          nextSteps: result.nextSteps,
           partnerRecommendations: result.partnerRecommendations.map(
             (partner) =>
               `${partner.label}: ${partner.primaryVendor?.name ?? partner.summary}`,
@@ -78,14 +80,14 @@ export default function ReportUnlockForm({
       className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8"
     >
       <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-        Fuld rapport
+        Rapport
       </p>
       <h2 className="mt-4 text-balance text-3xl font-semibold tracking-[-0.03em] text-ink">
-        Lås den fulde rapport op
+        Indtast oplysninger før rapporten sendes
       </h2>
       <p className="mt-4 text-sm leading-6 text-soft">
-        Angiv kontaktoplysninger, så kan virksomheden se den fulde rapport med
-        4 dimensioner, 30/60/90-plan og partneranbefalinger.
+        Rapporten sendes til email, og derefter kan virksomheden fortsætte til
+        en prioriteret liste af konsulentvirksomheder.
       </p>
 
       <div className="mt-6 grid gap-4">
@@ -98,6 +100,7 @@ export default function ReportUnlockForm({
           </label>
           <input
             id="unlock-company"
+            required
             value={lead.company}
             onChange={(event) => update("company", event.target.value)}
             className="w-full border border-line bg-paper px-4 py-3 text-sm text-ink outline-none transition focus:border-[#2a5a4f]"
@@ -139,38 +142,6 @@ export default function ReportUnlockForm({
             placeholder="navn@virksomhed.dk"
           />
         </div>
-
-        <div>
-          <label
-            htmlFor="unlock-phone"
-            className="mb-2 block text-sm font-semibold text-ink"
-          >
-            Telefon
-          </label>
-          <input
-            id="unlock-phone"
-            value={lead.phone}
-            onChange={(event) => update("phone", event.target.value)}
-            className="w-full border border-line bg-paper px-4 py-3 text-sm text-ink outline-none transition focus:border-[#2a5a4f]"
-            placeholder="Valgfrit"
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="unlock-message"
-            className="mb-2 block text-sm font-semibold text-ink"
-          >
-            Hvad vil virksomheden have afklaret først?
-          </label>
-          <textarea
-            id="unlock-message"
-            value={lead.message}
-            onChange={(event) => update("message", event.target.value)}
-            className="min-h-[120px] w-full border border-line bg-paper px-4 py-3 text-sm text-ink outline-none transition focus:border-[#2a5a4f]"
-            placeholder="Fx scope, governance, incident response eller konkrete leverandørmatch."
-          />
-        </div>
       </div>
 
       <button
@@ -178,7 +149,7 @@ export default function ReportUnlockForm({
         disabled={pending}
         className="mt-6 inline-flex bg-sage px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43] disabled:cursor-not-allowed disabled:bg-[#8a95a8]"
       >
-        {pending ? "Låser op..." : "Vis fuld rapport"}
+        {pending ? "Sender rapport..." : "Få rapporten tilsendt"}
       </button>
 
       {error ? <p className="mt-4 text-sm text-[#b64848]">{error}</p> : null}
