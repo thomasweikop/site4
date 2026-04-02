@@ -52,70 +52,78 @@ export const SCAN_QUESTIONS = [
   {
     id: "01",
     category: "Governance",
-    question: "Har I en formel ansvarlig for informationssikkerhed?",
+    question: "Har virksomheden en formel ansvarlig for informationssikkerhed?",
     weight: 1,
     recommendation: "Udpeg en tydelig ansvarlig med mandat til at drive informationssikkerhed.",
   },
   {
     id: "02",
     category: "Governance",
-    question: "Har I dokumenterede sikkerhedspolitikker for IT, adgang og data?",
+    question:
+      "Har virksomheden dokumenterede sikkerhedspolitikker for IT, adgang og data?",
     weight: 1,
     recommendation: "Saml og opdater de vigtigste politikker, så ansvar og minimumskrav er tydelige.",
   },
   {
     id: "03",
     category: "Risiko",
-    question: "Har I gennemført en risikovurdering inden for de sidste 12 måneder?",
+    question:
+      "Har virksomheden gennemført en risikovurdering inden for de sidste 12 måneder?",
     weight: 2,
     recommendation: "Lav en frisk risikovurdering med fokus på kritiske systemer, leverandører og drift.",
   },
   {
     id: "04",
     category: "Leverandører",
-    question: "Har I overblik over kritiske IT-leverandører og afhængigheder?",
+    question:
+      "Har virksomheden overblik over kritiske IT-leverandører og afhængigheder?",
     weight: 1,
     recommendation: "Kortlaeg kritiske leverandører og vurder hvor de udgør sikkerheds- eller driftsrisiko.",
   },
   {
     id: "05",
     category: "Incident response",
-    question: "Har I en plan for hvad I gør, hvis I bliver ramt af et angreb?",
+    question:
+      "Har virksomheden en plan for håndtering, hvis virksomheden bliver ramt af et angreb?",
     weight: 2,
     recommendation: "Etabler en incident response plan med roller, eskalering og kommunikationsflow.",
   },
   {
     id: "06",
     category: "Overvågning",
-    question: "Logger og overvåger I sikkerhedshændelser systematisk?",
+    question:
+      "Logger og overvåger virksomheden sikkerhedshændelser systematisk?",
     weight: 1,
     recommendation: "Skab bedre logging og overvågning, så hændelser bliver opdaget tidligere.",
   },
   {
     id: "07",
     category: "Adgang",
-    question: "Bruger I MFA på kritiske systemer og administrative konti?",
+    question:
+      "Bruger virksomheden MFA på kritiske systemer og administrative konti?",
     weight: 2,
     recommendation: "Udrul MFA konsekvent på administrative konti og andre kritiske systemer først.",
   },
   {
     id: "08",
     category: "Adgang",
-    question: "Har I styr på hvem der har adgang til hvad?",
+    question: "Har virksomheden styr på hvem der har adgang til hvad?",
     weight: 1,
     recommendation: "Gennemgå adgangsrettigheder og fjern unødvendige eller uafklarede privilegier.",
   },
   {
     id: "09",
     category: "Awareness",
-    question: "Træner I medarbejdere i phishing, adgangssikkerhed og grundlæggende cyberhygiejne?",
+    question:
+      "Træner virksomheden medarbejdere i phishing, adgangssikkerhed og grundlæggende cyberhygiejne?",
     weight: 1,
     recommendation: "Indfør regelmæssig awareness-træning og korte øvelser med tydeligt ansvar.",
   },
   {
     id: "10",
     category: "Test",
-    question: "Tester I jeres sikkerhed gennem audits, reviews eller penetrationstest?",
+    question:
+      "Tester virksomheden sikkerheden gennem audits, reviews eller penetrationstest?",
     weight: 1,
     recommendation: "Planlæg faste tests og reviews, så svagheder bliver fundet før de bliver udnyttet.",
   },
@@ -137,7 +145,7 @@ export const SCORE_BANDS = [
     className: "bg-[#dce8dc] text-sage border-[#b6cfb6]",
     barClassName: "bg-sage",
     summary:
-      "I ser forholdsvis godt dækket ud på tværs af de vigtigste områder, men bør stadig holde tempoet oppe på de resterende gaps.",
+      "Virksomheden ser forholdsvis godt dækket ud på tværs af de vigtigste områder, men bør stadig holde tempoet oppe på de resterende gaps.",
   },
   {
     id: "medium",
@@ -148,7 +156,7 @@ export const SCORE_BANDS = [
     className: "bg-[#f4ead2] text-[#6b4e1d] border-[#dfc58e]",
     barClassName: "bg-[#c78c2d]",
     summary:
-      "I har noget på plads, men der er tydelige svagheder som bør prioriteres, før presset fra kunder, drift eller regulering vokser.",
+      "Virksomheden har noget på plads, men der er tydelige svagheder som bør prioriteres, før presset fra kunder, drift eller regulering vokser.",
   },
   {
     id: "high",
