@@ -265,11 +265,21 @@ export type BlockerItem = {
   vendorTypes: VendorType[];
 };
 
+export type RoadmapPhase = {
+  phase: string;
+  title: string;
+  items: string[];
+};
+
 function getBand(percentage: number) {
   return (
     SCORE_BANDS.find((band) => percentage >= band.min) ??
     SCORE_BANDS[SCORE_BANDS.length - 1]
   );
+}
+
+function dedupeStrings(values: string[]) {
+  return Array.from(new Set(values.filter(Boolean)));
 }
 
 function getAnswerLabel(answer: ScanAnswerValue) {
@@ -560,6 +570,97 @@ function buildPartnerRationale(
   return `Anbefales fordi virksomhedens største behov lige nu ligger i ${focusText}, og fordi denne profil typisk passer til segmentet ${sizeLabel.toLowerCase()}.`;
 }
 
+function getUrgencyStatement(
+  percentage: number,
+  blockers: BlockerItem[],
+  weakestDimensions: DimensionScore[],
+) {
+  if (blockers.length > 0) {
+    return "Der er kritiske blockers i resultatet. Virksomheden bør begynde med de få kontroller der reducerer reel risiko hurtigst.";
+  }
+
+  if (percentage < 60) {
+    return `Virksomheden bør prioritere ${weakestDimensions
+      .map((dimension) => dimension.label.toLowerCase())
+      .join(" og ")} i første arbejdsspor.`;
+  }
+
+  return "Virksomheden har et brugbart fundament, men bør fortsat prioritere de laveste områder for at undgå at gaps sætter sig fast organisatorisk.";
+}
+
+function buildRoadmap(
+  gaps: GapItem[],
+  blockers: BlockerItem[],
+  partnerRecommendations: PartnerRecommendation[],
+  weakestDimensions: DimensionScore[],
+) {
+  const firstPartner = partnerRecommendations[0];
+  const secondPartner = partnerRecommendations[1];
+  const blockerText =
+    blockers.length > 0
+      ? dedupeStrings(
+          blockers.map(
+            (blocker) =>
+              `Afdæk og luk blocker: ${blocker.question.replace(/\?$/, "")}.`,
+          ),
+        )
+      : [];
+  const firstGapSteps = gaps
+    .slice(0, 2)
+    .map((gap) => gap.recommendation);
+  const laterGapSteps = gaps.slice(2).map((gap) => gap.recommendation);
+  const partnerLine = firstPartner
+    ? `Brug ${firstPartner.label.toLowerCase()} som første partnerdialog${
+        firstPartner.primaryVendor
+          ? `, fx ${firstPartner.primaryVendor.name}`
+          : ""
+      }, så arbejdet får tydeligt ejerskab.`
+    : "Brug den første partnerdialog til at validere scope, ansvar og rækkefølge.";
+  const assuranceLine = secondPartner
+    ? `Planlæg derefter et spor for ${secondPartner.label.toLowerCase()}${
+        secondPartner.primaryVendor
+          ? `, fx ${secondPartner.primaryVendor.name}`
+          : ""
+      }, så implementering og dokumentation følges ad.`
+    : "Planlæg derefter et spor for dokumentation, implementering og opfølgning.";
+
+  return [
+    {
+      phase: "0-30 dage",
+      title: "Stabiliser fundamentet",
+      items: dedupeStrings(
+        [
+          ...blockerText,
+          ...firstGapSteps,
+          `Skab ledelsesforankring omkring ${weakestDimensions
+            .map((dimension) => dimension.label.toLowerCase())
+            .join(" og ")}.`,
+        ].slice(0, 3),
+      ),
+    },
+    {
+      phase: "30-60 dage",
+      title: "Prioritér arbejdsspor",
+      items: dedupeStrings(
+        [
+          partnerLine,
+          ...laterGapSteps,
+          "Omsæt resultatet til et kort roadmap med ansvarlige, budget og afhængigheder.",
+        ].slice(0, 3),
+      ),
+    },
+    {
+      phase: "60-90 dage",
+      title: "Dokumentér og test",
+      items: dedupeStrings([
+        assuranceLine,
+        "Planlæg review, tabletop eller anden test af de vigtigste nye kontroller.",
+        "Saml dokumentation og status i en form der kan bruges over for ledelse, kunder og partnere.",
+      ]),
+    },
+  ] satisfies RoadmapPhase[];
+}
+
 function getPartnerRecommendations(
   dimensions: DimensionScore[],
   blockerIds: ScanQuestionId[],
@@ -785,6 +886,17 @@ export function calculateScanResult(
     .join(
       " og ",
     )}${blockers.length > 0 ? ", og der er samtidig kritiske blockers som bør håndteres først." : "."}`;
+  const urgencyStatement = getUrgencyStatement(
+    percentage,
+    blockers,
+    weakestDimensions,
+  );
+  const roadmap = buildRoadmap(
+    gaps,
+    blockers,
+    partnerRecommendations,
+    weakestDimensions,
+  );
 
   return {
     percentage,
@@ -801,9 +913,13 @@ export function calculateScanResult(
     weakestDimensions,
     partnerRecommendations,
     executiveSummary,
+    urgencyStatement,
     reportSections,
     vendorDirectoryCount: VENDOR_DIRECTORY.length,
     profileInsights,
     profileSummary,
+    roadmap,
   };
 }
+
+export type ScanResult = ReturnType<typeof calculateScanResult>;

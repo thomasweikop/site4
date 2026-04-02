@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import BrandWordmark from "@/components/BrandWordmark";
+import SiteFooter from "@/components/SiteFooter";
 import ScanExperience from "./ScanExperience";
 
 export const metadata: Metadata = {
@@ -41,6 +42,8 @@ export default function ScanPage() {
           <ScanExperience />
         </div>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }

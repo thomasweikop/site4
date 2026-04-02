@@ -1,14 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import Nis2LeadForm from "../Nis2LeadForm";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { useRouter } from "next/navigation";
 import {
-  ANSWER_OPTIONS,
+  clearScanDraft,
+  createReportSession,
+  loadScanDraft,
+  saveScanDraft,
+} from "@/lib/nis2Session";
+import {
   COMPANY_SIZE_OPTIONS,
   INDUSTRY_OPTIONS,
   ROLE_OPTIONS,
   SCAN_QUESTIONS,
-  calculateScanResult,
   type CompanySizeValue,
   type IndustryValue,
   type RoleValue,
@@ -26,16 +30,37 @@ type ProfileState = {
   role?: RoleValue;
 };
 
-export default function ScanExperience() {
-  const [profile, setProfile] = useState<ProfileState>({});
-  const [answers, setAnswers] = useState<ScanAnswers>({});
-  const [currentIndex, setCurrentIndex] = useState(-1);
+const NOOP_SUBSCRIBE = () => () => {};
+const EMPTY_PROFILE: ProfileState = {};
+const EMPTY_ANSWERS: ScanAnswers = {};
 
+export default function ScanExperience() {
+  const router = useRouter();
+  const clientReady = useSyncExternalStore(
+    NOOP_SUBSCRIBE,
+    () => true,
+    () => false,
+  );
+  const storedDraft = useSyncExternalStore(
+    NOOP_SUBSCRIBE,
+    loadScanDraft,
+    () => null,
+  );
+  const [profileState, setProfileState] = useState<ProfileState | null>(null);
+  const [answersState, setAnswersState] = useState<ScanAnswers | null>(null);
+  const [currentIndexState, setCurrentIndexState] = useState<number | null>(
+    null,
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const profile = profileState ?? storedDraft?.profile ?? EMPTY_PROFILE;
+  const answers = answersState ?? storedDraft?.answers ?? EMPTY_ANSWERS;
+  const currentIndex = currentIndexState ?? storedDraft?.currentIndex ?? -1;
+  const draftRestored = clientReady && Boolean(storedDraft);
   const profileComplete = Boolean(
     profile.companySize && profile.industry && profile.role,
   );
   const isProfileStep = currentIndex < 0;
-  const isShowingResults = currentIndex >= SCAN_QUESTIONS.length;
   const answeredCount = Object.keys(answers).length;
   const currentQuestion = isProfileStep
     ? null
@@ -44,28 +69,35 @@ export default function ScanExperience() {
     ? answers[currentQuestion.id]
     : undefined;
   const totalSteps = SCAN_QUESTIONS.length + 1;
-  const progress = isShowingResults
-    ? 100
-    : Math.max(
-        8,
-        Math.round(((Math.max(currentIndex, 0) + 1) / totalSteps) * 100),
-      );
-  const result =
-    answeredCount === SCAN_QUESTIONS.length && profileComplete
-      ? calculateScanResult(answers, {
-          companySize: profile.companySize!,
-          industry: profile.industry!,
-          role: profile.role!,
-        })
-      : null;
+  const progress = Math.max(
+    8,
+    Math.round(((Math.max(currentIndex, 0) + 1) / totalSteps) * 100),
+  );
+
+  useEffect(() => {
+    if (!clientReady || isSubmitting) {
+      return;
+    }
+
+    if (Object.keys(answers).length === 0 && Object.keys(profile).length === 0) {
+      clearScanDraft();
+      return;
+    }
+
+    saveScanDraft({
+      profile,
+      answers,
+      currentIndex,
+    });
+  }, [answers, clientReady, currentIndex, isSubmitting, profile]);
 
   function setAnswer(value: ScanAnswerValue) {
     if (!currentQuestion) {
       return;
     }
 
-    setAnswers((current) => ({
-      ...current,
+    setAnswersState((current) => ({
+      ...(current ?? answers),
       [currentQuestion.id]: value,
     }));
   }
@@ -74,8 +106,8 @@ export default function ScanExperience() {
     key: K,
     value: NonNullable<ProfileState[K]>,
   ) {
-    setProfile((current) => ({
-      ...current,
+    setProfileState((current) => ({
+      ...(current ?? profile),
       [key]: value,
     }));
   }
@@ -86,372 +118,58 @@ export default function ScanExperience() {
         return;
       }
 
-      setCurrentIndex(0);
+      setCurrentIndexState(0);
       return;
     }
 
-    if (!currentQuestion || !currentAnswer) {
+    if (!currentQuestion || !currentAnswer || !profileComplete) {
       return;
     }
 
     if (currentIndex === SCAN_QUESTIONS.length - 1) {
-      setCurrentIndex(SCAN_QUESTIONS.length);
+      setIsSubmitting(true);
+      const session = createReportSession({
+        profile: {
+          companySize: profile.companySize!,
+          industry: profile.industry!,
+          role: profile.role!,
+        },
+        answers,
+        source: "scan",
+      });
+
+      clearScanDraft();
+      router.push(`/result/${session.id}`);
       return;
     }
 
-    setCurrentIndex((index) => index + 1);
+    setCurrentIndexState((index) => Math.max(index ?? currentIndex, 0) + 1);
   }
 
   function goBack() {
-    if (isShowingResults) {
-      setCurrentIndex(SCAN_QUESTIONS.length - 1);
-      return;
-    }
-
     if (isProfileStep) {
       return;
     }
 
     if (currentIndex === 0) {
-      setCurrentIndex(-1);
+      setCurrentIndexState(-1);
       return;
     }
 
-    setCurrentIndex((index) => Math.max(0, index - 1));
+    setCurrentIndexState((index) => Math.max(0, (index ?? currentIndex) - 1));
   }
 
   function restart() {
-    setProfile({});
-    setAnswers({});
-    setCurrentIndex(-1);
+    setProfileState({});
+    setAnswersState({});
+    setCurrentIndexState(-1);
+    clearScanDraft();
   }
 
-  if (isShowingResults && result) {
-    const contextLines = [
-      ...result.profileSummary,
-      `Score: ${result.percentage}%`,
-      `Status: ${result.band.status}`,
-      `Risiko: ${result.band.risk}`,
-      ...result.reportSections,
-      ...result.blockers.map((blocker) => `Blocker: ${blocker.question}`),
-      ...result.partnerRecommendations.map(
-        (partner) =>
-          `Partnerprofil: ${partner.label} (${partner.directoryCount} match i kataloget)`,
-      ),
-      ...result.gaps.map((gap) => `Gap: ${gap.question} (${gap.answerLabel})`),
-    ];
-
+  if (!clientReady) {
     return (
-      <div className="grid gap-8 lg:grid-cols-[1fr_0.96fr]">
-        <div className="space-y-6">
-          <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-                  Virksomhedens resultat
-                </p>
-                <h2 className="mt-4 font-display text-4xl leading-none text-ink md:text-[3.35rem]">
-                  {result.percentage}% klar til NIS2
-                </h2>
-              </div>
-              <div
-                className={`border px-4 py-2 text-sm font-semibold ${result.band.className}`}
-              >
-                {result.band.status}
-              </div>
-            </div>
-
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-soft">
-              {result.riskSummary}
-            </p>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-soft">
-              {result.executiveSummary}
-            </p>
-
-            <div className="mt-6 h-2 overflow-hidden bg-[#dde5df]">
-              <div
-                className={`h-full rounded-full ${result.band.barClassName}`}
-                style={{ width: `${result.percentage}%` }}
-              />
-            </div>
-
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
-              <div className="border border-line bg-paper p-4">
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
-                  Ja
-                </p>
-                <p className="mt-2 text-3xl font-bold text-ink">
-                  {result.breakdown.yes}
-                </p>
-                <p className="mt-2 text-sm leading-6 text-soft">
-                  Områder der ser rimeligt dækket ud.
-                </p>
-              </div>
-              <div className="border border-line bg-paper p-4">
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
-                  Delvist
-                </p>
-                <p className="mt-2 text-3xl font-bold text-ink">
-                  {result.breakdown.partial}
-                </p>
-                <p className="mt-2 text-sm leading-6 text-soft">
-                  Områder hvor modenheden stadig er ujævn.
-                </p>
-              </div>
-              <div className="border border-line bg-paper p-4">
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
-                  Nej
-                </p>
-                <p className="mt-2 text-3xl font-bold text-ink">
-                  {result.breakdown.no}
-                </p>
-                <p className="mt-2 text-sm leading-6 text-soft">
-                  Klare gaps der bør ind i den første plan.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-8">
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-                Fire dimensioner
-              </p>
-              <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                {result.dimensions.map((dimension) => (
-                  <div
-                    key={dimension.key}
-                    className="border border-line bg-paper p-4"
-                  >
-                    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
-                      {dimension.label}
-                    </p>
-                    <p className="mt-3 text-3xl font-bold text-ink">
-                      {dimension.percentage}%
-                    </p>
-                    <p className="mt-2 text-sm font-semibold text-ink">
-                      {dimension.status}
-                    </p>
-                    <p className="mt-3 text-sm leading-6 text-soft">
-                      {dimension.summary}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {result.blockers.length > 0 ? (
-              <div className="mt-8">
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-                  Kritiske blockers
-                </p>
-                <div className="mt-4 grid gap-3">
-                  {result.blockers.map((blocker) => (
-                    <div
-                      key={blocker.id}
-                      className="border border-[#e0a291] bg-[#f8e5df] p-4"
-                    >
-                      <p className="text-sm font-semibold text-ink">
-                        {blocker.question}
-                      </p>
-                      <p className="mt-2 text-sm leading-6 text-soft">
-                        Denne blocker påvirker routing direkte og trækker
-                        anbefalingerne mod {blocker.vendorTypes.join(" / ")}.
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-          </div>
-
-          <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-              Profilkontekst
-            </p>
-            <div className="mt-5 grid gap-3">
-              {result.profileSummary.map((item) => (
-                <div
-                  key={item}
-                  className="border border-line bg-paper px-4 py-4 text-sm leading-6 text-soft"
-                >
-                  {item}
-                </div>
-              ))}
-              {result.profileInsights.map((item) => (
-                <div
-                  key={item}
-                  className="border border-line bg-white px-4 py-4 text-sm leading-6 text-soft"
-                >
-                  {item}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-                  Anbefalede partnerprofiler
-                </p>
-                <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-ink">
-                  Match baseret på score, dimensioner og gaps
-                </h3>
-              </div>
-              <div className="border border-line bg-paper px-4 py-2 text-sm font-medium text-soft">
-                {result.vendorDirectoryCount} profiler i kataloget
-              </div>
-            </div>
-
-            <div className="mt-6 grid gap-4">
-              {result.partnerRecommendations.map((partner) => {
-                return (
-                  <article
-                    key={partner.type}
-                    className="border border-line bg-paper p-5"
-                  >
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div>
-                        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
-                          {partner.label}
-                        </p>
-                        <h3 className="mt-3 text-lg font-semibold text-ink">
-                          {partner.primaryVendor?.name ?? partner.summary}
-                        </h3>
-                      </div>
-                      <div className="border border-line bg-white px-3 py-1 text-xs font-semibold text-soft">
-                        Fit score {partner.fitScore}
-                      </div>
-                    </div>
-
-                    <p className="mt-4 text-sm leading-6 text-soft">
-                      {partner.rationale}
-                    </p>
-
-                    <p className="mt-4 text-sm leading-6 text-soft">
-                      {partner.primaryVendor?.recommendedRole ??
-                        partner.summary}
-                    </p>
-
-                    {partner.primaryVendor?.website ? (
-                      <a
-                        href={partner.primaryVendor.website}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-4 inline-flex border border-line bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-[#f7f4ed]"
-                      >
-                        Besøg {partner.primaryVendor.name}
-                      </a>
-                    ) : null}
-
-                    <p className="mt-4 text-sm leading-6 text-soft">
-                      Alternative match i kataloget:{" "}
-                      {partner.sampleVendors
-                        .slice(1)
-                        .map((vendor) => vendor.name)
-                        .join(", ") ||
-                        `${partner.directoryCount - 1} andre profiler i denne kategori.`}
-                    </p>
-                  </article>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-              Største gaps
-            </p>
-            <div className="mt-6 grid gap-4">
-              {result.gaps.map((gap) => (
-                <article
-                  key={gap.id}
-                  className="border border-line bg-paper p-5"
-                >
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
-                        {gap.category}
-                      </p>
-                      <h3 className="mt-3 text-xl font-semibold text-ink">
-                        {gap.question}
-                      </h3>
-                    </div>
-                    <div className="rounded-full border border-line bg-white px-3 py-1 text-xs font-semibold text-soft">
-                      {gap.answerLabel}
-                    </div>
-                  </div>
-
-                  <p className="mt-4 text-sm leading-6 text-soft">
-                    {gap.recommendation}
-                  </p>
-                </article>
-              ))}
-            </div>
-          </div>
-
-          <div className="border border-line bg-sage p-6 text-white shadow-[var(--shadow)] md:p-8">
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#b9d0c2]">
-              Næste skridt
-            </p>
-            <div className="mt-6 grid gap-3">
-              {result.nextSteps.map((step) => (
-                <div
-                  key={step}
-                  className="border border-white/10 px-4 py-4 text-sm leading-6 text-white/80"
-                >
-                  {step}
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6 flex flex-wrap gap-3">
-              <a
-                href="#scan-help"
-                className="inline-flex bg-white px-6 py-3 text-sm font-semibold text-sage transition hover:bg-[#f1ece3]"
-              >
-                Få hjælp til at lukke gaps
-              </a>
-              <button
-                type="button"
-                onClick={restart}
-                className="inline-flex border border-white/14 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/8"
-              >
-                Tag scanen igen
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div id="scan-help" className="space-y-6">
-          <Nis2LeadForm
-            eyebrow="Efter resultatet"
-            title="Skal virksomheden have hjælp til at lukke de største gaps?"
-            description="Send resultatet videre sammen med virksomhedens kontaktoplysninger, så kan næste samtale tage udgangspunkt i de konkrete svagheder screeningen har peget på."
-            messageLabel="Hvad skal virksomheden have hjælp til først?"
-            messagePlaceholder="Fx incident response, MFA, risikovurdering eller et samlet roadmap for de næste 90 dage."
-            submitLabel="Bliv kontaktet om resultatet"
-            successMessage="Tak. Resultatet er modtaget, og der vendes hurtigt tilbage."
-            helperText="Vi tager udgangspunkt i score, profil og gaps, så næste samtale bliver mere konkret fra start."
-            sourceTag="NIS2 scan result lead"
-            contextLines={contextLines}
-          />
-
-          <div className="border border-line bg-white p-6 shadow-[var(--shadow)]">
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[#4c655d]">
-              Godt at vide
-            </p>
-            <div className="mt-4 grid gap-3">
-              <p className="text-sm leading-6 text-soft">
-                Scanen er et hurtigt modenhedsbillede og ikke en juridisk
-                afgørelse af om virksomheden er omfattet.
-              </p>
-              <p className="text-sm leading-6 text-soft">
-                Resultatet bliver mere nyttigt, når det læses sammen med
-                virksomhedens størrelse, branche og rolle.
-              </p>
-            </div>
-          </div>
-        </div>
+      <div className="mx-auto max-w-4xl border border-line bg-white p-6 shadow-[var(--shadow)]">
+        <p className="text-sm text-soft">Indlæser testen...</p>
       </div>
     );
   }
@@ -470,16 +188,21 @@ export default function ScanExperience() {
               {answeredCount} af {SCAN_QUESTIONS.length} spørgsmål er besvaret
             </p>
           </div>
-          {!isProfileStep && currentQuestion && currentQuestion.weight > 1 ? (
-            <div className="border border-[#d8ddd2] bg-[#f0f2ec] px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#50635c]">
-              Vægtes ekstra
-            </div>
-          ) : null}
+          <div className="flex flex-wrap items-center gap-2">
+            {draftRestored ? (
+              <span className="border border-line bg-paper px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#50635c]">
+                Kladde gendannet
+              </span>
+            ) : null}
+            <span className="border border-line bg-paper px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#50635c]">
+              Gemmes lokalt
+            </span>
+          </div>
         </div>
 
         <div className="mt-5 h-2 overflow-hidden bg-[#dde5df]">
           <div
-            className="h-full rounded-full bg-ember transition-all"
+            className="h-full bg-ember transition-all"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -494,8 +217,8 @@ export default function ScanExperience() {
                 Før virksomheden scores, skal der bruges lidt kontekst.
               </h2>
               <p className="mt-4 max-w-2xl text-base leading-7 text-soft">
-                Det gør resultatet mere brugbart, fordi anbefalinger og
-                fortolkning kan læses i lyset af virksomhedens segment.
+                Det gør rapporten mere brugbar, fordi anbefalinger og match kan
+                læses i lyset af virksomhedens segment.
               </p>
             </div>
 
@@ -582,14 +305,18 @@ export default function ScanExperience() {
             </div>
 
             <div className="mt-6 grid gap-2.5">
-              {ANSWER_OPTIONS.map((option) => {
+              {[
+                { value: "yes", label: "Ja" },
+                { value: "partial", label: "Delvist" },
+                { value: "no", label: "Nej" },
+              ].map((option) => {
                 const selected = currentAnswer === option.value;
 
                 return (
                   <button
                     key={option.value}
                     type="button"
-                    onClick={() => setAnswer(option.value)}
+                    onClick={() => setAnswer(option.value as ScanAnswerValue)}
                     className={classNames(
                       "border px-4 py-4 text-left transition",
                       selected
@@ -608,26 +335,42 @@ export default function ScanExperience() {
         )}
 
         <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-          <button
-            type="button"
-            onClick={goBack}
-            disabled={isProfileStep}
-            className="inline-flex border border-line bg-white px-6 py-3 text-sm font-semibold text-ink transition hover:bg-paper disabled:cursor-not-allowed disabled:opacity-45"
-          >
-            Forrige
-          </button>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={goBack}
+              disabled={isProfileStep || isSubmitting}
+              className="inline-flex border border-line bg-white px-6 py-3 text-sm font-semibold text-ink transition hover:bg-paper disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              Forrige
+            </button>
+
+            <button
+              type="button"
+              onClick={restart}
+              disabled={isSubmitting}
+              className="inline-flex border border-line bg-paper px-6 py-3 text-sm font-semibold text-soft transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              Start forfra
+            </button>
+          </div>
 
           <button
             type="button"
             onClick={goNext}
-            disabled={isProfileStep ? !profileComplete : !currentAnswer}
+            disabled={
+              isSubmitting ||
+              (isProfileStep ? !profileComplete : !currentAnswer)
+            }
             className="inline-flex bg-sage px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43] disabled:cursor-not-allowed disabled:bg-[#8a95a8]"
           >
-            {isProfileStep
-              ? "Start spørgsmålene"
-              : currentIndex === SCAN_QUESTIONS.length - 1
-                ? "Se mit resultat"
-                : "Næste spørgsmål"}
+            {isSubmitting
+              ? "Opretter rapport..."
+              : isProfileStep
+                ? "Start spørgsmål"
+                : currentIndex === SCAN_QUESTIONS.length - 1
+                  ? "Se rapport"
+                  : "Næste spørgsmål"}
           </button>
         </div>
       </div>

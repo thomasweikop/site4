@@ -8,6 +8,7 @@ import {
   WEIGHTED_TOPICS,
 } from "@/lib/nis2Scan";
 import BrandWordmark from "@/components/BrandWordmark";
+import SiteFooter from "@/components/SiteFooter";
 import Nis2LeadForm from "./Nis2LeadForm";
 
 const BENEFIT_POINTS = [
@@ -113,6 +114,15 @@ export default function Home() {
               <a href="#score" className="transition hover:text-white">
                 Score
               </a>
+              <Link href="/about-nis2" className="transition hover:text-white">
+                Om NIS2
+              </Link>
+              <Link
+                href="/for-partners"
+                className="transition hover:text-white"
+              >
+                For partnere
+              </Link>
               <a href="#kontakt" className="transition hover:text-white">
                 Kontakt
               </a>
@@ -396,6 +406,8 @@ export default function Home() {
           />
         </div>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }

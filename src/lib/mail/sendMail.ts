@@ -10,7 +10,7 @@ type SendMailArgs = {
 
 const REPLY_TO_EMAIL = "thomas.weikop@gmail.com";
 const REPLY_TO_NAME = "Thomas Weikop";
-const DEFAULT_FROM_NAME = "Weikop";
+const DEFAULT_FROM_NAME = "ComplyCheck";
 
 type SendMailResult = {
   sent: boolean;

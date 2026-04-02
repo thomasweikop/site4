@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     subject: `NIS2 kontakt fra ${name}`,
     text,
     html,
-    fromName: "Weikop NIS2",
+    fromName: "ComplyCheck",
     replyToEmail: email,
     replyToName: name,
   });
