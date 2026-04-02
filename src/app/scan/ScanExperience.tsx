@@ -328,7 +328,7 @@ export default function ScanExperience() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
+      <div className="border border-line bg-white p-5 shadow-[var(--shadow)] md:p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
@@ -347,7 +347,7 @@ export default function ScanExperience() {
           ) : null}
         </div>
 
-        <div className="mt-6 h-2 overflow-hidden bg-[#dde5df]">
+        <div className="mt-5 h-2 overflow-hidden bg-[#dde5df]">
           <div
             className="h-full rounded-full bg-ember transition-all"
             style={{ width: `${progress}%` }}
@@ -355,21 +355,21 @@ export default function ScanExperience() {
         </div>
 
         {isProfileStep ? (
-          <div className="mt-8 space-y-8">
+          <div className="mt-6 space-y-6">
             <div>
               <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[#4c655d]">
                 Profilér resultatet
               </p>
-              <h2 className="mt-4 max-w-3xl font-display text-4xl leading-none text-ink md:text-[3.15rem]">
+              <h2 className="mt-3 max-w-3xl font-display text-4xl leading-none text-ink md:text-[2.7rem]">
                 Før vi scorer jer, skal vi kende lidt kontekst.
               </h2>
-              <p className="mt-5 max-w-2xl text-lg leading-8 text-soft">
+              <p className="mt-4 max-w-2xl text-base leading-7 text-soft">
                 Det gør resultatet mere brugbart, fordi anbefalinger og
                 fortolkning kan læses i lyset af jeres segment.
               </p>
             </div>
 
-            <div className="grid gap-6">
+            <div className="grid gap-5">
               <div>
                 <p className="text-sm font-semibold text-ink">
                   Virksomhedsstørrelse
@@ -383,7 +383,7 @@ export default function ScanExperience() {
                         setProfileValue("companySize", option.value)
                       }
                       className={classNames(
-                        "border px-4 py-4 text-left text-sm font-semibold transition",
+                        "border px-4 py-3 text-left text-sm font-semibold transition",
                         profile.companySize === option.value
                           ? "border-[#2a5a4f] bg-[#eff3ec] text-ink"
                           : "border-line bg-paper text-soft hover:bg-white",
@@ -404,7 +404,7 @@ export default function ScanExperience() {
                       type="button"
                       onClick={() => setProfileValue("industry", option.value)}
                       className={classNames(
-                        "border px-4 py-4 text-left text-sm font-semibold transition",
+                        "border px-4 py-3 text-left text-sm font-semibold transition",
                         profile.industry === option.value
                           ? "border-[#2a5a4f] bg-[#eff3ec] text-ink"
                           : "border-line bg-paper text-soft hover:bg-white",
@@ -425,7 +425,7 @@ export default function ScanExperience() {
                       type="button"
                       onClick={() => setProfileValue("role", option.value)}
                       className={classNames(
-                        "border px-4 py-4 text-left text-sm font-semibold transition",
+                        "border px-4 py-3 text-left text-sm font-semibold transition",
                         profile.role === option.value
                           ? "border-[#2a5a4f] bg-[#eff3ec] text-ink"
                           : "border-line bg-paper text-soft hover:bg-white",
@@ -440,16 +440,16 @@ export default function ScanExperience() {
           </div>
         ) : (
           <>
-            <div className="mt-8">
+            <div className="mt-6">
               <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[#4c655d]">
                 {currentQuestion?.category}
               </p>
-              <h2 className="mt-4 max-w-3xl font-display text-4xl leading-none text-ink md:text-[3.15rem]">
+              <h2 className="mt-3 max-w-3xl font-display text-4xl leading-none text-ink md:text-[2.7rem]">
                 {currentQuestion?.question}
               </h2>
             </div>
 
-            <div className="mt-8 grid gap-3">
+            <div className="mt-6 grid gap-2.5">
               {ANSWER_OPTIONS.map((option) => {
                 const selected = currentAnswer === option.value;
 
@@ -459,22 +459,14 @@ export default function ScanExperience() {
                     type="button"
                     onClick={() => setAnswer(option.value)}
                     className={classNames(
-                      "border p-5 text-left transition",
+                      "border px-4 py-4 text-left transition",
                       selected
                         ? "border-[#2a5a4f] bg-[#eff3ec]"
                         : "border-line bg-paper hover:bg-white",
                     )}
                   >
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <p className="text-lg font-extrabold tracking-[-0.02em] text-ink">
-                        {option.label}
-                      </p>
-                      <div className="border border-line bg-white px-3 py-1 text-xs font-semibold text-soft">
-                        {option.pointsLabel}
-                      </div>
-                    </div>
-                    <p className="mt-3 text-sm leading-6 text-soft">
-                      {option.description}
+                    <p className="text-base font-semibold tracking-[-0.02em] text-ink">
+                      {option.label}
                     </p>
                   </button>
                 );
@@ -483,7 +475,7 @@ export default function ScanExperience() {
           </>
         )}
 
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
           <button
             type="button"
             onClick={goBack}

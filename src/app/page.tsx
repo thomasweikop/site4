@@ -143,13 +143,20 @@ export default function Home() {
               <div className="mt-10 flex flex-wrap gap-4">
                 <Link
                   href="/scan"
-                  className="inline-flex bg-white px-7 py-4 text-sm font-semibold text-sage transition hover:bg-[#f2eee6]"
+                  className="inline-flex items-center gap-2 bg-white px-7 py-4 text-sm font-semibold text-[#073832] transition hover:bg-[#f2eee6]"
                 >
+                  <svg
+                    viewBox="0 0 16 16"
+                    aria-hidden="true"
+                    className="h-4 w-4 fill-current"
+                  >
+                    <path d="M4 2.75v10.5L12.5 8 4 2.75Z" />
+                  </svg>
                   Start screening
                 </Link>
                 <a
                   href="#hvordan"
-                  className="inline-flex border border-white/16 px-7 py-4 text-sm font-semibold text-white transition hover:bg-white/8"
+                  className="inline-flex border border-[#18473f] bg-[#0d2d28] px-7 py-4 text-sm font-semibold text-white transition hover:bg-[#123b35]"
                 >
                   Læs hvordan det virker
                 </a>
