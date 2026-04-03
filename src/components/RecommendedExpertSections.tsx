@@ -160,13 +160,25 @@ export default function RecommendedExpertSections({
 
                   <div>
                     <p className="text-sm font-semibold text-ink">Specialer</p>
-                    <ul className="mt-2 grid gap-2 text-sm leading-6 text-soft">
+                    <ul className="mt-2 space-y-1 text-sm leading-6 text-soft">
                       {item.vendor.specialtyHighlights.map((line) => (
-                        <li key={`${item.vendor.name}-${line}`}>• {line}</li>
+                        <li
+                          key={`${item.vendor.name}-${line}`}
+                          className="grid grid-cols-[auto_1fr] items-start gap-x-2"
+                        >
+                          <span aria-hidden="true">•</span>
+                          <span>{line}</span>
+                        </li>
                       ))}
                       {specialties.length > 0 ? (
-                        <li key={`${item.vendor.name}-match`}>
-                          • Match i denne analyse: {specialties.join(", ")}
+                        <li
+                          key={`${item.vendor.name}-match`}
+                          className="grid grid-cols-[auto_1fr] items-start gap-x-2"
+                        >
+                          <span aria-hidden="true">•</span>
+                          <span>
+                            Match i denne analyse: {specialties.join(", ")}
+                          </span>
                         </li>
                       ) : null}
                     </ul>
