@@ -170,6 +170,12 @@ export default function Home() {
                 >
                   Læs hvordan det virker
                 </a>
+                <Link
+                  href="/scan?random=1"
+                  className="inline-flex items-center border border-white/18 bg-transparent px-7 py-4 text-sm font-semibold text-white/82 transition hover:bg-white/6 hover:text-white"
+                >
+                  Test tilfældigt resultat
+                </Link>
               </div>
 
               <div className="mt-12 flex flex-wrap gap-6 text-sm text-white/66">

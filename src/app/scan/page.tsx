@@ -10,7 +10,15 @@ export const metadata: Metadata = {
     "Svar på 10 spørgsmål og få en vægtet NIS2-score med de største gaps og næste anbefalede skridt.",
 };
 
-export default function ScanPage() {
+type ScanPageProps = {
+  searchParams: Promise<{ random?: string | string[] | undefined }>;
+};
+
+export default async function ScanPage({ searchParams }: ScanPageProps) {
+  const params = await searchParams;
+  const startWithRandomTest =
+    (Array.isArray(params.random) ? params.random[0] : params.random) === "1";
+
   return (
     <main className="bg-page text-ink">
       <section className="border-b border-line bg-paper">
@@ -39,7 +47,7 @@ export default function ScanPage() {
 
       <section className="px-6 py-8 md:px-8 md:py-10 lg:px-10">
         <div className="mx-auto max-w-5xl">
-          <ScanExperience />
+          <ScanExperience startWithRandomTest={startWithRandomTest} />
         </div>
       </section>
 

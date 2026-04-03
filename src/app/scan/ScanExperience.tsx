@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import {
   clearScanDraft,
@@ -31,6 +31,10 @@ type ProfileState = {
   role?: RoleValue;
 };
 
+type ScanExperienceProps = {
+  startWithRandomTest?: boolean;
+};
+
 const NOOP_SUBSCRIBE = () => () => {};
 const EMPTY_PROFILE: ProfileState = {};
 const EMPTY_ANSWERS: ScanAnswers = {};
@@ -40,8 +44,32 @@ function pickRandomValue<T>(values: readonly T[]) {
   return values[Math.floor(Math.random() * values.length)];
 }
 
-export default function ScanExperience() {
+function createRandomTestInput() {
+  const profile = {
+    companySize: pickRandomValue(COMPANY_SIZE_OPTIONS).value,
+    industry: pickRandomValue(INDUSTRY_OPTIONS).value,
+    role: pickRandomValue(ROLE_OPTIONS).value,
+  } satisfies {
+    companySize: CompanySizeValue;
+    industry: IndustryValue;
+    role: RoleValue;
+  };
+
+  const answers = Object.fromEntries(
+    SCAN_QUESTIONS.map((question) => [
+      question.id,
+      pickRandomValue(RANDOM_ANSWER_VALUES),
+    ]),
+  ) as ScanAnswers;
+
+  return { profile, answers };
+}
+
+export default function ScanExperience({
+  startWithRandomTest = false,
+}: ScanExperienceProps) {
   const router = useRouter();
+  const autoStartHandledRef = useRef(false);
   const clientReady = useSyncExternalStore(
     NOOP_SUBSCRIBE,
     () => true,
@@ -97,6 +125,30 @@ export default function ScanExperience() {
       currentIndex,
     });
   }, [answers, clientReady, currentIndex, isSubmitting, profile]);
+
+  useEffect(() => {
+    if (
+      !clientReady ||
+      !startWithRandomTest ||
+      isSubmitting ||
+      autoStartHandledRef.current
+    ) {
+      return;
+    }
+
+    autoStartHandledRef.current = true;
+
+    const { profile: randomProfile, answers: randomAnswers } =
+      createRandomTestInput();
+    const session = createReportSession({
+      profile: randomProfile,
+      answers: randomAnswers,
+      source: "random-test",
+    });
+
+    clearScanDraft();
+    router.push(`/result/${session.id}`);
+  }, [clientReady, isSubmitting, router, startWithRandomTest]);
 
   function setAnswer(value: ScanAnswerValue) {
     if (!currentQuestion) {
@@ -173,43 +225,14 @@ export default function ScanExperience() {
     clearScanDraft();
   }
 
-  function runRandomTest() {
-    const randomProfile = {
-      companySize: pickRandomValue(COMPANY_SIZE_OPTIONS).value,
-      industry: pickRandomValue(INDUSTRY_OPTIONS).value,
-      role: pickRandomValue(ROLE_OPTIONS).value,
-    } satisfies {
-      companySize: CompanySizeValue;
-      industry: IndustryValue;
-      role: RoleValue;
-    };
-
-    const randomAnswers = Object.fromEntries(
-      SCAN_QUESTIONS.map((question) => [
-        question.id,
-        pickRandomValue(RANDOM_ANSWER_VALUES),
-      ]),
-    ) as ScanAnswers;
-
-    setIsSubmitting(true);
-    setProfileState(randomProfile);
-    setAnswersState(randomAnswers);
-    setCurrentIndexState(SCAN_QUESTIONS.length - 1);
-
-    const session = createReportSession({
-      profile: randomProfile,
-      answers: randomAnswers,
-      source: "random-test",
-    });
-
-    clearScanDraft();
-    router.push(`/result/${session.id}`);
-  }
-
-  if (!clientReady) {
+  if (!clientReady || startWithRandomTest) {
     return (
       <div className="mx-auto max-w-4xl border border-line bg-white p-6 shadow-[var(--shadow)]">
-        <p className="text-sm text-soft">Indlæser testen...</p>
+        <p className="text-sm text-soft">
+          {startWithRandomTest
+            ? "Genererer et testresultat..."
+            : "Indlæser testen..."}
+        </p>
       </div>
     );
   }
@@ -229,14 +252,6 @@ export default function ScanExperience() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={runRandomTest}
-              disabled={isSubmitting}
-              className="inline-flex border border-dashed border-[#bfc8c0] bg-white px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#50635c] transition hover:bg-paper disabled:cursor-not-allowed disabled:opacity-45"
-            >
-              Test med tilfældige svar
-            </button>
             {draftRestored ? (
               <span className="border border-line bg-paper px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#50635c]">
                 Kladde gendannet
