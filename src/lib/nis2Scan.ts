@@ -271,6 +271,114 @@ export type RoadmapPhase = {
   items: string[];
 };
 
+export type PriorityArea = {
+  key: string;
+  label: string;
+  summary: string;
+  vendorTypes: VendorType[];
+  followUpQuestions: string[];
+};
+
+const BLOCKER_AREA_META: Record<
+  string,
+  Omit<PriorityArea, "key">
+> = {
+  "03": {
+    label: "Risikovurdering",
+    summary:
+      "Virksomheden mangler et opdateret grundlag for at vurdere hvilke trusler, afhængigheder og forretningskritiske scenarier der bør styre indsatsen.",
+    vendorTypes: ["legal", "grc"],
+    followUpQuestions: [
+      "Hvornår blev virksomhedens seneste samlede risikovurdering gennemført?",
+      "Hvilke systemer, processer og leverandører er vurderet som mest kritiske for driften?",
+      "Hvilken metode bruges i dag til at prioritere sandsynlighed og konsekvens?",
+      "Hvordan bliver ledelsen informeret om de største sikkerheds- og driftsrisici?",
+      "Er der et opdateret risikoregister med tydelige ejere og næste handlinger?",
+    ],
+  },
+  "05": {
+    label: "Incident response",
+    summary:
+      "Virksomheden bør skabe mere klarhed over roller, eskalering og praktisk håndtering hvis et angreb eller et større driftsbrud rammer.",
+    vendorTypes: ["technical", "soc"],
+    followUpQuestions: [
+      "Hvem ejer incident response i virksomheden, hvis en alvorlig hændelse opstår?",
+      "Hvordan eskaleres en sikkerhedshændelse i dag, både teknisk og ledelsesmæssigt?",
+      "Er der aftalt eksterne kontaktpunkter til fx SOC, juridiske rådgivere eller kommunikation?",
+      "Hvornår blev beredskabet sidst testet gennem tabletop, øvelse eller reel hændelse?",
+      "Hvilke hændelser skal udløse rapportering til kunder, myndigheder eller ledelse?",
+    ],
+  },
+  "07": {
+    label: "MFA og adgang",
+    summary:
+      "Virksomheden bør afklare om de mest kritiske konti, administratoradgange og forretningssystemer er tilstrækkeligt beskyttet.",
+    vendorTypes: ["technical", "soc"],
+    followUpQuestions: [
+      "Hvilke kritiske systemer og administrative konti er endnu ikke dækket af MFA?",
+      "Hvordan håndteres onboarding, ændring og lukning af brugeradgange i dag?",
+      "Er der særskilte krav til privilegerede konti, eksterne konsulenter og leverandører?",
+      "Bliver adgangsrettigheder gennemgået fast, og hvem godkender ændringer?",
+      "Hvordan opdager virksomheden misbrug eller afvigelser i adgangsmønstre?",
+    ],
+  },
+};
+
+const DIMENSION_AREA_META: Record<DimensionKey, Omit<PriorityArea, "key">> = {
+  governance: {
+    label: "Governance og ansvar",
+    summary:
+      "Der er behov for mere klarhed omkring ansvar, ledelsesforankring, politikker og styringsmodel.",
+    vendorTypes: ["legal", "grc"],
+    followUpQuestions: [
+      "Hvem har det formelle ejerskab for informationssikkerhed på ledelsesniveau?",
+      "Hvilke politikker og minimumskrav er allerede besluttet og dokumenteret?",
+      "Hvordan bliver sikkerhed prioriteret i forhold til andre drifts- og udviklingsopgaver?",
+      "Hvilke emner efterspørger bestyrelse eller direktion allerede status på i dag?",
+      "Hvor er der størst uklarhed om ansvar mellem ledelse, IT, drift og forretning?",
+    ],
+  },
+  technical: {
+    label: "Tekniske kontroller",
+    summary:
+      "Virksomheden har behov for mere indsigt i beskyttelse, adgangsstyring, logging og teknisk hardening.",
+    vendorTypes: ["technical", "soc"],
+    followUpQuestions: [
+      "Hvilke tekniske sikkerhedskontroller er implementeret konsekvent på tværs af de vigtigste systemer?",
+      "Hvor mangler virksomheden stadig overblik over assets, konti eller integrationspunkter?",
+      "Hvilke logkilder og alarmer er reelt overvåget i dag?",
+      "Hvordan opdages og håndteres afvigelser i adgang, privilegier og systemændringer?",
+      "Er der tekniske områder hvor driftshensyn har udskudt nødvendige sikkerhedstiltag?",
+    ],
+  },
+  operational: {
+    label: "Beredskab og drift",
+    summary:
+      "Virksomheden bør få mere indsigt i hvordan sikkerhed, hændelser og kontinuitet faktisk håndteres i den daglige drift.",
+    vendorTypes: ["soc", "technical", "grc"],
+    followUpQuestions: [
+      "Hvordan reagerer virksomheden i praksis på mistænkelige hændelser eller driftsforstyrrelser?",
+      "Hvem træffer beslutninger under pres, hvis systemer eller leverandører fejler?",
+      "Hvordan bliver medarbejdere trænet i at opdage phishing, misbrug og sikkerhedsbrud?",
+      "Er der afhængigheder i drift eller beredskab som kun få personer har indsigt i?",
+      "Hvor hurtigt kan virksomheden genetablere kritiske processer efter et sikkerhedsrelateret nedbrud?",
+    ],
+  },
+  compliance: {
+    label: "Dokumentation og leverandørstyring",
+    summary:
+      "Virksomheden har behov for mere indsigt i dokumentation, leverandørkrav, assurance og regulatorisk readiness.",
+    vendorTypes: ["audit", "grc", "legal"],
+    followUpQuestions: [
+      "Hvordan dokumenterer virksomheden i dag at kontroller faktisk er etableret og bruges?",
+      "Hvilke sikkerhedskrav stilles til kritiske leverandører og outsourcing-partnere?",
+      "Er der allerede kundekrav, audits eller assurance-spor som virksomheden skal kunne svare på?",
+      "Hvem vedligeholder dokumentation, kontrolejere og revisionsspor internt?",
+      "Hvor er der størst usikkerhed om hvad der skal kunne bevises over for kunder eller myndigheder?",
+    ],
+  },
+};
+
 function getBand(percentage: number) {
   return (
     SCORE_BANDS.find((band) => percentage >= band.min) ??
@@ -661,6 +769,92 @@ function buildRoadmap(
   ] satisfies RoadmapPhase[];
 }
 
+function buildPriorityAreas(
+  blockers: BlockerItem[],
+  dimensions: DimensionScore[],
+) {
+  const areas: PriorityArea[] = [];
+  const sortedDimensions = [...dimensions].sort(
+    (left, right) => left.percentage - right.percentage,
+  );
+
+  for (const blocker of blockers) {
+    const meta = BLOCKER_AREA_META[blocker.id];
+
+    if (!meta || areas.some((area) => area.key === blocker.id)) {
+      continue;
+    }
+
+    areas.push({
+      key: blocker.id,
+      ...meta,
+    });
+  }
+
+  for (const dimension of sortedDimensions) {
+    const meta = DIMENSION_AREA_META[dimension.key];
+
+    if (
+      areas.some((area) => area.label === meta.label) ||
+      areas.some((area) =>
+        area.vendorTypes.every((type) => meta.vendorTypes.includes(type)),
+      )
+    ) {
+      continue;
+    }
+
+    areas.push({
+      key: dimension.key,
+      ...meta,
+    });
+  }
+
+  return areas.slice(0, 3);
+}
+
+function buildSpecialistMatrixVendors(
+  partnerRecommendations: PartnerRecommendation[],
+  priorityAreas: PriorityArea[],
+  profile?: ScanProfile,
+) {
+  const sizeFit = profile
+    ? getCompanySizeSegment(profile.companySize)
+    : "mid-market";
+  const relevantTypes = new Set(priorityAreas.flatMap((area) => area.vendorTypes));
+  const picked = new Map<string, VendorDirectoryEntry>();
+
+  for (const partner of partnerRecommendations) {
+    for (const vendor of partner.sampleVendors) {
+      picked.set(vendor.name, vendor);
+    }
+
+    if (partner.primaryVendor) {
+      picked.set(partner.primaryVendor.name, partner.primaryVendor);
+    }
+  }
+
+  const supplemental = VENDOR_DIRECTORY.filter(
+    (vendor) =>
+      (relevantTypes.has(vendor.type) ||
+        vendor.secondaryTypes.some((type) => relevantTypes.has(type))) &&
+      vendor.sizeFit.includes(sizeFit),
+  )
+    .sort((left, right) => {
+      if (right.score !== left.score) {
+        return right.score - left.score;
+      }
+
+      return left.rankInType - right.rankInType;
+    })
+    .slice(0, 12);
+
+  for (const vendor of supplemental) {
+    picked.set(vendor.name, vendor);
+  }
+
+  return Array.from(picked.values()).slice(0, 12);
+}
+
 function getPartnerRecommendations(
   dimensions: DimensionScore[],
   blockerIds: ScanQuestionId[],
@@ -897,6 +1091,12 @@ export function calculateScanResult(
     partnerRecommendations,
     weakestDimensions,
   );
+  const priorityAreas = buildPriorityAreas(blockers, dimensions);
+  const specialistMatrixVendors = buildSpecialistMatrixVendors(
+    partnerRecommendations,
+    priorityAreas,
+    profile,
+  );
 
   return {
     percentage,
@@ -919,6 +1119,8 @@ export function calculateScanResult(
     profileInsights,
     profileSummary,
     roadmap,
+    priorityAreas,
+    specialistMatrixVendors,
   };
 }
 

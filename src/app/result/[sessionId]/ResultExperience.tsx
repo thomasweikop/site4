@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
+import type { VendorDirectoryEntry } from "@/lib/nis2BuildPack";
+import type { PriorityArea } from "@/lib/nis2Scan";
 import ReportUnlockForm from "@/components/ReportUnlockForm";
 import {
   getSessionReport,
@@ -16,7 +18,21 @@ type ResultExperienceProps = {
   sessionId: string;
 };
 
+type ResultStep =
+  | null
+  | "summary"
+  | "specialist-overview"
+  | "specialist-recommended"
+  | "questions";
+
 const NOOP_SUBSCRIBE = () => () => {};
+
+function vendorCoversArea(vendor: VendorDirectoryEntry, area: PriorityArea) {
+  return (
+    area.vendorTypes.includes(vendor.type) ||
+    vendor.secondaryTypes.some((type) => area.vendorTypes.includes(type))
+  );
+}
 
 export default function ResultExperience({
   sessionId,
@@ -37,7 +53,7 @@ export default function ResultExperience({
     ) ?? null;
   const [sessionOverride, setSessionOverride] =
     useState<StoredReportSession | null>(null);
-  const [step, setStep] = useState<"sent" | "partners" | null>(null);
+  const [step, setStep] = useState<ResultStep>(null);
   const session = sessionOverride ?? storedSession;
 
   if (!clientReady) {
@@ -82,21 +98,14 @@ export default function ResultExperience({
 
   const result = getSessionReport(session);
   const unlocked = Boolean(session.unlockedAt);
-  const activeStep = step ?? (unlocked ? "partners" : null);
-  const teaserLines = [
-    `Samlet score: ${result.percentage}% (${result.band.status})`,
-    ...result.profileSummary,
-    ...result.weakestDimensions.map(
-      (dimension) => `${dimension.label}: ${dimension.percentage}%`,
-    ),
-  ];
+  const activeStep = step ?? (unlocked ? "summary" : null);
 
   function handleUnlocked(lead: UnlockLead) {
     const updated = markReportUnlocked(sessionId, lead);
 
     if (updated) {
       setSessionOverride(updated);
-      setStep("sent");
+      setStep("summary");
     }
   }
 
@@ -110,12 +119,12 @@ export default function ResultExperience({
                 Rapporten er klar
               </p>
               <h1 className="mt-4 text-balance font-display text-4xl leading-none text-ink md:text-[3.15rem]">
-                Før rapporten vises, sendes den til virksomheden på mail
+                Før rapporten sendes, registreres virksomhed, navn og email
               </h1>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-soft md:text-base">
-                Først registreres virksomhedsnavn, navn og email. Derefter
-                sendes rapporten til mail, og virksomheden kan fortsætte til en
-                prioriteret liste af konsulentvirksomheder.
+                Når oplysningerne er indtastet, sendes rapporten til mail.
+                Derefter kan virksomheden fortsætte til specialist-overblik og
+                spørgsmål til de ansvarlige i virksomheden.
               </p>
 
               <div className="mt-6 grid gap-4 md:grid-cols-3">
@@ -137,36 +146,25 @@ export default function ResultExperience({
                 </div>
                 <div className="border border-line bg-paper p-4">
                   <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
-                    Partnermatch
+                    Fokusområder
                   </p>
                   <p className="mt-2 text-lg font-semibold text-ink">
-                    {result.partnerRecommendations.length} anbefalinger
+                    {result.priorityAreas.length}
                   </p>
                 </div>
-              </div>
-
-              <div className="mt-6 grid gap-3">
-                {teaserLines.map((line) => (
-                  <p
-                    key={line}
-                    className="border border-line bg-paper px-4 py-4 text-sm leading-6 text-soft"
-                  >
-                    {line}
-                  </p>
-                ))}
               </div>
             </div>
 
             <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
               <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-                Dette ligger i rapporten
+                Det virksomheden får bagefter
               </p>
               <div className="mt-5 grid gap-3">
                 {[
-                  "4 dimensioner: governance, technical, operational og compliance.",
-                  "Kritiske blockers og de områder der bør håndteres først.",
-                  "30 / 60 / 90 dages prioriteret handlingsplan.",
-                  "En prioriteret konsulentliste baseret på virksomhedens konkrete behov.",
+                  "Et kort billede af hvor der fortsat er huller i virksomhedens NIS2 compliance.",
+                  "Et specialist-overblik med leverandører og områder de typisk er stærke i.",
+                  "En prioriteret liste af anbefalede eksperter.",
+                  "Fem konkrete spørgsmål til hvert område der kræver mere indsigt.",
                 ].map((item) => (
                   <div
                     key={item}
@@ -187,182 +185,302 @@ export default function ResultExperience({
         </section>
       ) : null}
 
-      {activeStep === "sent" ? (
-        <section className="mx-auto max-w-4xl border border-line bg-white p-8 shadow-[var(--shadow)] md:p-10">
-          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-            Rapport sendt
-          </p>
-          <h1 className="mt-4 text-balance font-display text-4xl leading-none text-ink md:text-[3.15rem]">
-            Rapporten sendes til dig på mail
-          </h1>
-          <p className="mt-5 max-w-3xl text-base leading-7 text-soft">
-            Ønsker du at se en prioriteret liste af konsulentvirksomheder, der
-            kan hjælpe med at løse opgaver for virksomheden? Konsulenterne er
-            prioriteret efter de behov testen har peget på.
-          </p>
+      {activeStep === "summary" ? (
+        <section className="space-y-6">
+          <div className="border border-[#b6cfb6] bg-[#edf4ed] px-5 py-4 text-sm text-[#235b41] shadow-[var(--shadow)]">
+            Rapporten sendes til dig på mail.
+          </div>
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={() => setStep("partners")}
-              className="inline-flex bg-sage px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43]"
-            >
-              Fortsæt
-            </button>
-            <Link
-              href="/scan"
-              className="inline-flex border border-line bg-paper px-6 py-3 text-sm font-semibold text-ink transition hover:bg-white"
-            >
-              Tag testen igen
-            </Link>
+          <div className="border border-line bg-white p-8 shadow-[var(--shadow)] md:p-10">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
+              Næste skridt
+            </p>
+            <h1 className="mt-4 max-w-4xl text-balance font-display text-4xl leading-none text-ink md:text-[3.15rem]">
+              Ud fra dine besvarelser virker det til, at der fortsat er huller i
+              virksomhedens NIS2 compliance
+            </h1>
+            <p className="mt-5 text-base leading-7 text-soft">
+              {result.urgencyStatement}
+            </p>
+
+            <div className="mt-8">
+              <p className="text-sm font-semibold text-ink">Vigtigste områder</p>
+              <div className="mt-4 grid gap-3">
+                {result.priorityAreas.map((area) => (
+                  <div
+                    key={area.key}
+                    className="border border-line bg-paper px-4 py-4 text-sm leading-6 text-soft"
+                  >
+                    <span className="font-semibold text-ink">{area.label}</span>
+                    <span className="text-soft">: {area.summary}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-8 grid gap-4 lg:grid-cols-2">
+              <article className="border border-line bg-paper p-5">
+                <h2 className="text-xl font-semibold text-ink">
+                  Få overblik over specialister der kan hjælpe med at sikre fuld
+                  compliance
+                </h2>
+                <p className="mt-3 text-sm leading-6 text-soft">
+                  Start med et overblik over specialister og områder de typisk er
+                  stærke i.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setStep("specialist-overview")}
+                  className="mt-5 inline-flex bg-sage px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43]"
+                >
+                  Fortsæt
+                </button>
+              </article>
+
+              <article className="border border-line bg-paper p-5">
+                <h2 className="text-xl font-semibold text-ink">
+                  Spørgsmål til de ansvarlige i virksomheden
+                </h2>
+                <p className="mt-3 text-sm leading-6 text-soft">
+                  Brug de næste spørgsmål til at få mere indsigt i de områder der
+                  kræver afklaring før næste beslutning.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setStep("questions")}
+                  className="mt-5 inline-flex bg-sage px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43]"
+                >
+                  Fortsæt
+                </button>
+              </article>
+            </div>
           </div>
         </section>
       ) : null}
 
-      {activeStep === "partners" ? (
+      {activeStep === "specialist-overview" ? (
         <section className="space-y-6">
-          <div className="border border-[#b6cfb6] bg-[#edf4ed] px-5 py-4 text-sm text-[#235b41] shadow-[var(--shadow)]">
-            Rapporten er sendt til mail. Herunder vises den prioriterede liste
-            af konsulentvirksomheder baseret på virksomhedens behov.
-          </div>
+          <div className="border border-line bg-white p-8 shadow-[var(--shadow)] md:p-10">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
+              Specialist-overblik
+            </p>
+            <h1 className="mt-4 text-balance font-display text-4xl leading-none text-ink md:text-[3.15rem]">
+              Specialister og de områder de typisk er gode til
+            </h1>
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-soft md:text-base">
+              Tabellen viser et første overblik. Prikken markerer de områder hvor
+              leverandøren typisk har kapabiliteter der matcher virksomhedens
+              behov.
+            </p>
 
-          <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-            <div className="space-y-6">
-              <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-                  Resume
-                </p>
-                <h2 className="mt-4 text-balance font-display text-4xl leading-none text-ink md:text-[3rem]">
-                  Virksomhedens prioriterede match
-                </h2>
-                <p className="mt-4 text-base leading-7 text-soft">
-                  {result.executiveSummary}
-                </p>
-                <p className="mt-4 text-sm leading-6 text-soft">
-                  {result.urgencyStatement}
-                </p>
-
-                <div className="mt-6 grid gap-3">
-                  {teaserLines.map((line) => (
-                    <div
-                      key={line}
-                      className="border border-line bg-paper px-4 py-4 text-sm leading-6 text-soft"
-                    >
-                      {line}
-                    </div>
+            <div className="mt-8 overflow-x-auto border border-line">
+              <table className="min-w-full border-collapse bg-white text-sm">
+                <thead className="bg-paper">
+                  <tr>
+                    <th className="border-b border-line px-4 py-3 text-left font-semibold text-ink">
+                      Leverandør
+                    </th>
+                    {result.priorityAreas.map((area) => (
+                      <th
+                        key={area.key}
+                        className="border-b border-line px-4 py-3 text-center font-semibold text-ink"
+                      >
+                        {area.label}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {result.specialistMatrixVendors.map((vendor) => (
+                    <tr key={vendor.name} className="border-b border-line last:border-b-0">
+                      <td className="px-4 py-3 text-ink">
+                        <div className="font-semibold">{vendor.name}</div>
+                        <div className="mt-1 text-xs text-soft">
+                          {vendor.type} / {vendor.priceBand}
+                        </div>
+                      </td>
+                      {result.priorityAreas.map((area) => (
+                        <td
+                          key={`${vendor.name}-${area.key}`}
+                          className="px-4 py-3 text-center"
+                        >
+                          {vendorCoversArea(vendor, area) ? (
+                            <span className="inline-flex h-3 w-3 rounded-full bg-sage" />
+                          ) : (
+                            <span className="inline-flex h-3 w-3 rounded-full bg-[#d8ddd2]" />
+                          )}
+                        </td>
+                      ))}
+                    </tr>
                   ))}
-                </div>
-              </div>
-
-              <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-                  Første anbefalede fokus
-                </p>
-                <div className="mt-5 grid gap-3">
-                  {result.nextSteps.map((stepItem) => (
-                    <div
-                      key={stepItem}
-                      className="border border-line bg-paper px-4 py-4 text-sm leading-6 text-soft"
-                    >
-                      {stepItem}
-                    </div>
-                  ))}
-                </div>
-              </div>
+                </tbody>
+              </table>
             </div>
 
-            <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-                    Prioriteret konsulentliste
-                  </p>
-                  <h2 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-ink">
-                    Konsulentvirksomheder der matcher virksomhedens behov
-                  </h2>
-                </div>
-                <span className="border border-line bg-paper px-4 py-2 text-sm text-soft">
-                  {result.partnerRecommendations.length} viste match
-                </span>
-              </div>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => setStep("specialist-recommended")}
+                className="inline-flex bg-sage px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43]"
+              >
+                Anbefalede eksperter
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep("summary")}
+                className="inline-flex border border-line bg-paper px-6 py-3 text-sm font-semibold text-ink transition hover:bg-white"
+              >
+                Tilbage
+              </button>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
-              <div className="mt-6 grid gap-4">
-                {result.partnerRecommendations.map((partner, index) => (
-                  <article
-                    key={partner.type}
-                    className="border border-line bg-paper p-5"
-                  >
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div>
-                        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
-                          Prioritet {index + 1}
-                        </p>
-                        <h3 className="mt-2 text-xl font-semibold text-ink">
-                          {partner.primaryVendor?.name ?? partner.label}
-                        </h3>
-                        <p className="mt-2 text-sm font-medium text-soft">
-                          {partner.label}
-                        </p>
-                      </div>
-                      <span className="border border-line bg-white px-3 py-1 text-xs font-semibold text-soft">
-                        Fit score {partner.fitScore}
-                      </span>
+      {activeStep === "specialist-recommended" ? (
+        <section className="space-y-6">
+          <div className="border border-line bg-white p-8 shadow-[var(--shadow)] md:p-10">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
+              Anbefalede eksperter
+            </p>
+            <h1 className="mt-4 text-balance font-display text-4xl leading-none text-ink md:text-[3.15rem]">
+              Prioriterede eksperter baseret på virksomhedens behov
+            </h1>
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-soft md:text-base">
+              Her vises de eksperter der ligger stærkest i forhold til de huller
+              testen har peget på.
+            </p>
+
+            <div className="mt-8 grid gap-4">
+              {result.partnerRecommendations.map((partner, index) => (
+                <article
+                  key={partner.type}
+                  className="border border-line bg-paper p-5"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
+                        Prioritet {index + 1}
+                      </p>
+                      <h2 className="mt-2 text-xl font-semibold text-ink">
+                        {partner.primaryVendor?.name ?? partner.label}
+                      </h2>
+                      <p className="mt-2 text-sm text-soft">{partner.label}</p>
                     </div>
+                    <span className="border border-line bg-white px-3 py-1 text-xs font-semibold text-soft">
+                      Fit score {partner.fitScore}
+                    </span>
+                  </div>
 
-                    <p className="mt-4 text-sm leading-6 text-soft">
-                      {partner.rationale}
-                    </p>
+                  <p className="mt-4 text-sm leading-6 text-soft">
+                    {partner.rationale}
+                  </p>
 
-                    {partner.primaryVendor ? (
-                      <div className="mt-4 grid gap-2 text-sm leading-6 text-soft">
-                        <p>
-                          <span className="font-semibold text-ink">Best for:</span>{" "}
-                          {partner.primaryVendor.bestFor}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-ink">Rolle:</span>{" "}
-                          {partner.primaryVendor.recommendedRole}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-ink">
-                            Alternative profiler:
-                          </span>{" "}
-                          {partner.sampleVendors
-                            .slice(1)
-                            .map((vendor) => vendor.name)
-                            .join(", ") || "Ingen ekstra vist"}
-                        </p>
-                      </div>
-                    ) : null}
+                  {partner.primaryVendor ? (
+                    <div className="mt-4 grid gap-2 text-sm leading-6 text-soft">
+                      <p>
+                        <span className="font-semibold text-ink">Best for:</span>{" "}
+                        {partner.primaryVendor.bestFor}
+                      </p>
+                      <p>
+                        <span className="font-semibold text-ink">Rolle:</span>{" "}
+                        {partner.primaryVendor.recommendedRole}
+                      </p>
+                    </div>
+                  ) : null}
 
-                    {partner.primaryVendor?.website ? (
-                      <a
-                        href={partner.primaryVendor.website}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-4 inline-flex border border-line bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-[#f7f4ed]"
+                  {partner.primaryVendor?.website ? (
+                    <a
+                      href={partner.primaryVendor.website}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-4 inline-flex border border-line bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-[#f7f4ed]"
+                    >
+                      Besøg {partner.primaryVendor.name}
+                    </a>
+                  ) : null}
+                </article>
+              ))}
+            </div>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => setStep("specialist-overview")}
+                className="inline-flex border border-line bg-paper px-6 py-3 text-sm font-semibold text-ink transition hover:bg-white"
+              >
+                Tilbage til overblik
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep("summary")}
+                className="inline-flex border border-line bg-white px-6 py-3 text-sm font-semibold text-soft transition hover:bg-paper"
+              >
+                Tilbage til start
+              </button>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {activeStep === "questions" ? (
+        <section className="space-y-6">
+          <div className="border border-line bg-white p-8 shadow-[var(--shadow)] md:p-10">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
+              Spørgsmål til de ansvarlige
+            </p>
+            <h1 className="mt-4 text-balance font-display text-4xl leading-none text-ink md:text-[3.15rem]">
+              Konkrete spørgsmål der giver mere indsigt i de vigtigste områder
+            </h1>
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-soft md:text-base">
+              Brug spørgsmålene her i ledelse, IT eller sikkerhedsgruppen for at
+              få et skarpere billede før næste prioritering.
+            </p>
+
+            <div className="mt-8 grid gap-4">
+              {result.priorityAreas.map((area) => (
+                <article
+                  key={area.key}
+                  className="border border-line bg-paper p-5"
+                >
+                  <h2 className="text-2xl font-semibold tracking-[-0.03em] text-ink">
+                    {area.label}
+                  </h2>
+                  <p className="mt-3 text-sm leading-6 text-soft">
+                    {area.summary}
+                  </p>
+                  <ol className="mt-5 grid gap-3">
+                    {area.followUpQuestions.map((question, index) => (
+                      <li
+                        key={question}
+                        className="border border-line bg-white px-4 py-4 text-sm leading-6 text-soft"
                       >
-                        Besøg {partner.primaryVendor.name}
-                      </a>
-                    ) : null}
-                  </article>
-                ))}
-              </div>
+                        <span className="font-semibold text-ink">
+                          {index + 1}.
+                        </span>{" "}
+                        {question}
+                      </li>
+                    ))}
+                  </ol>
+                </article>
+              ))}
+            </div>
 
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Link
-                  href="/for-partners"
-                  className="inline-flex border border-line bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:bg-[#f7f4ed]"
-                >
-                  Se partner-modellen
-                </Link>
-                <Link
-                  href="/scan"
-                  className="inline-flex border border-line bg-paper px-5 py-3 text-sm font-semibold text-soft transition hover:bg-white"
-                >
-                  Tag testen igen
-                </Link>
-              </div>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => setStep("summary")}
+                className="inline-flex border border-line bg-paper px-6 py-3 text-sm font-semibold text-ink transition hover:bg-white"
+              >
+                Tilbage
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep("specialist-overview")}
+                className="inline-flex bg-sage px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43]"
+              >
+                Se specialister
+              </button>
             </div>
           </div>
         </section>
