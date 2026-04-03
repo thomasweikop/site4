@@ -142,7 +142,7 @@ export default function ResultExperience({
   return (
     <div className="space-y-6">
       {!unlocked ? (
-        <section className="grid gap-6 lg:grid-cols-[1.02fr_0.98fr]">
+        <section className="mx-auto max-w-4xl space-y-6">
           <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
             <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
               Anbefalingerne er klar
@@ -160,49 +160,13 @@ export default function ResultExperience({
               på egne besvarelser. Resultatet kan bruges til at prioritere de
               første dialoger, initiativer og specialistspor.
             </p>
-
-            <div className="mt-6 grid gap-3">
-              {result.topAnalysisAreas.map((area) => (
-                <article
-                  key={area.key}
-                  className="border border-line bg-paper px-4 py-4"
-                >
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <p className="font-semibold text-ink">{area.label}</p>
-                      <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[#4c655d]">
-                        {area.complianceLabel} · {area.percentage}%
-                      </p>
-                    </div>
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-soft">
-                    {area.description}
-                  </p>
-                </article>
-              ))}
-            </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-                Modtag resultatet på email
-              </p>
-              <h2 className="mt-4 text-3xl font-semibold tracking-[-0.03em] text-ink">
-                Indtast kontaktinformationer
-              </h2>
-              <p className="mt-4 text-sm leading-7 text-soft md:text-base">
-                Virksomhedens analyse og de næste anbefalede skridt sendes til
-                email, før det fulde resultat åbnes.
-              </p>
-            </div>
-
-            <ReportUnlockForm
-              sessionId={sessionId}
-              result={result}
-              onUnlocked={handleUnlocked}
-            />
-          </div>
+          <ReportUnlockForm
+            sessionId={sessionId}
+            result={result}
+            onUnlocked={handleUnlocked}
+          />
         </section>
       ) : null}
 

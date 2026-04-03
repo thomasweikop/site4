@@ -92,10 +92,7 @@ export default function ReportUnlockForm({
       onSubmit={onSubmit}
       className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8"
     >
-      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-        Modtag resultatet på email
-      </p>
-      <h2 className="mt-4 text-balance text-3xl font-semibold tracking-[-0.03em] text-ink">
+      <h2 className="text-balance font-display text-[2rem] leading-none text-ink md:text-[2.35rem]">
         Indtast kontaktinformationer
       </h2>
       <p className="mt-4 text-sm leading-6 text-soft">
