@@ -3,6 +3,7 @@ import { sendMail } from "@/lib/mail/sendMail";
 
 type ContactBody = {
   name?: string;
+  title?: string;
   email?: string;
   message?: string;
 };
@@ -23,6 +24,7 @@ function escapeHtml(value: string) {
 export async function POST(request: Request) {
   const body = (await request.json()) as ContactBody;
   const name = (body.name ?? "").trim();
+  const title = (body.title ?? "").trim();
   const email = (body.email ?? "").trim().toLowerCase();
   const message = (body.message ?? "").trim();
 
@@ -38,12 +40,14 @@ export async function POST(request: Request) {
   }
 
   const safeName = escapeHtml(name);
+  const safeTitle = escapeHtml(title || "Ikke angivet");
   const safeEmail = escapeHtml(email);
   const safeMessage = escapeHtml(message).replace(/\n/g, "<br />");
-  const text = `Ny besked fra NIS2 kontaktformular\n\nNavn: ${name}\nEmail: ${email}\n\nBesked:\n${message}`;
+  const text = `Ny besked fra NIS2 kontaktformular\n\nNavn: ${name}\nTitel: ${title || "Ikke angivet"}\nEmail: ${email}\n\nBesked:\n${message}`;
   const html = `
     <p>Ny besked fra NIS2 kontaktformular</p>
     <p><strong>Navn:</strong> ${safeName}</p>
+    <p><strong>Titel:</strong> ${safeTitle}</p>
     <p><strong>Email:</strong> ${safeEmail}</p>
     <p><strong>Besked:</strong></p>
     <p>${safeMessage}</p>

@@ -5,6 +5,7 @@ import { useState } from "react";
 type FormState = {
   company: string;
   name: string;
+  title: string;
   email: string;
   phone: string;
   message: string;
@@ -26,6 +27,7 @@ type Nis2LeadFormProps = {
 const EMPTY_FORM: FormState = {
   company: "",
   name: "",
+  title: "",
   email: "",
   phone: "",
   message: "",
@@ -65,6 +67,7 @@ export default function Nis2LeadForm({
       ...(extraContext.length > 0 ? ["Kontekst:", ...extraContext, ""] : []),
       `Virksomhed: ${form.company || "Ikke angivet"}`,
       `Navn: ${form.name || "Ikke angivet"}`,
+      `Titel: ${form.title || "Ikke angivet"}`,
       `Email: ${form.email || "Ikke angivet"}`,
       `Telefon: ${form.phone || "Ikke angivet"}`,
       "",
@@ -77,6 +80,7 @@ export default function Nis2LeadForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name,
+          title: form.title,
           email: form.email,
           message,
         }),
@@ -165,6 +169,24 @@ export default function Nis2LeadForm({
             required
             className="w-full border border-line bg-paper px-5 py-4 text-base text-ink outline-none transition focus:border-[#2a5a4f]"
             placeholder="Navn på kontaktperson"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="title"
+            className="mb-2 block text-sm font-semibold text-ink"
+          >
+            Titel
+          </label>
+          <input
+            id="title"
+            name="title"
+            autoComplete="organization-title"
+            value={form.title}
+            onChange={(event) => update("title", event.target.value)}
+            className="w-full border border-line bg-paper px-5 py-4 text-base text-ink outline-none transition focus:border-[#2a5a4f]"
+            placeholder="Fx IT-chef"
           />
         </div>
 

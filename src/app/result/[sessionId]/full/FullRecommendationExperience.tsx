@@ -75,13 +75,13 @@ export default function FullRecommendationExperience({
     <div className="space-y-6">
       <section className="border border-line bg-white p-8 shadow-[var(--shadow)] md:p-10">
         <h1 className="mt-4 max-w-5xl text-balance font-display text-4xl leading-none text-ink md:text-[3.2rem]">
-          Find NIS2 specialist
+          Vælg næste action
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-7 text-soft md:text-base">
           Vælg næste skridt baseret på de vigtigste områder i analysen af{" "}
           {company}.
         </p>
-        <div className="mt-8 grid gap-6 lg:grid-cols-2">
+        <div className="mt-8 grid gap-6">
           <article className="border border-line bg-paper p-6">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#4c655d]">
               1 Find de rette rådgivere

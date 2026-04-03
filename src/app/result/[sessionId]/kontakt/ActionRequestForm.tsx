@@ -6,6 +6,7 @@ type ActionRequestFormProps = {
   sessionId: string;
   initialCompany?: string;
   initialName?: string;
+  initialTitle?: string;
   initialEmail?: string;
   areas: string[];
 };
@@ -13,6 +14,7 @@ type ActionRequestFormProps = {
 type FormState = {
   company: string;
   name: string;
+  title: string;
   email: string;
   phone: string;
   consent: boolean;
@@ -22,12 +24,14 @@ export default function ActionRequestForm({
   sessionId,
   initialCompany = "",
   initialName = "",
+  initialTitle = "",
   initialEmail = "",
   areas,
 }: ActionRequestFormProps) {
   const [form, setForm] = useState<FormState>({
     company: initialCompany,
     name: initialName,
+    title: initialTitle,
     email: initialEmail,
     phone: "",
     consent: true,
@@ -54,6 +58,7 @@ export default function ActionRequestForm({
           sessionId,
           company: form.company,
           name: form.name,
+          title: form.title,
           email: form.email,
           phone: form.phone,
           consent: form.consent,
@@ -109,6 +114,22 @@ export default function ActionRequestForm({
             value={form.name}
             onChange={(event) => update("name", event.target.value)}
             className="w-full border border-line bg-paper px-5 py-4 text-base text-ink outline-none transition focus:border-[#2a5a4f]"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="action-title"
+            className="mb-2 block text-sm font-semibold text-ink"
+          >
+            Titel
+          </label>
+          <input
+            id="action-title"
+            value={form.title}
+            onChange={(event) => update("title", event.target.value)}
+            className="w-full border border-line bg-paper px-5 py-4 text-base text-ink outline-none transition focus:border-[#2a5a4f]"
+            autoComplete="organization-title"
           />
         </div>
 

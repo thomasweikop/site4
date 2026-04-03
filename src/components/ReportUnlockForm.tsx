@@ -17,6 +17,7 @@ type ReportUnlockFormProps = {
 const EMPTY_LEAD: UnlockLead = {
   company: "",
   name: "",
+  title: "",
   email: "",
   phone: "",
   message: "",
@@ -132,6 +133,23 @@ export default function ReportUnlockForm({
             onChange={(event) => update("name", event.target.value)}
             className="w-full border border-line bg-paper px-4 py-3 text-sm text-ink outline-none transition focus:border-[#2a5a4f]"
             placeholder="Kontaktperson"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="unlock-title"
+            className="mb-2 block text-sm font-semibold text-ink"
+          >
+            Titel
+          </label>
+          <input
+            id="unlock-title"
+            value={lead.title ?? ""}
+            onChange={(event) => update("title", event.target.value)}
+            className="w-full border border-line bg-paper px-4 py-3 text-sm text-ink outline-none transition focus:border-[#2a5a4f]"
+            placeholder="Fx IT-chef eller CISO"
+            autoComplete="organization-title"
           />
         </div>
 

@@ -10,6 +10,7 @@ type UnlockBody = {
   sessionId?: string;
   company?: string;
   name?: string;
+  title?: string;
   email?: string;
   phone?: string;
   message?: string;
@@ -60,6 +61,7 @@ export async function POST(request: Request) {
   const sessionId = (body.sessionId ?? "").trim();
   const company = (body.company ?? "").trim();
   const name = (body.name ?? "").trim();
+  const title = (body.title ?? "").trim();
   const email = (body.email ?? "").trim().toLowerCase();
   const phone = (body.phone ?? "").trim();
   const message = (body.message ?? "").trim();
@@ -89,6 +91,7 @@ export async function POST(request: Request) {
 
   const safeCompany = escapeHtml(company || "Ikke angivet");
   const safeName = escapeHtml(name);
+  const safeTitle = escapeHtml(title || "Ikke angivet");
   const safeEmail = escapeHtml(email);
   const safePhone = escapeHtml(phone || "Ikke angivet");
   const safeMessage = escapeHtml(message || "Ingen ekstra besked.").replace(
@@ -102,6 +105,7 @@ export async function POST(request: Request) {
     `Session: ${sessionId}`,
     `Virksomhed: ${company}`,
     `Navn: ${name}`,
+    `Titel: ${title || "Ikke angivet"}`,
     `Email: ${email}`,
     `Telefon: ${phone || "Ikke angivet"}`,
     `Score: ${body.score ?? "Ukendt"}%`,
@@ -128,6 +132,7 @@ export async function POST(request: Request) {
     <p><strong>Session:</strong> ${escapeHtml(sessionId)}</p>
     <p><strong>Virksomhed:</strong> ${safeCompany}</p>
     <p><strong>Navn:</strong> ${safeName}</p>
+    <p><strong>Titel:</strong> ${safeTitle}</p>
     <p><strong>Email:</strong> ${safeEmail}</p>
     <p><strong>Telefon:</strong> ${safePhone}</p>
     <p><strong>Score:</strong> ${body.score ?? "Ukendt"}%</p>
@@ -247,6 +252,7 @@ export async function POST(request: Request) {
   await markDbReportUnlocked(sessionId, {
     company,
     name,
+    title,
     email,
     phone,
     message,

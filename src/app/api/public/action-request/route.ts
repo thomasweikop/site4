@@ -4,6 +4,7 @@ import { sendMail } from "@/lib/mail/sendMail";
 type ActionRequestBody = {
   company?: string;
   name?: string;
+  title?: string;
   email?: string;
   phone?: string;
   consent?: boolean;
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
   const body = (await request.json()) as ActionRequestBody;
   const company = (body.company ?? "").trim();
   const name = (body.name ?? "").trim();
+  const title = (body.title ?? "").trim();
   const email = (body.email ?? "").trim().toLowerCase();
   const phone = (body.phone ?? "").trim();
   const sessionId = (body.sessionId ?? "").trim();
@@ -57,6 +59,7 @@ export async function POST(request: Request) {
     "",
     `Virksomhed: ${company}`,
     `Navn: ${name}`,
+    `Titel: ${title || "Ikke angivet"}`,
     `Email: ${email}`,
     `Telefon: ${phone || "Ikke angivet"}`,
     `Session: ${sessionId || "Ikke angivet"}`,
@@ -72,6 +75,7 @@ export async function POST(request: Request) {
     <p>Ny henvendelse fra målrettede initiativer</p>
     <p><strong>Virksomhed:</strong> ${escapeHtml(company)}</p>
     <p><strong>Navn:</strong> ${escapeHtml(name)}</p>
+    <p><strong>Titel:</strong> ${escapeHtml(title || "Ikke angivet")}</p>
     <p><strong>Email:</strong> ${escapeHtml(email)}</p>
     <p><strong>Telefon:</strong> ${escapeHtml(phone || "Ikke angivet")}</p>
     <p><strong>Session:</strong> ${escapeHtml(sessionId || "Ikke angivet")}</p>

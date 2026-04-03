@@ -17,6 +17,7 @@ export type ScanDraft = {
 export type UnlockLead = {
   company: string;
   name: string;
+  title?: string;
   email: string;
   phone: string;
   message: string;

@@ -8,6 +8,7 @@ import {
   buildReportSnapshot,
   encodeReportSnapshot,
 } from "@/lib/reportLinks";
+import RecommendedExpertSections from "@/components/RecommendedExpertSections";
 import ReportUnlockForm from "@/components/ReportUnlockForm";
 import {
   getSessionReport,
@@ -228,6 +229,20 @@ export default function ResultExperience({
                   ))}
                 </div>
               </div>
+            </div>
+
+            <div className="mt-10 space-y-4">
+              <div>
+                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
+                  Anbefaling på specialister
+                </p>
+                <p className="mt-4 max-w-4xl text-sm leading-7 text-soft md:text-base">
+                  Nedenfor vises de specialister der matcher de vigtigste områder
+                  i den initielle analyse. Dermed kan virksomheden gå direkte
+                  videre til en konkret markedsdialog uden ekstra klik.
+                </p>
+              </div>
+              <RecommendedExpertSections result={result} />
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">

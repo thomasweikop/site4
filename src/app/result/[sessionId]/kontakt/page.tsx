@@ -52,6 +52,7 @@ export default async function ActionRequestPage({
             sessionId={sessionId}
             initialCompany={initialSession?.unlockLead?.company}
             initialName={initialSession?.unlockLead?.name}
+            initialTitle={initialSession?.unlockLead?.title}
             initialEmail={initialSession?.unlockLead?.email}
             areas={areas}
           />
