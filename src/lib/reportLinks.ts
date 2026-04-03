@@ -187,6 +187,10 @@ export function buildFollowupQuestionsPath(sessionId: string) {
   return `/sporgsmal-til-ansvarlige/${sessionId}`;
 }
 
+export function buildActionRequestPath(sessionId: string) {
+  return `/result/${sessionId}/kontakt`;
+}
+
 export function buildSessionSpecialistsUrl(sessionId: string) {
   return `${getSiteUrl()}${buildSessionSpecialistsPath(sessionId)}`;
 }
@@ -197,4 +201,8 @@ export function buildRecommendedExpertsUrl(sessionId: string) {
 
 export function buildFollowupQuestionsUrl(sessionId: string) {
   return `${getSiteUrl()}${buildFollowupQuestionsPath(sessionId)}`;
+}
+
+export function buildActionRequestUrl(sessionId: string) {
+  return `${getSiteUrl()}${buildActionRequestPath(sessionId)}`;
 }

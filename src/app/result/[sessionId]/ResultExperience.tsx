@@ -249,7 +249,7 @@ export default function ResultExperience({
                 href={fullRecommendationHref}
                 className="inline-flex bg-sage px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
               >
-                Fortsæt
+                Fortsæt til actions
               </Link>
             </div>
           </div>

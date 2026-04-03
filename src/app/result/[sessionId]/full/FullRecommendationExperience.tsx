@@ -1,13 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import type { ReportSnapshot } from "@/lib/reportLinks";
 import type { StoredReportSession } from "@/lib/nis2Session";
 import { useStoredReportSession } from "@/lib/useStoredReportSession";
 import {
+  buildActionRequestPath,
   buildRecommendedExpertsPath,
-  buildSessionSpecialistsPath,
 } from "@/lib/reportLinks";
 
 type FullRecommendationExperienceProps = {
@@ -38,8 +37,8 @@ export default function FullRecommendationExperience({
     result?.topAnalysisAreas ?? snapshot?.topAnalysisAreas ?? [];
   const company =
     session?.unlockLead?.company?.trim() || snapshot?.company || "Virksomheden";
-  const specialistsHref = buildSessionSpecialistsPath(sessionId);
   const recommendedExpertsHref = buildRecommendedExpertsPath(sessionId);
+  const actionRequestHref = buildActionRequestPath(sessionId);
 
   if (!result && !snapshot) {
     return (
@@ -79,51 +78,65 @@ export default function FullRecommendationExperience({
           Find NIS2 specialist
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-7 text-soft md:text-base">
-          Generer en liste med specialister baseret på de vigtigste områder i
-          analysen af {company}.
+          Vælg næste skridt baseret på de vigtigste områder i analysen af{" "}
+          {company}.
         </p>
-        <div className="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="mt-8 grid gap-6 lg:grid-cols-2">
           <article className="border border-line bg-paper p-6">
-            <p className="text-sm font-semibold text-ink">
-              Lav en liste med specialister indenfor:
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#4c655d]">
+              1 Find de rette rådgivere
             </p>
-            <ul className="mt-5 grid gap-3 text-sm leading-7 text-soft md:text-base">
-              {areas.map((area) => (
-                <li key={area.label}>• {area.label}</li>
-              ))}
-            </ul>
+            <p className="mt-4 text-sm leading-7 text-soft md:text-base">
+              Vi har screenet det danske marked for rådgivere og specialister med
+              fokus på NIS2-relaterede kompetencer. Ud fra virksomhedens
+              vigtigste fokusområder kan listen bruges som en hurtig shortlist,
+              før virksomheden vælger hvem der skal kontaktes først. Det giver et
+              mere fokuseret udgangspunkt for næste dialog.
+            </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-6">
+              <p className="text-sm font-semibold text-ink">
+                Vis en liste med specialister indenfor:
+              </p>
+              <ul className="mt-4 grid gap-2 text-sm leading-7 text-soft md:text-base">
+                {areas.map((area) => (
+                  <li key={area.label}>• {area.label}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="mt-8">
               <Link
                 href={recommendedExpertsHref}
                 className="inline-flex bg-sage px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
               >
-                Generer liste
-              </Link>
-              <Link
-                href={specialistsHref}
-                className="inline-flex border border-line bg-paper px-6 py-3 text-sm font-semibold text-ink transition hover:bg-white"
-              >
-                Specialist liste
+                Vis rådgivere
               </Link>
             </div>
           </article>
 
-          <article className="border border-line bg-white p-5 shadow-[var(--shadow)] md:p-6">
-            <div className="overflow-hidden border border-line bg-paper">
-              <Image
-                src="/nis2-specialist-matrix-preview.jpg"
-                alt="Preview af specialistarket med leverandører og NIS2-områder"
-                width={1800}
-                height={2200}
-                className="h-auto w-full"
-                priority
-              />
-            </div>
-            <p className="mt-3 text-xs leading-5 text-soft">
-              Preview af specialistarket. Leverandørnavne og områder er vist i
-              komprimeret form for at give et samlet overblik.
+          <article className="border border-line bg-paper p-6">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#4c655d]">
+              2 Målrettede initiativer
             </p>
+            <p className="mt-4 text-sm leading-7 text-soft md:text-base">
+              Målrettede initiativer kræver mere information om virksomheden end
+              den indledende screening kan give alene. ComplyCheck kan hjælpe med
+              at skabe et bedre overblik over gaps, den konkrete prioritering og
+              hvilke rådgivere der er bedst egnet til at løfte næste skridt.
+              Det gør det lettere at omsætte analysen til en realistisk
+              actionliste og et mere konkret beslutningsgrundlag for
+              virksomheden.
+            </p>
+
+            <div className="mt-8">
+              <Link
+                href={actionRequestHref}
+                className="inline-flex bg-sage px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
+              >
+                Send mail
+              </Link>
+            </div>
           </article>
         </div>
       </section>
