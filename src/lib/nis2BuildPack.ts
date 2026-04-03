@@ -141,6 +141,8 @@ export type VendorDirectoryEntry = {
   matrixAreas: Record<MatrixAreaKey, boolean>;
   capabilityAreaKeys: MatrixAreaKey[];
   capabilityAreaLabels: string[];
+  granularAreaLabels: string[];
+  specialtyHighlights: string[];
   blockerCoverage: {
     riskAssessment: boolean;
     incidentResponse: boolean;
@@ -384,6 +386,34 @@ function buildMatrixAreas(row: RawVendorRow): Record<MatrixAreaKey, boolean> {
   };
 }
 
+function formatSectorFit(value: string) {
+  return value.replace(/;\s*/g, ", ");
+}
+
+function buildSpecialtyHighlights(input: {
+  bestFor: string;
+  bestMatchAreas: string[];
+  granularAreaLabels: string[];
+  sectorFit: string;
+}) {
+  const lines = [
+    input.bestFor,
+    input.bestMatchAreas.length > 0
+      ? `Primære fokusområder: ${input.bestMatchAreas.join(", ")}`
+      : "",
+    input.granularAreaLabels.length > 0
+      ? `Typiske kompetencer: ${input.granularAreaLabels
+          .slice(0, 4)
+          .join(", ")}`
+      : "",
+    input.sectorFit
+      ? `Markedsfokus: ${formatSectorFit(input.sectorFit)}`
+      : "",
+  ].filter(Boolean);
+
+  return Array.from(new Set(lines));
+}
+
 export const FOLLOWUP_QUESTIONS = Object.fromEntries(
   Object.entries(buildSpec.followups).map(([dimension, questions]) => [
     normalizeDimensionKey(dimension),
@@ -471,6 +501,12 @@ export const VENDOR_DIRECTORY: VendorDirectoryEntry[] = vendorMatrix.map(
     const capabilityAreaKeys = MATRIX_COLUMNS.filter(
       (column) => matrixAreas[column.key],
     ).map((column) => column.key);
+    const granularAreaLabels = GRANULAR_AREA_COLUMNS.filter(
+      (column) => matrixAreas[column.key],
+    ).map((column) => column.label);
+    const bestFor = row.Best_for.trim();
+    const sectorFit = row.Sector_fit.trim();
+    const bestMatchAreas = parseList(row.Best_match_areas);
 
     return {
       rankInType: Number(row.Rank_in_type || 999),
@@ -479,15 +515,15 @@ export const VENDOR_DIRECTORY: VendorDirectoryEntry[] = vendorMatrix.map(
       secondaryTypes: parseVendorTypes(row.Secondary_types),
       adjacentTypes: parseVendorTypes(row.Adjacent_types),
       sizeFit: normalizeSizeFit(row.Size_fit),
-      sectorFit: row.Sector_fit.trim(),
+      sectorFit,
       priceBand: row.Price_band.trim(),
-      bestFor: row.Best_for.trim(),
+      bestFor,
       website: row.Website.trim(),
       qualificationMethodNote: row.Qualification_method_note.trim(),
       score: Number(row.Qualification_score_initial || 0),
       recommendedRole: row.Recommended_role.trim(),
       recommendedWhen: row.Recommended_when.trim(),
-      bestMatchAreas: parseList(row.Best_match_areas),
+      bestMatchAreas,
       dimensionCount: Number(row.Dimension_count || 0),
       granularAreaCount: Number(row.Granular_area_count || 0),
       matrixAreas,
@@ -495,6 +531,13 @@ export const VENDOR_DIRECTORY: VendorDirectoryEntry[] = vendorMatrix.map(
       capabilityAreaLabels: MATRIX_COLUMNS.filter((column) =>
         capabilityAreaKeys.includes(column.key),
       ).map((column) => column.label),
+      granularAreaLabels,
+      specialtyHighlights: buildSpecialtyHighlights({
+        bestFor,
+        bestMatchAreas,
+        granularAreaLabels,
+        sectorFit,
+      }),
       blockerCoverage: {
         riskAssessment: hasMatrixMark(row.Blocker_risk_assessment),
         incidentResponse: hasMatrixMark(row.Blocker_incident_response),

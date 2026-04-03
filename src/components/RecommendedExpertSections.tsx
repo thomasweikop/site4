@@ -119,7 +119,7 @@ export default function RecommendedExpertSections({
               return (
                 <article
                   key={`${area.key}-${item.vendor.name}`}
-                  className="grid gap-4 border border-line bg-paper p-5 md:grid-cols-[1.2fr_1fr_1.25fr_auto]"
+                  className="grid gap-4 border border-line bg-paper p-5 md:grid-cols-[1.05fr_1.65fr_auto]"
                 >
                   <div>
                     <div className="flex flex-wrap items-center gap-3">
@@ -132,27 +132,20 @@ export default function RecommendedExpertSections({
                         </span>
                       ) : null}
                     </div>
-                    <p className="mt-2 text-sm text-soft">
-                      {item.vendor.bestFor}
-                    </p>
                   </div>
 
                   <div>
                     <p className="text-sm font-semibold text-ink">Specialer</p>
-                    <p className="mt-2 text-sm leading-6 text-soft">
-                      {specialties.join(", ")}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="text-sm font-semibold text-ink">Begrundelse</p>
-                    <p className="mt-2 text-sm leading-7 text-soft">
-                      {item.vendor.recommendedWhen ||
-                        `${item.vendor.name} matcher især ${area.label.toLowerCase()} og har samtidig synlige kompetencer indenfor ${specialties
-                          .slice(0, 3)
-                          .join(", ")
-                          .toLowerCase()}.`}
-                    </p>
+                    <ul className="mt-2 grid gap-2 text-sm leading-6 text-soft">
+                      {item.vendor.specialtyHighlights.map((line) => (
+                        <li key={`${item.vendor.name}-${line}`}>• {line}</li>
+                      ))}
+                      {specialties.length > 0 ? (
+                        <li key={`${item.vendor.name}-match`}>
+                          • Match i denne analyse: {specialties.join(", ")}
+                        </li>
+                      ) : null}
+                    </ul>
                   </div>
 
                   <div className="flex items-start">
