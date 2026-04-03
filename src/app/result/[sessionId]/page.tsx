@@ -4,9 +4,9 @@ import SiteHeader from "@/components/SiteHeader";
 import ResultExperience from "./ResultExperience";
 
 export const metadata: Metadata = {
-  title: "NIS2 Rapport | ComplyCheck",
+  title: "NIS2 Anbefalinger | ComplyCheck",
   description:
-    "Se teaser eller fuld rapport for virksomhedens NIS2-screening med score, dimensioner og anbefalede partnere.",
+    "Se teaser eller fulde anbefalinger for virksomhedens NIS2-screening med score, dimensioner og anbefalede specialister.",
 };
 
 export default async function ResultPage({

@@ -2,11 +2,12 @@ import Link from "next/link";
 import BrandWordmark from "@/components/BrandWordmark";
 
 type SiteHeaderProps = {
-  current?: "home" | "scan" | "about" | "partners" | "privacy";
+  current?: "home" | "scan" | "about" | "partners" | "privacy" | "specialists";
 };
 
 export default function SiteHeader({ current }: SiteHeaderProps) {
   const items = [
+    { href: "/specialists", label: "Specialister", key: "specialists" },
     { href: "/about-nis2", label: "Om NIS2", key: "about" },
     { href: "/for-partners", label: "For partnere", key: "partners" },
     { href: "/privacy", label: "Privacy", key: "privacy" },

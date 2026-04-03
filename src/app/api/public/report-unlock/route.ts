@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import { sendMail } from "@/lib/mail/sendMail";
+import {
+  buildFullRecommendationUrl,
+  buildSpecialistsUrl,
+} from "@/lib/reportLinks";
 
 type UnlockBody = {
   sessionId?: string;
@@ -16,6 +20,7 @@ type UnlockBody = {
   executiveSummary?: string;
   nextSteps?: string[];
   partnerRecommendations?: string[];
+  reportSnapshot?: string;
 };
 
 function isValidEmail(value: string) {
@@ -64,6 +69,11 @@ export async function POST(request: Request) {
   const partnerRecommendations = (body.partnerRecommendations ?? []).filter(
     Boolean,
   );
+  const reportSnapshot = (body.reportSnapshot ?? "").trim();
+  const fullRecommendationUrl = reportSnapshot
+    ? buildFullRecommendationUrl(sessionId, reportSnapshot)
+    : "";
+  const specialistsUrl = buildSpecialistsUrl();
 
   if (!sessionId || !company || !name || !email) {
     return NextResponse.json(
@@ -86,7 +96,7 @@ export async function POST(request: Request) {
   );
 
   const internalText = [
-    "Ny unlock af NIS2-rapport",
+    "Ny unlock af NIS2-anbefalinger",
     "",
     `Session: ${sessionId}`,
     `Virksomhed: ${company}`,
@@ -101,8 +111,10 @@ export async function POST(request: Request) {
     buildList("Profil", profileSummary),
     buildList("Laveste dimensioner", weakestDimensions),
     buildList("Blockers", blockers),
-    buildList("Næste skridt", nextSteps),
+    buildList("Initielle anbefalinger", nextSteps),
     buildList("Partneranbefalinger", partnerRecommendations),
+    fullRecommendationUrl ? `Fuld anbefaling: ${fullRecommendationUrl}` : "",
+    `Specialist liste: ${specialistsUrl}`,
     "",
     "Besked:",
     message || "Ingen ekstra besked.",
@@ -111,7 +123,7 @@ export async function POST(request: Request) {
     .join("\n");
 
   const internalHtml = `
-    <p>Ny unlock af NIS2-rapport</p>
+    <p>Ny unlock af NIS2-anbefalinger</p>
     <p><strong>Session:</strong> ${escapeHtml(sessionId)}</p>
     <p><strong>Virksomhed:</strong> ${safeCompany}</p>
     <p><strong>Navn:</strong> ${safeName}</p>
@@ -127,15 +139,21 @@ export async function POST(request: Request) {
     ${buildHtmlList("Profil", profileSummary)}
     ${buildHtmlList("Laveste dimensioner", weakestDimensions)}
     ${buildHtmlList("Blockers", blockers)}
-    ${buildHtmlList("Næste skridt", nextSteps)}
+    ${buildHtmlList("Initielle anbefalinger", nextSteps)}
     ${buildHtmlList("Partneranbefalinger", partnerRecommendations)}
+    ${
+      fullRecommendationUrl
+        ? `<p><strong>Fuld anbefaling:</strong> <a href="${escapeHtml(fullRecommendationUrl)}">${escapeHtml(fullRecommendationUrl)}</a></p>`
+        : ""
+    }
+    <p><strong>Specialist liste:</strong> <a href="${escapeHtml(specialistsUrl)}">${escapeHtml(specialistsUrl)}</a></p>
     <p><strong>Besked:</strong></p>
     <p>${safeMessage}</p>
   `;
 
   const internalResult = await sendMail({
     to: process.env.NIS2_CONTACT_EMAIL || "thomas.weikop@gmail.com",
-    subject: `NIS2 rapport unlock fra ${name}`,
+    subject: `NIS2 anbefalinger unlock fra ${name}`,
     text: internalText,
     html: internalHtml,
     fromName: "ComplyCheck",
@@ -145,7 +163,7 @@ export async function POST(request: Request) {
 
   if (!internalResult.sent) {
     return NextResponse.json(
-      { error: "Rapporten kunne ikke låses op lige nu." },
+      { error: "Anbefalingerne kunne ikke låses op lige nu." },
       { status: 500 },
     );
   }
@@ -153,7 +171,7 @@ export async function POST(request: Request) {
   const userText = [
     `Hej ${name},`,
     "",
-    "Virksomhedens NIS2-rapport er nu klar.",
+    `NIS2 anbefalinger for ${company}`,
     "",
     `Virksomhed: ${company}`,
     `Samlet score: ${body.score ?? "Ukendt"}%`,
@@ -163,17 +181,30 @@ export async function POST(request: Request) {
     "",
     buildList("Laveste dimensioner", weakestDimensions),
     buildList("Eventuelle blockers", blockers),
-    buildList("Første anbefalede skridt", nextSteps),
+    buildList("Initielle anbefalinger", nextSteps),
     buildList("Prioriterede konsulentprofiler", partnerRecommendations),
     "",
-    "Rapporten er lavet som et første modenhedsbillede og bør læses som beslutningsgrundlag for næste prioritering.",
+    "Se mere detaljerede anbefalinger",
+    fullRecommendationUrl || "",
+    "",
+    "Anbefalede specialister",
+    specialistsUrl,
+    "",
+    "Anbefalingerne er lavet som et første modenhedsbillede og bør læses som beslutningsgrundlag for næste prioritering.",
   ]
     .filter(Boolean)
     .join("\n");
 
+  const buttonBaseStyle =
+    "display:inline-block;padding:12px 18px;border:1px solid #cfd6cc;font-weight:600;text-decoration:none;margin-right:12px;margin-top:8px;";
+  const fullRecommendationButton = fullRecommendationUrl
+    ? `<a href="${escapeHtml(fullRecommendationUrl)}" style="${buttonBaseStyle}background:#073832;color:#ffffff;border-color:#073832;">Se mere detaljerede anbefalinger</a>`
+    : "";
+  const specialistButton = `<a href="${escapeHtml(specialistsUrl)}" style="${buttonBaseStyle}background:#ffffff;color:#073832;">Specialist liste</a>`;
+
   const userHtml = `
     <p>Hej ${safeName},</p>
-    <p>Virksomhedens NIS2-rapport er nu klar.</p>
+    <p><strong>NIS2 anbefalinger for ${safeCompany}</strong></p>
     <p><strong>Virksomhed:</strong> ${safeCompany}</p>
     <p><strong>Samlet score:</strong> ${body.score ?? "Ukendt"}%</p>
     <p><strong>Status:</strong> ${escapeHtml(body.status ?? "Ukendt")}</p>
@@ -184,14 +215,22 @@ export async function POST(request: Request) {
     }
     ${buildHtmlList("Laveste dimensioner", weakestDimensions)}
     ${buildHtmlList("Eventuelle blockers", blockers)}
-    ${buildHtmlList("Første anbefalede skridt", nextSteps)}
+    ${buildHtmlList("Initielle anbefalinger", nextSteps)}
     ${buildHtmlList("Prioriterede konsulentprofiler", partnerRecommendations)}
-    <p>Rapporten er lavet som et første modenhedsbillede og bør læses som beslutningsgrundlag for næste prioritering.</p>
+    <p><strong>Se mere detaljerede anbefalinger</strong></p>
+    <p>
+      ${fullRecommendationButton}
+    </p>
+    <p><strong>Anbefalede specialister</strong></p>
+    <p>
+      ${specialistButton}
+    </p>
+    <p>Anbefalingerne er lavet som et første modenhedsbillede og bør læses som beslutningsgrundlag for næste prioritering.</p>
   `;
 
   const userResult = await sendMail({
     to: email,
-    subject: "Virksomhedens NIS2-rapport er klar",
+    subject: `NIS2 anbefalinger for ${company}`,
     text: userText,
     html: userHtml,
     fromName: "ComplyCheck",
@@ -199,7 +238,7 @@ export async function POST(request: Request) {
 
   if (!userResult.sent) {
     return NextResponse.json(
-      { error: "Rapporten kunne ikke sendes til email lige nu." },
+      { error: "Anbefalingerne kunne ikke sendes til email lige nu." },
       { status: 500 },
     );
   }

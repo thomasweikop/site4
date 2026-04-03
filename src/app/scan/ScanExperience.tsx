@@ -280,7 +280,8 @@ export default function ScanExperience({
                 Før virksomheden scores, skal der bruges lidt kontekst.
               </h2>
               <p className="mt-4 max-w-2xl text-base leading-7 text-soft">
-                Det gør rapporten mere brugbar, fordi anbefalinger og match kan
+                Det gør anbefalingerne mere brugbare, fordi anbefalinger og
+                match kan
                 læses i lyset af virksomhedens segment.
               </p>
             </div>
@@ -428,11 +429,11 @@ export default function ScanExperience({
             className="inline-flex bg-sage px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43] disabled:cursor-not-allowed disabled:bg-[#8a95a8]"
           >
             {isSubmitting
-              ? "Opretter rapport..."
+              ? "Opretter anbefalinger..."
               : isProfileStep
                 ? "Start spørgsmål"
                 : currentIndex === SCAN_QUESTIONS.length - 1
-                  ? "Se rapport"
+                  ? "Se anbefalinger"
                   : "Næste spørgsmål"}
           </button>
         </div>

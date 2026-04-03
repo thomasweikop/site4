@@ -3,6 +3,10 @@
 import { useState } from "react";
 import type { ScanResult } from "@/lib/nis2Scan";
 import type { UnlockLead } from "@/lib/nis2Session";
+import {
+  buildReportSnapshot,
+  encodeReportSnapshot,
+} from "@/lib/reportLinks";
 
 type ReportUnlockFormProps = {
   sessionId: string;
@@ -37,6 +41,14 @@ export default function ReportUnlockForm({
     setError(null);
 
     try {
+      const reportSnapshot = encodeReportSnapshot(
+        buildReportSnapshot({
+          sessionId,
+          company: lead.company,
+          result,
+        }),
+      );
+
       const response = await fetch("/api/public/report-unlock", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -56,13 +68,14 @@ export default function ReportUnlockForm({
             (partner) =>
               `${partner.label}: ${partner.primaryVendor?.name ?? partner.summary}`,
           ),
+          reportSnapshot,
         }),
       });
 
       const payload = (await response.json()) as { error?: string };
 
       if (!response.ok) {
-        setError(payload.error || "Kunne ikke låse rapporten op.");
+        setError(payload.error || "Kunne ikke hente anbefalingerne.");
         return;
       }
 
@@ -80,14 +93,14 @@ export default function ReportUnlockForm({
       className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8"
     >
       <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-        Rapport
+        Anbefalinger
       </p>
       <h2 className="mt-4 text-balance text-3xl font-semibold tracking-[-0.03em] text-ink">
-        Indtast oplysninger før rapporten sendes
+        Indtast oplysninger før anbefalingerne sendes
       </h2>
       <p className="mt-4 text-sm leading-6 text-soft">
-        Rapporten sendes til email, og derefter kan virksomheden fortsætte til
-        en prioriteret liste af konsulentvirksomheder.
+        Anbefalingerne sendes til email, og derefter kan virksomheden fortsætte
+        til detaljerede anbefalinger og specialistlisten.
       </p>
 
       <div className="mt-6 grid gap-4">
@@ -149,7 +162,7 @@ export default function ReportUnlockForm({
         disabled={pending}
         className="mt-6 inline-flex bg-sage px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43] disabled:cursor-not-allowed disabled:bg-[#8a95a8]"
       >
-        {pending ? "Sender rapport..." : "Få rapporten tilsendt"}
+        {pending ? "Sender anbefalinger..." : "Få anbefalingerne tilsendt"}
       </button>
 
       {error ? <p className="mt-4 text-sm text-[#b64848]">{error}</p> : null}

@@ -312,7 +312,7 @@ export default function Home() {
                   <p className="mt-3 text-sm text-soft">Delvist compliant</p>
                 </div>
                 <div className="border border-[#d2d8cb] bg-[#f2f3ee] px-4 py-2 text-sm font-medium text-ink">
-                  Moderat risiko
+                  Behov for prioritering
                 </div>
               </div>
 
@@ -328,9 +328,7 @@ export default function Home() {
                   >
                     <div className="flex items-center justify-between gap-4">
                       <p className="font-semibold text-ink">{band.range}</p>
-                      <p className="text-sm text-soft">
-                        {band.status} / {band.risk}
-                      </p>
+                      <p className="text-sm text-soft">{band.status}</p>
                     </div>
                   </div>
                 ))}

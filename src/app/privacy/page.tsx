@@ -24,7 +24,7 @@ export default function PrivacyPage() {
           <div className="mt-6 grid gap-4 text-sm leading-7 text-soft">
             <p>
               Screeningssessioner gemmes lokalt i browseren i denne MVP, så
-              virksomheden kan vende tilbage til rapporten på samme enhed.
+              virksomheden kan vende tilbage til anbefalingerne på samme enhed.
             </p>
             <p>
               Når en formular sendes, bruges kontaktoplysningerne til at

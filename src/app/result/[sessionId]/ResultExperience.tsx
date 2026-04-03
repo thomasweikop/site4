@@ -4,6 +4,12 @@ import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
 import type { VendorDirectoryEntry } from "@/lib/nis2BuildPack";
 import type { PriorityArea } from "@/lib/nis2Scan";
+import {
+  buildFullRecommendationPath,
+  buildReportSnapshot,
+  buildSpecialistsPath,
+  encodeReportSnapshot,
+} from "@/lib/reportLinks";
 import ReportUnlockForm from "@/components/ReportUnlockForm";
 import {
   getSessionReport,
@@ -59,7 +65,7 @@ export default function ResultExperience({
   if (!clientReady) {
     return (
       <div className="border border-line bg-white p-8 shadow-[var(--shadow)]">
-        <p className="text-sm text-soft">Indlæser rapporten...</p>
+        <p className="text-sm text-soft">Indlæser anbefalingerne...</p>
       </div>
     );
   }
@@ -68,15 +74,15 @@ export default function ResultExperience({
     return (
       <div className="border border-line bg-white p-8 shadow-[var(--shadow)]">
         <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-          Rapporten kunne ikke findes
+          Anbefalingerne kunne ikke findes
         </p>
         <h1 className="mt-4 text-3xl font-semibold tracking-[-0.03em] text-ink">
           Sessionen findes ikke på denne enhed
         </h1>
         <p className="mt-4 max-w-2xl text-sm leading-6 text-soft">
-          Resultatet gemmes lokalt i browseren i denne MVP. Hvis rapporten blev
-          åbnet på en anden enhed eller efter at browserdata er ryddet, skal
-          testen startes igen.
+          Resultatet gemmes lokalt i browseren i denne MVP. Hvis anbefalingerne
+          blev åbnet på en anden enhed eller efter at browserdata er ryddet,
+          skal testen startes igen.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
@@ -99,6 +105,17 @@ export default function ResultExperience({
   const result = getSessionReport(session);
   const unlocked = Boolean(session.unlockedAt);
   const activeStep = step ?? (unlocked ? "summary" : null);
+  const reportSnapshot = buildReportSnapshot({
+    sessionId,
+    company: session.unlockLead?.company,
+    result,
+  });
+  const encodedReportSnapshot = encodeReportSnapshot(reportSnapshot);
+  const fullRecommendationHref = buildFullRecommendationPath(
+    sessionId,
+    encodedReportSnapshot,
+  );
+  const specialistsHref = buildSpecialistsPath();
 
   function handleUnlocked(lead: UnlockLead) {
     const updated = markReportUnlocked(sessionId, lead);
@@ -116,13 +133,13 @@ export default function ResultExperience({
           <div className="space-y-6">
             <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
               <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-                Rapporten er klar
+                Anbefalingerne er klar
               </p>
               <h1 className="mt-4 text-balance font-display text-4xl leading-none text-ink md:text-[3.15rem]">
-                Før rapporten sendes, registreres virksomhed, navn og email
+                Før anbefalingerne sendes, registreres virksomhed, navn og email
               </h1>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-soft md:text-base">
-                Når oplysningerne er indtastet, sendes rapporten til mail.
+                Når oplysningerne er indtastet, sendes anbefalingerne til mail.
                 Derefter kan virksomheden fortsætte til specialist-overblik og
                 spørgsmål til de ansvarlige i virksomheden.
               </p>
@@ -188,7 +205,7 @@ export default function ResultExperience({
       {activeStep === "summary" ? (
         <section className="space-y-6">
           <div className="border border-[#b6cfb6] bg-[#edf4ed] px-5 py-4 text-sm text-[#235b41] shadow-[var(--shadow)]">
-            Rapporten sendes til dig på mail.
+            Anbefalingerne sendes til dig på mail.
           </div>
 
           <div className="border border-line bg-white p-8 shadow-[var(--shadow)] md:p-10">
@@ -216,6 +233,21 @@ export default function ResultExperience({
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                href={fullRecommendationHref}
+                className="inline-flex bg-sage px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43]"
+              >
+                Se detaljerede anbefalinger
+              </Link>
+              <Link
+                href={specialistsHref}
+                className="inline-flex border border-line bg-paper px-5 py-3 text-sm font-semibold text-ink transition hover:bg-white"
+              >
+                Specialist liste
+              </Link>
             </div>
 
             <div className="mt-8 grid gap-4 lg:grid-cols-2">

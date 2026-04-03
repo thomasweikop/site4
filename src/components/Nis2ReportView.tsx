@@ -10,7 +10,7 @@ type Nis2ReportViewProps = {
 
 export default function Nis2ReportView({
   result,
-  title = "Virksomhedens NIS2-rapport",
+  title = "Virksomhedens NIS2-anbefalinger",
   subtitle = "Et vægtet første billede af modenhed, gaps og de partnerprofiler der passer bedst til næste skridt.",
   footerCta,
 }: Nis2ReportViewProps) {
@@ -20,7 +20,7 @@ export default function Nis2ReportView({
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-              Rapport
+              Anbefalinger
             </p>
             <h1 className="mt-4 max-w-3xl text-balance font-display text-4xl leading-none text-ink md:text-[3.2rem]">
               {title}
@@ -188,7 +188,7 @@ export default function Nis2ReportView({
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-soft">
                   Denne blocker påvirker matchingen direkte og trækker
-                  rapporten mod {blocker.vendorTypes.join(" / ")}.
+                  anbefalingerne mod {blocker.vendorTypes.join(" / ")}.
                 </p>
               </article>
             ))}
