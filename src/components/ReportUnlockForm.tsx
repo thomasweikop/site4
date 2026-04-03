@@ -93,7 +93,7 @@ export default function ReportUnlockForm({
       className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8"
     >
       <h2 className="text-balance font-display text-[2rem] leading-none text-ink md:text-[2.35rem]">
-        Indtast kontaktinformationer
+        Se konkrete anbefalinger
       </h2>
       <p className="mt-4 text-sm leading-6 text-soft">
         Resultatet sendes til email, og derefter kan virksomheden fortsætte til
