@@ -11,6 +11,22 @@ const MENU_ITEMS = [
     href: "/about-nis2",
     label: "NIS2",
   },
+  {
+    href: "",
+    label: "GDPR",
+  },
+  {
+    href: "",
+    label: "DORA",
+  },
+  {
+    href: "",
+    label: "AI Act",
+  },
+  {
+    href: "",
+    label: "CRA",
+  },
 ] as const;
 
 export default function SiteHeader({ current }: SiteHeaderProps) {
@@ -38,6 +54,7 @@ export default function SiteHeader({ current }: SiteHeaderProps) {
 
             <div className="absolute right-0 top-[calc(100%+0.6rem)] z-20 min-w-[170px] border border-line bg-white p-2 shadow-[var(--shadow)]">
               {MENU_ITEMS.map((item) => (
+                item.href ? (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -45,6 +62,14 @@ export default function SiteHeader({ current }: SiteHeaderProps) {
                 >
                   {item.label}
                 </Link>
+                ) : (
+                  <span
+                    key={item.label}
+                    className="block px-4 py-3 text-sm font-semibold text-soft"
+                  >
+                    {item.label}
+                  </span>
+                )
               ))}
             </div>
           </details>
