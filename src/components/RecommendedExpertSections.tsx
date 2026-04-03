@@ -143,7 +143,7 @@ export default function RecommendedExpertSections({
               return (
                 <article
                   key={`${area.key}-${item.vendor.name}`}
-                  className="grid gap-4 border border-line bg-paper p-5 md:grid-cols-[1.05fr_1.65fr_auto]"
+                  className="grid gap-4 border border-line bg-paper p-5 md:grid-cols-[1.05fr_1.65fr]"
                 >
                   <div>
                     <div className="flex flex-wrap items-center gap-3">
@@ -151,7 +151,7 @@ export default function RecommendedExpertSections({
                         {item.vendor.name}
                       </p>
                       {index === 0 ? (
-                        <span className="bg-sage px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] !text-white">
+                        <span className="bg-[#73acd6] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] !text-white">
                           Anbefalet
                         </span>
                       ) : null}
@@ -172,15 +172,25 @@ export default function RecommendedExpertSections({
                     </ul>
                   </div>
 
-                  <div className="flex items-start">
+                  <div className="flex items-start md:col-span-2 md:justify-end">
+                    <div className="flex flex-col items-start gap-3 md:items-end">
+                      <a
+                        href={item.vendor.website}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sm font-medium text-[#1b4f45] underline decoration-[#1b4f45]/30 underline-offset-4 transition hover:text-[#0d4b43]"
+                      >
+                        Website
+                      </a>
                     <a
                       href={item.vendor.website}
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex bg-sage px-4 py-2 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
                     >
-                      Website
+                      Find rette kontaktperson
                     </a>
+                    </div>
                   </div>
                 </article>
               );
