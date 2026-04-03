@@ -31,11 +31,34 @@ const MENU_ITEMS = [
 
 export default function SiteHeader({ current }: SiteHeaderProps) {
   const showBackBar = current && current !== "home";
+  const navItems = [
+    { href: "/", label: "Forside", key: "home" },
+    { href: "/specialists", label: "Specialister", key: "specialists" },
+    { href: "/about-nis2", label: "Om NIS2", key: "about" },
+    { href: "/for-partners", label: "For partnere", key: "partners" },
+    { href: "/privacy", label: "Privacy", key: "privacy" },
+  ] as const;
 
   return (
     <header className="border-b border-line bg-paper">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-6 md:px-8 lg:px-10">
         <BrandWordmark />
+
+        <nav className="hidden items-center gap-8 text-sm font-semibold text-ink lg:flex">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={
+                current === item.key
+                  ? "text-[#2a5a4f]"
+                  : "transition hover:text-[#2a5a4f]"
+              }
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
 
         <div className="flex items-center gap-3">
           <span className="inline-flex bg-black px-4 py-2 text-sm font-semibold uppercase tracking-[0.16em] text-white">
