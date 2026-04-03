@@ -1,12 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ANSWER_OPTIONS,
-  SCAN_QUESTIONS,
-  SCORE_BANDS,
-  SCORE_RULES,
-  WEIGHTED_TOPICS,
-} from "@/lib/nis2Scan";
+import { ANSWER_OPTIONS, SCAN_QUESTIONS } from "@/lib/nis2Scan";
 import BrandWordmark from "@/components/BrandWordmark";
 import SiteFooter from "@/components/SiteFooter";
 import Nis2LeadForm from "./Nis2LeadForm";
@@ -30,7 +24,7 @@ const HOW_IT_WORKS = [
   },
   {
     step: "03",
-    title: "Se de største gaps",
+    title: "Se de største mangler",
     text: "Resultatet peger på de områder hvor organisationen typisk bør begynde.",
   },
   {
@@ -54,7 +48,7 @@ const FAQ_ITEMS = [
   {
     question: "Hvad får vi ud af resultatet?",
     answer:
-      "Virksomheden får en vægtet score, de vigtigste gaps og de første anbefalede næste skridt, så resultatet kan bruges i en reel intern drøftelse.",
+      "Virksomheden får en vægtet score, de vigtigste mangler og de første anbefalede næste skridt, så resultatet kan bruges i en reel intern drøftelse.",
   },
 ] as const;
 
@@ -319,60 +313,6 @@ export default function Home() {
               <div className="mt-6 h-2 overflow-hidden bg-[#dde5df]">
                 <div className="h-full w-[62%] bg-[#2a5a4f]" />
               </div>
-
-              <div className="mt-6 grid gap-3">
-                {SCORE_BANDS.map((band) => (
-                  <div
-                    key={band.range}
-                    className="border border-line bg-paper px-4 py-4"
-                  >
-                    <div className="flex items-center justify-between gap-4">
-                      <p className="font-semibold text-ink">{band.range}</p>
-                      <p className="text-sm text-soft">{band.status}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="border border-line bg-white p-6 shadow-[var(--shadow)]">
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-                Scoremodel
-              </p>
-              <div className="mt-5 grid gap-3">
-                {SCORE_RULES.map((rule) => (
-                  <div
-                    key={rule.label}
-                    className="border border-line bg-paper px-4 py-4"
-                  >
-                    <div className="flex items-center justify-between gap-4">
-                      <p className="font-semibold text-ink">{rule.label}</p>
-                      <p className="text-sm font-medium text-[#4c655d]">
-                        {rule.points}
-                      </p>
-                    </div>
-                    <p className="mt-2 text-sm leading-6 text-soft">
-                      {rule.text}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="border border-line bg-sage px-6 py-6 text-white shadow-[var(--shadow)]">
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#b9d0c2]">
-                Vægtning
-              </p>
-              <div className="mt-4 grid gap-3">
-                {WEIGHTED_TOPICS.map((item) => (
-                  <div
-                    key={item}
-                    className="border border-white/10 px-4 py-4 text-sm leading-6 text-white/78"
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>
@@ -383,7 +323,7 @@ export default function Home() {
           <div>
             <SectionHeading
               eyebrow="Kontakt"
-              title="Når resultatet peger på gaps, er næste skridt at prioritere dem roligt og i den rigtige rækkefølge."
+              title="Når resultatet peger på mangler, er næste skridt at prioritere dem roligt og i den rigtige rækkefølge."
               text="Brug formularen, hvis resultatet skal omsættes til en mere konkret drøftelse om governance, teknologi eller implementering."
             />
 

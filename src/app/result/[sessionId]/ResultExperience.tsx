@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import {
+  buildAreaDetailPath,
   buildFullRecommendationPath,
   buildReportSnapshot,
   encodeReportSnapshot,
@@ -215,28 +216,13 @@ export default function ResultExperience({
                         {area.description}
                       </p>
 
-                      <div className="mt-5 grid gap-4 lg:grid-cols-2">
-                        <div className="border border-line bg-white p-4">
-                          <p className="text-sm font-semibold text-ink">
-                            Typiske gaps
-                          </p>
-                          <ul className="mt-3 grid gap-2 text-sm leading-6 text-soft">
-                            {area.typicalGaps.map((gap) => (
-                              <li key={gap}>• {gap}</li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div className="border border-line bg-white p-4">
-                          <p className="text-sm font-semibold text-ink">
-                            Hvad skal gøres
-                          </p>
-                          <ul className="mt-3 grid gap-2 text-sm leading-6 text-soft">
-                            {area.actions.map((action) => (
-                              <li key={action}>• {action}</li>
-                            ))}
-                          </ul>
-                        </div>
+                      <div className="mt-5">
+                        <Link
+                          href={buildAreaDetailPath(sessionId, area.key)}
+                          className="text-sm font-semibold text-[#1b4f45] underline decoration-[#1b4f45]/30 underline-offset-4 transition hover:text-[#0d4b43]"
+                        >
+                          Læs mere
+                        </Link>
                       </div>
                     </article>
                   ))}

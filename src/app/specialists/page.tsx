@@ -86,13 +86,10 @@ export default function SpecialistsPage() {
                           Virksomhed
                         </th>
                         <th className="border-b border-line px-4 py-3 text-left font-semibold text-ink">
-                          Størrelsesfit
+                          Market fit
                         </th>
                         <th className="border-b border-line px-4 py-3 text-left font-semibold text-ink">
-                          Prisniveau
-                        </th>
-                        <th className="border-b border-line px-4 py-3 text-left font-semibold text-ink">
-                          Bedst til
+                          Vurdering af kompetencer
                         </th>
                         <th className="border-b border-line px-4 py-3 text-left font-semibold text-ink">
                           Website
@@ -110,15 +107,9 @@ export default function SpecialistsPage() {
                           </td>
                           <td className="px-4 py-4">
                             <p className="font-semibold text-ink">{vendor.name}</p>
-                            <p className="mt-2 text-sm leading-6 text-soft">
-                              {vendor.recommendedRole}
-                            </p>
                           </td>
                           <td className="px-4 py-4 text-soft">
                             {vendor.sizeFit.join(", ")}
-                          </td>
-                          <td className="px-4 py-4 text-soft">
-                            {vendor.priceBand}
                           </td>
                           <td className="px-4 py-4 text-soft">
                             {vendor.bestFor}

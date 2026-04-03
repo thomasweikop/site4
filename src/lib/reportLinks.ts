@@ -191,6 +191,10 @@ export function buildActionRequestPath(sessionId: string) {
   return `/result/${sessionId}/kontakt`;
 }
 
+export function buildAreaDetailPath(sessionId: string, areaKey: string) {
+  return `/result/${sessionId}/omraade/${areaKey}`;
+}
+
 export function buildSessionSpecialistsUrl(sessionId: string) {
   return `${getSiteUrl()}${buildSessionSpecialistsPath(sessionId)}`;
 }
@@ -205,4 +209,8 @@ export function buildFollowupQuestionsUrl(sessionId: string) {
 
 export function buildActionRequestUrl(sessionId: string) {
   return `${getSiteUrl()}${buildActionRequestPath(sessionId)}`;
+}
+
+export function buildAreaDetailUrl(sessionId: string, areaKey: string) {
+  return `${getSiteUrl()}${buildAreaDetailPath(sessionId, areaKey)}`;
 }

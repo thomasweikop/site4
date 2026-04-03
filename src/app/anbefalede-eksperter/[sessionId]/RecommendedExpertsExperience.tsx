@@ -181,6 +181,7 @@ export default function RecommendedExpertsExperience({
       {groupedSpecialists.map(({ area, specialists }) => (
         <section
           key={area.key}
+          id={area.key}
           className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8"
         >
           <div className="flex flex-wrap items-start justify-between gap-4">

@@ -39,6 +39,23 @@ export type GuidanceAreaDefinition = {
   levels: Record<ComplianceLevelKey, GuidanceLevelContent>;
 };
 
+export function getGuidanceAreaByKey(key: string) {
+  return NIS2_AREA_GUIDANCE.find((area) => area.key === key);
+}
+
+export function getExpandedGuidanceBullets(area: GuidanceAreaDefinition) {
+  return Array.from(
+    new Set([
+      ...area.levels.low.typicalGaps,
+      ...area.levels.medium.typicalGaps,
+      ...area.levels.high.typicalGaps,
+      ...area.levels.low.actions,
+      ...area.levels.medium.actions,
+      ...area.levels.high.actions,
+    ]),
+  ).slice(0, 12);
+}
+
 export function getComplianceLevelKey(percentage: number): ComplianceLevelKey {
   if (percentage >= 75) {
     return "high";
