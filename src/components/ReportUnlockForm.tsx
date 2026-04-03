@@ -93,14 +93,14 @@ export default function ReportUnlockForm({
       className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8"
     >
       <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-        Anbefalinger
+        Modtag resultatet på email
       </p>
       <h2 className="mt-4 text-balance text-3xl font-semibold tracking-[-0.03em] text-ink">
-        Indtast oplysninger før anbefalingerne sendes
+        Indtast kontaktinformationer
       </h2>
       <p className="mt-4 text-sm leading-6 text-soft">
-        Anbefalingerne sendes til email, og derefter kan virksomheden fortsætte
-        til detaljerede anbefalinger og specialistlisten.
+        Resultatet sendes til email, og derefter kan virksomheden fortsætte til
+        analysens resultat og de næste anbefalede skridt.
       </p>
 
       <div className="mt-6 grid gap-4">
@@ -162,7 +162,7 @@ export default function ReportUnlockForm({
         disabled={pending}
         className="mt-6 inline-flex bg-sage px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43] disabled:cursor-not-allowed disabled:bg-[#8a95a8] disabled:!text-white"
       >
-        {pending ? "Sender anbefalinger..." : "Få anbefalingerne tilsendt"}
+        {pending ? "Sender..." : "Send"}
       </button>
 
       {error ? <p className="mt-4 text-sm text-[#b64848]">{error}</p> : null}

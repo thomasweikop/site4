@@ -19,6 +19,12 @@ import {
   type VendorSizeFit,
   type VendorType,
 } from "./nis2BuildPack";
+import {
+  NIS2_AREA_GUIDANCE,
+  getComplianceLevelKey,
+  type ComplianceLevelKey,
+  type GuidanceAreaKey,
+} from "./nis2AreaGuidance";
 
 export const ANSWER_OPTIONS = [
   {
@@ -323,6 +329,18 @@ export type PriorityArea = {
   summary: string;
   vendorTypes: VendorType[];
   followUpQuestions: string[];
+};
+
+export type AnalysisArea = {
+  key: GuidanceAreaKey;
+  label: string;
+  intro: string;
+  percentage: number;
+  complianceLevel: ComplianceLevelKey;
+  complianceLabel: string;
+  description: string;
+  typicalGaps: string[];
+  actions: string[];
 };
 
 export type RankedVendorFit = {
@@ -919,10 +937,10 @@ function getUrgencyStatement(
 
 function buildExecutiveSummary(
   percentage: number,
-  priorityAreas: PriorityArea[],
+  analysisAreas: AnalysisArea[],
   blockers: BlockerItem[],
 ) {
-  const areasText = priorityAreas
+  const areasText = analysisAreas
     .map((area) => area.label.toLowerCase())
     .join(", ")
     .replace(/, ([^,]*)$/, " og $1");
@@ -932,6 +950,47 @@ function buildExecutiveSummary(
   }
 
   return `Virksomhedens samlede score er ${percentage}%. De største relative gaps ligger indenfor ${areasText}.`;
+}
+
+function buildAnalysisAreas(
+  details: Array<{
+    id: ScanQuestionId;
+    baseScore: number;
+  }>,
+) {
+  const detailsById = new Map(details.map((item) => [item.id, item]));
+
+  return NIS2_AREA_GUIDANCE.map((area) => {
+    let score = 0;
+    let maxScore = 0;
+
+    for (const [questionId, weight] of Object.entries(area.questionWeights)) {
+      const item = detailsById.get(questionId as ScanQuestionId);
+
+      if (!item || !weight) {
+        continue;
+      }
+
+      score += item.baseScore * weight;
+      maxScore += 10 * weight;
+    }
+
+    const percentage = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
+    const complianceLevel = getComplianceLevelKey(percentage);
+    const level = area.levels[complianceLevel];
+
+    return {
+      key: area.key,
+      label: area.label,
+      intro: area.intro,
+      percentage,
+      complianceLevel,
+      complianceLabel: level.label,
+      description: level.description,
+      typicalGaps: level.typicalGaps,
+      actions: level.actions,
+    } satisfies AnalysisArea;
+  }).sort((left, right) => left.percentage - right.percentage);
 }
 
 export function calculateScanResult(
@@ -969,6 +1028,8 @@ export function calculateScanResult(
   const band = getBand(percentage);
   const dimensions = getDimensionScores(details);
   const blockers = getBlockers(details);
+  const analysisAreas = buildAnalysisAreas(details);
+  const topAnalysisAreas = analysisAreas.slice(0, TOP_AREA_COUNT);
   const weakestDimensions = [...dimensions]
     .sort((left, right) => left.percentage - right.percentage)
     .slice(0, 2);
@@ -1028,7 +1089,7 @@ export function calculateScanResult(
 
   const executiveSummary = buildExecutiveSummary(
     percentage,
-    priorityAreas,
+    topAnalysisAreas,
     blockers,
   );
   const urgencyStatement = getUrgencyStatement(
@@ -1054,6 +1115,8 @@ export function calculateScanResult(
     dimensions,
     blockers,
     weakestDimensions,
+    analysisAreas,
+    topAnalysisAreas,
     priorityAreas,
     followupAreas,
     partnerRecommendations,

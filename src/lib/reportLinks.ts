@@ -12,6 +12,14 @@ export type ReportSnapshot = {
   weakestDimensions: string[];
   blockers: string[];
   nextSteps: string[];
+  topAnalysisAreas: Array<{
+    label: string;
+    percentage: number;
+    complianceLabel: string;
+    description: string;
+    typicalGaps: string[];
+    actions: string[];
+  }>;
   priorityAreas: Array<{
     label: string;
     summary: string;
@@ -86,6 +94,14 @@ export function buildReportSnapshot(input: {
     ),
     blockers: result.blockers.map((blocker) => blocker.question),
     nextSteps: result.nextSteps,
+    topAnalysisAreas: result.topAnalysisAreas.map((area) => ({
+      label: area.label,
+      percentage: area.percentage,
+      complianceLabel: area.complianceLabel,
+      description: area.description,
+      typicalGaps: area.typicalGaps,
+      actions: area.actions,
+    })),
     priorityAreas: result.priorityAreas.map((area) => ({
       label: area.label,
       summary: area.summary,
