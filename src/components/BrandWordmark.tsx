@@ -74,15 +74,24 @@ export default function BrandWordmark({
     <Link
       href={href}
       className="inline-flex items-center gap-3"
-      aria-label="ComplyCheck"
+      aria-label="ComplyCheck NIS2"
     >
       <Nis2Mark />
-      <span
-        className={`text-[1.55rem] font-semibold tracking-[-0.04em] ${
-          inverse ? "text-white" : "text-ink"
-        }`}
-      >
-        ComplyCheck
+      <span className="flex flex-col leading-none">
+        <span
+          className={`text-[1.68rem] font-extrabold tracking-[-0.05em] ${
+            inverse ? "text-white" : "text-ink"
+          }`}
+        >
+          ComplyCheck
+        </span>
+        <span
+          className={`mt-1 text-[0.72rem] font-light uppercase tracking-[0.42em] ${
+            inverse ? "text-white/78" : "text-soft"
+          }`}
+        >
+          NIS2
+        </span>
       </span>
     </Link>
   );
