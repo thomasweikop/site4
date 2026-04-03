@@ -3,7 +3,8 @@ import Link from "next/link";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import {
-  buildSpecialistsPath,
+  buildRecommendedExpertsPath,
+  buildSessionSpecialistsPath,
   decodeReportSnapshot,
 } from "@/lib/reportLinks";
 
@@ -54,7 +55,7 @@ export default async function FullRecommendationPage({
                 Start testen igen
               </Link>
               <Link
-                href={buildSpecialistsPath()}
+                href={buildSessionSpecialistsPath(sessionId)}
                 className="inline-flex border border-line bg-paper px-5 py-3 text-sm font-semibold text-ink transition hover:bg-white"
               >
                 Specialist liste
@@ -112,10 +113,16 @@ export default async function FullRecommendationPage({
 
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                href={buildSpecialistsPath()}
+                href={buildSessionSpecialistsPath(sessionId)}
                 className="inline-flex bg-sage px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43]"
               >
                 Specialist liste
+              </Link>
+              <Link
+                href={buildRecommendedExpertsPath(sessionId)}
+                className="inline-flex border border-line bg-paper px-5 py-3 text-sm font-semibold text-ink transition hover:bg-white"
+              >
+                Anbefalede eksperter
               </Link>
               <Link
                 href={`/result/${sessionId}`}
@@ -244,7 +251,7 @@ export default async function FullRecommendationPage({
               </div>
 
               <Link
-                href={buildSpecialistsPath()}
+                href={buildSessionSpecialistsPath(sessionId)}
                 className="inline-flex border border-line bg-paper px-5 py-3 text-sm font-semibold text-ink transition hover:bg-white"
               >
                 Specialist liste

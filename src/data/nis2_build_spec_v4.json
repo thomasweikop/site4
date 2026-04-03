@@ -1,0 +1,290 @@
+{
+  "version": "4.0",
+  "language": "da",
+  "product_name": "NIS2 test + specialistoverblik",
+  "core_copy": {
+    "headline": "Ud fra dine besvarelser virker det til, at der fortsat er huller i virksomhedens NIS2 compliance.",
+    "intro": "De største risici ligger indenfor følgende områder:",
+    "cta_a_label": "Få overblik over specialister der kan hjælpe med at sikre fuld compliance",
+    "cta_a_button": "Fortsæt",
+    "cta_b_label": "Spørgsmål til de ansvarlige i virksomheden",
+    "cta_b_button": "Fortsæt",
+    "recommended_button": "Anbefalede eksperter"
+  },
+  "routes": [
+    "/",
+    "/test",
+    "/result/[sessionId]",
+    "/specialister/[sessionId]",
+    "/anbefalede-eksperter/[sessionId]",
+    "/sporgsmal-til-ansvarlige/[sessionId]",
+    "/for-partners",
+    "/admin/vendors"
+  ],
+  "answer_scale": {
+    "Nej": 0,
+    "Delvist": 5,
+    "Ja": 10
+  },
+  "questions": [
+    {
+      "id": "Q1",
+      "category": "Governance",
+      "label_da": "Er der en navngiven ansvarlig for cybersikkerhed / NIS2 med ledelsesopbakning?",
+      "weight": 1.5,
+      "dimensions": [
+        "Governance"
+      ],
+      "critical_blocker": false
+    },
+    {
+      "id": "Q2",
+      "category": "Politikker",
+      "label_da": "Har virksomheden godkendte informationssikkerhedspolitikker og standarder, som revideres mindst én gang årligt?",
+      "weight": 1.0,
+      "dimensions": [
+        "Governance"
+      ],
+      "critical_blocker": false
+    },
+    {
+      "id": "Q3",
+      "category": "Risikovurdering",
+      "label_da": "Er der gennemført en dokumenteret cyber-risikovurdering inden for de seneste 12 måneder?",
+      "weight": 2.0,
+      "dimensions": [
+        "Governance",
+        "Compliance"
+      ],
+      "critical_blocker": true
+    },
+    {
+      "id": "Q4",
+      "category": "Leverandørstyring",
+      "label_da": "Vurderer I kritiske leverandører og vedligeholder dokumenterede sikkerhedskrav og due diligence?",
+      "weight": 1.5,
+      "dimensions": [
+        "Compliance"
+      ],
+      "critical_blocker": false
+    },
+    {
+      "id": "Q5",
+      "category": "Incident response",
+      "label_da": "Har I en incident response-proces, rapporteringsflow og navngivne roller for større hændelser?",
+      "weight": 2.0,
+      "dimensions": [
+        "Operational",
+        "Compliance"
+      ],
+      "critical_blocker": true
+    },
+    {
+      "id": "Q6",
+      "category": "Logging & monitorering",
+      "label_da": "Bliver kritiske systemer logget og overvåget centralt med alarmering?",
+      "weight": 1.5,
+      "dimensions": [
+        "Technical"
+      ],
+      "critical_blocker": false
+    },
+    {
+      "id": "Q7",
+      "category": "Identity / MFA / PAM",
+      "label_da": "Er MFA tvunget på kritiske systemer, og er privilegeret adgang kontrolleret?",
+      "weight": 2.0,
+      "dimensions": [
+        "Technical"
+      ],
+      "critical_blocker": true
+    },
+    {
+      "id": "Q8",
+      "category": "Asset- og adgangsoverblik",
+      "label_da": "Vedligeholder I et overblik over kritiske aktiver, systemer, konti og ejere?",
+      "weight": 1.5,
+      "dimensions": [
+        "Technical"
+      ],
+      "critical_blocker": false
+    },
+    {
+      "id": "Q9",
+      "category": "Træning & awareness",
+      "label_da": "Får medarbejdere løbende security awareness og rollebaseret træning?",
+      "weight": 1.0,
+      "dimensions": [
+        "Operational"
+      ],
+      "critical_blocker": false
+    },
+    {
+      "id": "Q10",
+      "category": "Backup / recovery / continuity",
+      "label_da": "Tester I backup, recovery, continuity og nøglekontroller mindst én gang årligt?",
+      "weight": 1.5,
+      "dimensions": [
+        "Operational",
+        "Compliance"
+      ],
+      "critical_blocker": false
+    }
+  ],
+  "dimensions": {
+    "Governance": {
+      "questions": [
+        "Q1",
+        "Q2",
+        "Q3"
+      ],
+      "weights": {
+        "Q1": 1.5,
+        "Q2": 1.0,
+        "Q3": 2.0
+      }
+    },
+    "Technical": {
+      "questions": [
+        "Q6",
+        "Q7",
+        "Q8"
+      ],
+      "weights": {
+        "Q6": 1.5,
+        "Q7": 2.0,
+        "Q8": 1.5
+      }
+    },
+    "Operational": {
+      "questions": [
+        "Q5",
+        "Q9",
+        "Q10"
+      ],
+      "weights": {
+        "Q5": 2.0,
+        "Q9": 1.0,
+        "Q10": 1.5
+      }
+    },
+    "Compliance": {
+      "questions": [
+        "Q3",
+        "Q4",
+        "Q5",
+        "Q10"
+      ],
+      "weights": {
+        "Q3": 1.0,
+        "Q4": 1.5,
+        "Q5": 1.0,
+        "Q10": 1.5
+      }
+    }
+  },
+  "risk_bands": {
+    "critical": [
+      0,
+      39
+    ],
+    "high": [
+      40,
+      59
+    ],
+    "moderate": [
+      60,
+      79
+    ],
+    "low": [
+      80,
+      100
+    ]
+  },
+  "important_areas_rule": "Sort the four dimensions ascending and show the lowest three as top areas.",
+  "flow_b_rule": "Show five follow-up questions for every dimension with score < 70.",
+  "blockers": [
+    "Q3",
+    "Q5",
+    "Q7"
+  ],
+  "type_routing": {
+    "Governance": {
+      "primary": [
+        "Legal",
+        "GRC"
+      ],
+      "adjacent": [
+        "Audit"
+      ]
+    },
+    "Technical": {
+      "primary": [
+        "Technical",
+        "SOC"
+      ],
+      "adjacent": [
+        "GRC"
+      ]
+    },
+    "Operational": {
+      "primary": [
+        "SOC",
+        "Technical"
+      ],
+      "adjacent": [
+        "GRC"
+      ]
+    },
+    "Compliance": {
+      "primary": [
+        "GRC",
+        "Audit"
+      ],
+      "adjacent": [
+        "Legal"
+      ]
+    }
+  },
+  "fit_score_formula": {
+    "formula": "0.45*qualification_score_initial + 0.20*type_fit + 0.15*area_fit + 0.10*size_fit + 0.05*sector_fit + 0.05*blocker_fit",
+    "components": {
+      "qualification_score_initial": "Base vendor score from directory",
+      "type_fit": "100 primary type, 75 adjacent type, else 0",
+      "area_fit": "Percent match between vendor capability areas and user's top weak areas",
+      "size_fit": "100 strong size match, 70 partial, else 40",
+      "sector_fit": "100 clear sector match or cross-sector, 70 possible, else 40",
+      "blocker_fit": "100 if vendor maps to blocker area, else 0"
+    }
+  },
+  "followups": {
+    "Governance": [
+      "Hvem i ledelsen ejer formelt NIS2-arbejdet, og hvordan bliver status rapporteret til ledelsen?",
+      "Hvilke sikkerhedspolitikker er formelt godkendt, og hvornår blev de sidst opdateret?",
+      "Hvornår blev den seneste risikovurdering udført, og hvilke kritiske risici blev identificeret?",
+      "Hvordan dokumenteres beslutninger, undtagelser og risici i dag?",
+      "Hvordan håndteres leverandør- og tredjepartsrisici i jeres governance-model?"
+    ],
+    "Technical": [
+      "Hvilke kritiske systemer er omfattet af central logging og monitorering i dag?",
+      "Er MFA implementeret for alle privilegerede brugere og eksterne adgange?",
+      "Hvordan vedligeholder I overblik over aktiver, systemer, konti og ejere?",
+      "Hvordan håndteres patching og sårbarheder på kritiske systemer?",
+      "Hvilke tekniske kontroller mangler i dag for at reducere risikoen væsentligt?"
+    ],
+    "Operational": [
+      "Har I en dokumenteret incident response-plan, og hvem aktiverer den ved en alvorlig hændelse?",
+      "Hvornår blev beredskabsplanen eller incident response-planen sidst testet i praksis?",
+      "Hvordan trænes medarbejdere og nøglepersoner i håndtering af cyberhændelser?",
+      "Hvordan eskaleres hændelser internt og til relevante myndigheder eller partnere?",
+      "Hvor hurtigt kan I genetablere drift ved tab af et kritisk system eller en kritisk leverandør?"
+    ],
+    "Compliance": [
+      "Kan I i dag dokumentere de sikkerhedsforanstaltninger, som NIS2 kræver?",
+      "Hvordan dokumenterer I due diligence og sikkerhedskrav til kritiske leverandører?",
+      "Har I et samlet compliance-overblik, fx ISMS, kontrolkatalog eller tilsvarende struktur?",
+      "Har I gennemført intern eller ekstern review/audit af cybersikkerhedsarbejdet?",
+      "Hvordan sikrer I løbende opfølgning på nye krav, hændelser og kontrolsvagheder?"
+    ]
+  }
+}

@@ -158,3 +158,15 @@ export function buildSpecialistsPath() {
 export function buildSpecialistsUrl() {
   return `${getSiteUrl()}${buildSpecialistsPath()}`;
 }
+
+export function buildSessionSpecialistsPath(sessionId: string) {
+  return `/specialister/${sessionId}`;
+}
+
+export function buildRecommendedExpertsPath(sessionId: string) {
+  return `/anbefalede-eksperter/${sessionId}`;
+}
+
+export function buildFollowupQuestionsPath(sessionId: string) {
+  return `/sporgsmal-til-ansvarlige/${sessionId}`;
+}
