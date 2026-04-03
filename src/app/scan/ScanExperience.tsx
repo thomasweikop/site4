@@ -65,6 +65,30 @@ function createRandomTestInput() {
   return { profile, answers };
 }
 
+async function createServerSession(input: {
+  profile: {
+    companySize: CompanySizeValue;
+    industry: IndustryValue;
+    role: RoleValue;
+  };
+  answers: ScanAnswers;
+  source: string;
+}) {
+  const response = await fetch("/api/public/report-session", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    throw new Error("Server session creation failed");
+  }
+
+  return (await response.json()) as { id: string; createdAt: string };
+}
+
 export default function ScanExperience({
   startWithRandomTest = false,
 }: ScanExperienceProps) {
@@ -138,16 +162,31 @@ export default function ScanExperience({
 
     autoStartHandledRef.current = true;
 
-    const { profile: randomProfile, answers: randomAnswers } =
-      createRandomTestInput();
-    const session = createReportSession({
-      profile: randomProfile,
-      answers: randomAnswers,
-      source: "random-test",
-    });
+    void (async () => {
+      const { profile: randomProfile, answers: randomAnswers } =
+        createRandomTestInput();
 
-    clearScanDraft();
-    router.push(`/result/${session.id}`);
+      try {
+        const session = await createServerSession({
+          profile: randomProfile,
+          answers: randomAnswers,
+          source: "random-test",
+        });
+
+        clearScanDraft();
+        router.push(`/result/${session.id}`);
+        return;
+      } catch {
+        const session = createReportSession({
+          profile: randomProfile,
+          answers: randomAnswers,
+          source: "random-test",
+        });
+
+        clearScanDraft();
+        router.push(`/result/${session.id}`);
+      }
+    })();
   }, [clientReady, isSubmitting, router, startWithRandomTest]);
 
   function setAnswer(value: ScanAnswerValue) {
@@ -187,18 +226,28 @@ export default function ScanExperience({
 
     if (currentIndex === SCAN_QUESTIONS.length - 1) {
       setIsSubmitting(true);
-      const session = createReportSession({
-        profile: {
-          companySize: profile.companySize!,
-          industry: profile.industry!,
-          role: profile.role!,
-        },
-        answers,
-        source: "scan",
-      });
+      void (async () => {
+        const payload = {
+          profile: {
+            companySize: profile.companySize!,
+            industry: profile.industry!,
+            role: profile.role!,
+          },
+          answers,
+          source: "scan",
+        };
 
-      clearScanDraft();
-      router.push(`/result/${session.id}`);
+        try {
+          const session = await createServerSession(payload);
+          clearScanDraft();
+          router.push(`/result/${session.id}`);
+          return;
+        } catch {
+          const session = createReportSession(payload);
+          clearScanDraft();
+          router.push(`/result/${session.id}`);
+        }
+      })();
       return;
     }
 
@@ -426,7 +475,7 @@ export default function ScanExperience({
               isSubmitting ||
               (isProfileStep ? !profileComplete : !currentAnswer)
             }
-            className="inline-flex bg-sage px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43] disabled:cursor-not-allowed disabled:bg-[#8a95a8]"
+            className="inline-flex bg-sage px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43] disabled:cursor-not-allowed disabled:bg-[#8a95a8] disabled:!text-white"
           >
             {isSubmitting
               ? "Opretter anbefalinger..."

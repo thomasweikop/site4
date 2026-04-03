@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 import { CORE_COPY } from "@/lib/nis2BuildPack";
 import {
   buildFollowupQuestionsPath,
@@ -14,35 +14,24 @@ import ReportUnlockForm from "@/components/ReportUnlockForm";
 import {
   getSessionReport,
   markReportUnlocked,
-  parseSessionsStorageValue,
-  readSessionsStorageValue,
   type StoredReportSession,
   type UnlockLead,
 } from "@/lib/nis2Session";
+import { useStoredReportSession } from "@/lib/useStoredReportSession";
 
 type ResultExperienceProps = {
   sessionId: string;
+  initialSession?: StoredReportSession | null;
 };
-
-const NOOP_SUBSCRIBE = () => () => {};
 
 export default function ResultExperience({
   sessionId,
+  initialSession = null,
 }: ResultExperienceProps) {
-  const clientReady = useSyncExternalStore(
-    NOOP_SUBSCRIBE,
-    () => true,
-    () => false,
+  const { clientReady, session: storedSession } = useStoredReportSession(
+    sessionId,
+    initialSession,
   );
-  const sessionsStorageValue = useSyncExternalStore(
-    NOOP_SUBSCRIBE,
-    readSessionsStorageValue,
-    () => "[]",
-  );
-  const storedSession =
-    parseSessionsStorageValue(sessionsStorageValue).find(
-      (candidate) => candidate.id === sessionId,
-    ) ?? null;
   const [sessionOverride, setSessionOverride] =
     useState<StoredReportSession | null>(null);
   const session = sessionOverride ?? storedSession;
@@ -72,7 +61,7 @@ export default function ResultExperience({
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href="/scan"
-            className="inline-flex bg-sage px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43]"
+            className="inline-flex bg-sage px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
           >
             Start testen igen
           </Link>
@@ -108,7 +97,20 @@ export default function ResultExperience({
 
     if (updated) {
       setSessionOverride(updated);
+      return;
     }
+
+    if (!session) {
+      return;
+    }
+
+    const unlockedAt = new Date().toISOString();
+    setSessionOverride({
+      ...session,
+      updatedAt: unlockedAt,
+      unlockedAt,
+      unlockLead: lead,
+    });
   }
 
   return (
@@ -232,7 +234,7 @@ export default function ResultExperience({
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href={fullRecommendationHref}
-                className="inline-flex bg-sage px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43]"
+                className="inline-flex bg-sage px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
               >
                 Se detaljerede anbefalinger
               </Link>
@@ -249,7 +251,7 @@ export default function ResultExperience({
                 </p>
                 <Link
                   href={sessionSpecialistsHref}
-                  className="mt-5 inline-flex bg-sage px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43]"
+                  className="mt-5 inline-flex bg-sage px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
                 >
                   {CORE_COPY.cta_a_button}
                 </Link>
@@ -265,7 +267,7 @@ export default function ResultExperience({
                 </p>
                 <Link
                   href={followupQuestionsHref}
-                  className="mt-5 inline-flex bg-sage px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43]"
+                  className="mt-5 inline-flex bg-sage px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
                 >
                   {CORE_COPY.cta_b_button}
                 </Link>

@@ -229,7 +229,7 @@ export default function Nis2LeadForm({
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex bg-sage px-7 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43] disabled:cursor-not-allowed disabled:bg-[#8a95a8]"
+          className="inline-flex bg-sage px-7 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43] disabled:cursor-not-allowed disabled:bg-[#8a95a8] disabled:!text-white"
         >
           {pending ? "Sender..." : submitLabel}
         </button>

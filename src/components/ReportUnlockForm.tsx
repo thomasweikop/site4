@@ -160,7 +160,7 @@ export default function ReportUnlockForm({
       <button
         type="submit"
         disabled={pending}
-        className="mt-6 inline-flex bg-sage px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43] disabled:cursor-not-allowed disabled:bg-[#8a95a8]"
+        className="mt-6 inline-flex bg-sage px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43] disabled:cursor-not-allowed disabled:bg-[#8a95a8] disabled:!text-white"
       >
         {pending ? "Sender anbefalinger..." : "Få anbefalingerne tilsendt"}
       </button>

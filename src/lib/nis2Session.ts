@@ -1,5 +1,3 @@
-"use client";
-
 import {
   calculateScanResult,
   type ScanAnswers,

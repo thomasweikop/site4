@@ -1,17 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import type { StoredReportSession } from "@/lib/nis2Session";
 import { buildFollowupQuestionsPath, buildSessionSpecialistsPath } from "@/lib/reportLinks";
 import { useStoredReportSession } from "@/lib/useStoredReportSession";
 
 type RecommendedExpertsExperienceProps = {
   sessionId: string;
+  initialSession?: StoredReportSession | null;
 };
 
 export default function RecommendedExpertsExperience({
   sessionId,
+  initialSession = null,
 }: RecommendedExpertsExperienceProps) {
-  const { clientReady, session, result } = useStoredReportSession(sessionId);
+  const { clientReady, session, result } = useStoredReportSession(
+    sessionId,
+    initialSession,
+  );
 
   if (!clientReady) {
     return (
@@ -37,7 +43,7 @@ export default function RecommendedExpertsExperience({
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href="/scan"
-            className="inline-flex bg-sage px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43]"
+            className="inline-flex bg-sage px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
           >
             Start testen igen
           </Link>

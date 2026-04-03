@@ -170,3 +170,15 @@ export function buildRecommendedExpertsPath(sessionId: string) {
 export function buildFollowupQuestionsPath(sessionId: string) {
   return `/sporgsmal-til-ansvarlige/${sessionId}`;
 }
+
+export function buildSessionSpecialistsUrl(sessionId: string) {
+  return `${getSiteUrl()}${buildSessionSpecialistsPath(sessionId)}`;
+}
+
+export function buildRecommendedExpertsUrl(sessionId: string) {
+  return `${getSiteUrl()}${buildRecommendedExpertsPath(sessionId)}`;
+}
+
+export function buildFollowupQuestionsUrl(sessionId: string) {
+  return `${getSiteUrl()}${buildFollowupQuestionsPath(sessionId)}`;
+}

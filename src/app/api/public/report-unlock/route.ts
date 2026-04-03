@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { sendMail } from "@/lib/mail/sendMail";
 import {
   buildFullRecommendationUrl,
-  buildSpecialistsUrl,
+  buildSessionSpecialistsUrl,
 } from "@/lib/reportLinks";
+import { markDbReportUnlocked } from "@/lib/reportSessionStore";
 
 type UnlockBody = {
   sessionId?: string;
@@ -73,7 +74,7 @@ export async function POST(request: Request) {
   const fullRecommendationUrl = reportSnapshot
     ? buildFullRecommendationUrl(sessionId, reportSnapshot)
     : "";
-  const specialistsUrl = buildSpecialistsUrl();
+  const specialistsUrl = buildSessionSpecialistsUrl(sessionId);
 
   if (!sessionId || !company || !name || !email) {
     return NextResponse.json(
@@ -242,6 +243,14 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
+
+  await markDbReportUnlocked(sessionId, {
+    company,
+    name,
+    email,
+    phone,
+    message,
+  });
 
   return NextResponse.json({ ok: true });
 }

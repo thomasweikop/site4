@@ -50,7 +50,7 @@ export default async function FullRecommendationPage({
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/scan"
-                className="inline-flex bg-sage px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43]"
+                className="inline-flex bg-sage px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
               >
                 Start testen igen
               </Link>
@@ -114,7 +114,7 @@ export default async function FullRecommendationPage({
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href={buildSessionSpecialistsPath(sessionId)}
-                className="inline-flex bg-sage px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43]"
+                className="inline-flex bg-sage px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
               >
                 Specialist liste
               </Link>

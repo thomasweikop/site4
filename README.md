@@ -36,6 +36,7 @@ Required on Vercel:
 - `MAILERSEND_API_TOKEN`
 - `MAILERSEND_FROM_EMAIL`
 - `NIS2_CONTACT_EMAIL`
+- `DATABASE_URL` for database-backed sessions/results across devices
 
 Optional fallback / legacy variables still supported by the mail helper:
 
@@ -51,6 +52,14 @@ In Vercel Project Settings:
 3. Add the required environment variables for `Production`.
 4. Add the same environment variables for `Preview` if preview deployments should also send mail correctly.
 5. Redeploy after any environment variable change.
+
+## Database-backed sessions
+
+The scan can now persist report sessions in Postgres when `DATABASE_URL` is set.
+The app creates the `nis2_report_sessions` table automatically on first use, so
+no separate migration step is required for the MVP.
+
+Without `DATABASE_URL`, the UI falls back to browser-local storage for sessions.
 
 ## Notes
 

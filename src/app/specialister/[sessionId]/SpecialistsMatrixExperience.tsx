@@ -9,6 +9,7 @@ import {
   type VendorSizeFit,
   type VendorType,
 } from "@/lib/nis2BuildPack";
+import type { StoredReportSession } from "@/lib/nis2Session";
 import { INDUSTRY_OPTIONS, type IndustryValue } from "@/lib/nis2Scan";
 import {
   buildFollowupQuestionsPath,
@@ -18,6 +19,7 @@ import { useStoredReportSession } from "@/lib/useStoredReportSession";
 
 type SpecialistsMatrixExperienceProps = {
   sessionId: string;
+  initialSession?: StoredReportSession | null;
 };
 
 type TypeFilter = VendorType | "all";
@@ -83,8 +85,12 @@ function vendorMatchesSector(
 
 export default function SpecialistsMatrixExperience({
   sessionId,
+  initialSession = null,
 }: SpecialistsMatrixExperienceProps) {
-  const { clientReady, session, result } = useStoredReportSession(sessionId);
+  const { clientReady, session, result } = useStoredReportSession(
+    sessionId,
+    initialSession,
+  );
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [sizeFilter, setSizeFilter] = useState<SizeFilter>("all");
   const [sectorFilter, setSectorFilter] = useState<SectorFilter>("all");
@@ -142,7 +148,7 @@ export default function SpecialistsMatrixExperience({
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href="/scan"
-            className="inline-flex bg-sage px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43]"
+            className="inline-flex bg-sage px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
           >
             Start testen igen
           </Link>
@@ -261,7 +267,7 @@ export default function SpecialistsMatrixExperience({
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             href={buildRecommendedExpertsPath(sessionId)}
-            className="inline-flex bg-sage px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d4b43]"
+            className="inline-flex bg-sage px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
           >
             Anbefalede eksperter
           </Link>
