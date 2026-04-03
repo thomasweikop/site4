@@ -242,7 +242,7 @@ export default function ResultExperience({
                   videre til en konkret markedsdialog uden ekstra klik.
                 </p>
               </div>
-              <RecommendedExpertSections result={result} />
+              <RecommendedExpertSections result={result} sessionId={sessionId} />
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">

@@ -1,58 +1,15 @@
 "use client";
 
-import type { MatrixAreaKey } from "@/lib/nis2BuildPack";
+import Link from "next/link";
+import { buildSessionSpecialistsPath } from "@/lib/reportLinks";
+import { getMatrixKeysForAnalysisArea } from "@/lib/analysisAreaMatrix";
 import type { ScanResult } from "@/lib/nis2Scan";
-
-const ANALYSIS_AREA_TO_MATRIX_KEYS = {
-  "governance-risk-management": [
-    "governance",
-    "governance-responsibility",
-    "policies-documentation",
-    "risk-assessment",
-  ],
-  "incident-management": [
-    "operational",
-    "incident-response",
-    "logging-monitoring",
-  ],
-  "business-continuity-disaster-recovery": [
-    "operational",
-    "backup-recovery-continuity",
-  ],
-  "supply-chain-security": ["compliance", "supplier-management"],
-  "security-in-network-information-systems": [
-    "technical",
-    "asset-access-overview",
-    "logging-monitoring",
-  ],
-  "access-control-identity-management": [
-    "technical",
-    "identity-mfa-pam",
-    "asset-access-overview",
-  ],
-  "vulnerability-patch-management": [
-    "technical",
-    "asset-access-overview",
-    "audit-assurance",
-  ],
-  "monitoring-detection-logging": [
-    "technical",
-    "operational",
-    "logging-monitoring",
-  ],
-  "cryptography-data-protection": [
-    "technical",
-    "compliance",
-    "identity-mfa-pam",
-  ],
-  "awareness-training": ["operational", "training-awareness"],
-} satisfies Record<string, MatrixAreaKey[]>;
 
 export function getAreaSpecialists(result: ScanResult) {
   const usedCompanyNames = new Set<string>();
 
   return result.topAnalysisAreas.map((area) => {
-    const matrixKeys = ANALYSIS_AREA_TO_MATRIX_KEYS[area.key] ?? [];
+    const matrixKeys = getMatrixKeysForAnalysisArea(area.key);
     const specialists: typeof result.vendorFits = [];
     const areaCompanyNames = new Set<string>();
 
@@ -104,10 +61,12 @@ export function getAreaSpecialists(result: ScanResult) {
 
 type RecommendedExpertSectionsProps = {
   result: ScanResult;
+  sessionId: string;
 };
 
 export default function RecommendedExpertSections({
   result,
+  sessionId,
 }: RecommendedExpertSectionsProps) {
   const groupedSpecialists = getAreaSpecialists(result);
 
@@ -194,19 +153,31 @@ export default function RecommendedExpertSections({
                       >
                         Website
                       </a>
-                    <a
-                      href={item.vendor.website}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex bg-sage px-4 py-2 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
-                    >
-                      Find rette kontaktperson
-                    </a>
+                      <a
+                        href={item.vendor.website}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex bg-sage px-4 py-2 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
+                      >
+                        Find rette kontaktperson
+                      </a>
                     </div>
                   </div>
                 </article>
               );
             })}
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <Link
+              href={{
+                pathname: buildSessionSpecialistsPath(sessionId),
+                query: { area: area.key },
+              }}
+              className="inline-flex border border-line bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:bg-paper"
+            >
+              Se flere
+            </Link>
           </div>
         </section>
       ))}

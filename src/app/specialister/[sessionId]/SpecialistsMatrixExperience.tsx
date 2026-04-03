@@ -15,11 +15,13 @@ import {
   buildFollowupQuestionsPath,
   buildRecommendedExpertsPath,
 } from "@/lib/reportLinks";
+import { getMatrixKeysForAnalysisArea } from "@/lib/analysisAreaMatrix";
 import { useStoredReportSession } from "@/lib/useStoredReportSession";
 
 type SpecialistsMatrixExperienceProps = {
   sessionId: string;
   initialSession?: StoredReportSession | null;
+  initialAreaKey?: string;
 };
 
 type TypeFilter = VendorType | "all";
@@ -86,6 +88,7 @@ function vendorMatchesSector(
 export default function SpecialistsMatrixExperience({
   sessionId,
   initialSession = null,
+  initialAreaKey,
 }: SpecialistsMatrixExperienceProps) {
   const { clientReady, session, result } = useStoredReportSession(
     sessionId,
@@ -120,9 +123,27 @@ export default function SpecialistsMatrixExperience({
         return false;
       }
 
+      if (initialAreaKey) {
+        const matchingMatrixKeys = getMatrixKeysForAnalysisArea(initialAreaKey);
+
+        if (
+          matchingMatrixKeys.length > 0 &&
+          !matchingMatrixKeys.some((matrixKey) => vendor.matrixAreas[matrixKey])
+        ) {
+          return false;
+        }
+      }
+
       return true;
     });
-  }, [recommendedOnly, result, sectorFilter, sizeFilter, typeFilter]);
+  }, [
+    initialAreaKey,
+    recommendedOnly,
+    result,
+    sectorFilter,
+    sizeFilter,
+    typeFilter,
+  ]);
 
   if (!clientReady) {
     return (
@@ -163,6 +184,9 @@ export default function SpecialistsMatrixExperience({
     );
   }
 
+  const selectedArea =
+    result.topAnalysisAreas.find((area) => area.key === initialAreaKey) ?? null;
+
   return (
     <div className="space-y-6">
       <section className="border border-line bg-white p-8 shadow-[var(--shadow)] md:p-10">
@@ -179,6 +203,15 @@ export default function SpecialistsMatrixExperience({
               indsnævre overblikket og gå derefter videre til de anbefalede
               eksperter.
             </p>
+            {selectedArea ? (
+              <p className="mt-4 text-sm leading-7 text-soft md:text-base">
+                Listen er filtreret til området{" "}
+                <span className="font-semibold text-ink">
+                  {selectedArea.label}
+                </span>
+                .
+              </p>
+            ) : null}
           </div>
 
           <div className="grid min-w-[220px] gap-3">

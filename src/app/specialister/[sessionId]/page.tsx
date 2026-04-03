@@ -12,10 +12,16 @@ export const metadata: Metadata = {
 
 export default async function SessionSpecialistsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ sessionId: string }>;
+  searchParams: Promise<{ area?: string | string[] | undefined }>;
 }) {
   const { sessionId } = await params;
+  const resolvedSearchParams = await searchParams;
+  const areaParam = Array.isArray(resolvedSearchParams.area)
+    ? resolvedSearchParams.area[0]
+    : resolvedSearchParams.area;
   const initialSession = await getDbReportSession(sessionId);
 
   return (
@@ -27,6 +33,7 @@ export default async function SessionSpecialistsPage({
           <SpecialistsMatrixExperience
             sessionId={sessionId}
             initialSession={initialSession}
+            initialAreaKey={areaParam}
           />
         </div>
       </section>
