@@ -49,9 +49,14 @@ const ANALYSIS_AREA_TO_MATRIX_KEYS = {
 } satisfies Record<string, MatrixAreaKey[]>;
 
 export function getAreaSpecialists(result: ScanResult) {
+  const usedCompanyNames = new Set<string>();
+
   return result.topAnalysisAreas.map((area) => {
     const matrixKeys = ANALYSIS_AREA_TO_MATRIX_KEYS[area.key] ?? [];
-    const specialists = result.vendorFits
+    const specialists: typeof result.vendorFits = [];
+    const areaCompanyNames = new Set<string>();
+
+    const rankedCandidates = result.vendorFits
       .filter((item) =>
         matrixKeys.some((matrixKey) => item.vendor.matrixAreas[matrixKey]),
       )
@@ -68,8 +73,27 @@ export function getAreaSpecialists(result: ScanResult) {
         }
 
         return right.fitScore - left.fitScore;
-      })
-      .slice(0, 3);
+      });
+
+    for (const item of rankedCandidates) {
+      const normalizedCompanyName = item.vendor.name.trim().toLowerCase();
+
+      if (areaCompanyNames.has(normalizedCompanyName)) {
+        continue;
+      }
+
+      if (usedCompanyNames.has(normalizedCompanyName)) {
+        continue;
+      }
+
+      areaCompanyNames.add(normalizedCompanyName);
+      usedCompanyNames.add(normalizedCompanyName);
+      specialists.push(item);
+
+      if (specialists.length === 3) {
+        break;
+      }
+    }
 
     return {
       area,
