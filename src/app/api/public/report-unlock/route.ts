@@ -3,7 +3,6 @@ import { sendMail } from "@/lib/mail/sendMail";
 import {
   buildComplianceRecommendationsUrl,
   buildResultUrl,
-  buildSpecialistHelpUrl,
 } from "@/lib/reportLinks";
 import { markDbReportUnlocked } from "@/lib/reportSessionStore";
 
@@ -78,14 +77,7 @@ export async function POST(request: Request) {
   const weakestDimensions = (body.weakestDimensions ?? []).filter(Boolean);
   const blockers = (body.blockers ?? []).filter(Boolean);
   const nextSteps = (body.nextSteps ?? []).filter(Boolean);
-  const partnerRecommendations = (body.partnerRecommendations ?? []).filter(
-    Boolean,
-  );
-  const reportSnapshot = (body.reportSnapshot ?? "").trim();
   const trimmedExecutiveSummary = trimExecutiveSummary(body.executiveSummary);
-  const specialistHelpUrl = reportSnapshot
-    ? buildSpecialistHelpUrl(sessionId, reportSnapshot)
-    : "";
   const resultUrl = buildResultUrl(sessionId);
   const complianceRecommendationsUrl =
     buildComplianceRecommendationsUrl(sessionId);
@@ -129,9 +121,7 @@ export async function POST(request: Request) {
     buildList("Laveste dimensioner", weakestDimensions),
     buildList("Blockers", blockers),
     buildList("Initielle anbefalinger", nextSteps),
-    buildList("Partneranbefalinger", partnerRecommendations),
     resultUrl ? `Resultat: ${resultUrl}` : "",
-    specialistHelpUrl ? `Specialist-hjælp: ${specialistHelpUrl}` : "",
     "",
     "Besked:",
     message || "Ingen ekstra besked.",
@@ -158,15 +148,9 @@ export async function POST(request: Request) {
     ${buildHtmlList("Laveste dimensioner", weakestDimensions)}
     ${buildHtmlList("Blockers", blockers)}
     ${buildHtmlList("Initielle anbefalinger", nextSteps)}
-    ${buildHtmlList("Partneranbefalinger", partnerRecommendations)}
     ${
       resultUrl
         ? `<p><strong>Resultat:</strong> <a href="${escapeHtml(resultUrl)}">${escapeHtml(resultUrl)}</a></p>`
-        : ""
-    }
-    ${
-      specialistHelpUrl
-        ? `<p><strong>Specialist-hjælp:</strong> <a href="${escapeHtml(specialistHelpUrl)}">${escapeHtml(specialistHelpUrl)}</a></p>`
         : ""
     }
     <p><strong>Besked:</strong></p>
