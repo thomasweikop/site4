@@ -115,7 +115,6 @@ export default function ScanExperience({
   const profile = profileState ?? storedDraft?.profile ?? EMPTY_PROFILE;
   const answers = answersState ?? storedDraft?.answers ?? EMPTY_ANSWERS;
   const currentIndex = currentIndexState ?? storedDraft?.currentIndex ?? -1;
-  const draftRestored = clientReady && Boolean(storedDraft);
   const profileComplete = Boolean(
     profile.companySize && profile.industry && profile.role,
   );
@@ -299,16 +298,6 @@ export default function ScanExperience({
             <p className="mt-2 text-sm text-soft">
               {answeredCount} af {SCAN_QUESTIONS.length} spørgsmål er besvaret
             </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {draftRestored ? (
-              <span className="border border-line bg-paper px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#50635c]">
-                Kladde gendannet
-              </span>
-            ) : null}
-            <span className="border border-line bg-paper px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#50635c]">
-              Gemmes lokalt
-            </span>
           </div>
         </div>
 
