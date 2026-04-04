@@ -63,11 +63,13 @@ export default function SuperadminSidebar({ email }: SuperadminSidebarProps) {
                 href={item.href}
                 className={
                   active
-                    ? "flex items-center rounded-[1.6rem] bg-[#050a1f] px-6 py-5 text-lg font-semibold text-white"
+                    ? "flex items-center rounded-[1.6rem] bg-[#050a1f] px-6 py-5 text-lg font-semibold !text-white"
                     : "flex items-center rounded-[1.6rem] px-6 py-5 text-lg font-semibold text-ink transition hover:bg-paper"
                 }
               >
-                <span>{item.label}</span>
+                <span className={active ? "!text-white" : undefined}>
+                  {item.label}
+                </span>
               </Link>
             );
           })}
