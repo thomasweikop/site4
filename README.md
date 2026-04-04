@@ -36,7 +36,8 @@ Required on Vercel:
 - `MAILERSEND_API_TOKEN`
 - `MAILERSEND_FROM_EMAIL`
 - `NIS2_CONTACT_EMAIL`
-- `DATABASE_URL` for database-backed sessions/results across devices
+- `DATABASE_URL` for Supabase/Postgres-backed sessions, users, logs and superadmin
+- `SUPERADMIN_SESSION_SECRET` for signed superadmin login sessions
 
 Optional fallback / legacy variables still supported by the mail helper:
 
@@ -53,11 +54,30 @@ In Vercel Project Settings:
 4. Add the same environment variables for `Preview` if preview deployments should also send mail correctly.
 5. Redeploy after any environment variable change.
 
-## Database-backed sessions
+## Supabase setup checklist
 
-The scan can now persist report sessions in Postgres when `DATABASE_URL` is set.
-The app creates the `nis2_report_sessions` table automatically on first use, so
-no separate migration step is required for the MVP.
+This app uses plain Postgres over `DATABASE_URL`, so Supabase is used as the
+database backend rather than through the Supabase JavaScript client.
+
+For Vercel/serverless use, copy the **Supavisor transaction mode** connection
+string from Supabase into `DATABASE_URL`. The app already uses `postgres` with
+`prepare: false`, which matches Supabase's guidance for transaction mode.
+
+1. Open the correct Supabase project.
+2. Go to `Connect`.
+3. Copy the **Transaction pooler** connection string (port `6543`).
+4. Put that full connection string into Vercel as `DATABASE_URL`.
+5. Keep `sslmode=require` if Supabase includes it in the string.
+6. No manual SQL migration is required for the MVP; the app creates the
+   required tables automatically on first use.
+
+## Database-backed sessions and superadmin
+
+The scan now persists report sessions in Postgres when `DATABASE_URL` is set.
+Superadmin also stores admins, logs, specialist overrides, question overrides
+and scoring overrides in the same database. The app creates the required tables
+automatically on first use, so no separate migration step is required for the
+MVP.
 
 Without `DATABASE_URL`, the UI falls back to browser-local storage for sessions.
 

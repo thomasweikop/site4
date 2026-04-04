@@ -11,6 +11,14 @@ const requiredOnVercel = [
     name: "NIS2_CONTACT_EMAIL",
     reason: "used as the inbox that receives new lead notifications",
   },
+  {
+    name: "DATABASE_URL",
+    reason: "used for Supabase/Postgres-backed sessions, users, logs and superadmin",
+  },
+  {
+    name: "SUPERADMIN_SESSION_SECRET",
+    reason: "used to sign and verify the protected superadmin login session cookie",
+  },
 ];
 
 const isVercelBuild = process.env.VERCEL === "1";
