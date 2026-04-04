@@ -203,6 +203,15 @@ export default function ResultExperience({
               effekt først.
             </p>
 
+            <div className="mt-6">
+              <Link
+                href="/om-complycheck"
+                className="inline-flex bg-sage px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
+              >
+                Om ComplyCheck
+              </Link>
+            </div>
+
             <div className="mt-8 space-y-4">
               <div>
                 <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">

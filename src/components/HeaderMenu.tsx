@@ -97,6 +97,15 @@ export default function HeaderMenu({ inverse = false }: HeaderMenuProps) {
               {item.label}
             </span>
           ))}
+
+          <div className={`my-2 border-t ${dividerClassName}`} />
+
+          <Link
+            href="/om-complycheck"
+            className={`block px-4 py-3 text-sm font-semibold ${itemClassName}`}
+          >
+            Om ComplyCheck
+          </Link>
         </div>
       </details>
     </div>
