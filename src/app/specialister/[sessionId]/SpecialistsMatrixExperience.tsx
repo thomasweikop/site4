@@ -356,9 +356,6 @@ export default function SpecialistsMatrixExperience({
                 <th className="border-b border-line px-4 py-3 text-left font-semibold text-ink">
                   Company
                 </th>
-                <th className="border-b border-line px-4 py-3 text-left font-semibold text-ink">
-                  Primary type
-                </th>
                 {MATRIX_COLUMNS.map((column) => (
                   <th
                     key={column.key}
@@ -383,11 +380,11 @@ export default function SpecialistsMatrixExperience({
                   <td className="px-4 py-4">
                     <p className="font-semibold text-ink">{item.vendor.name}</p>
                     <p className="mt-2 text-xs leading-5 text-soft">
+                      {VENDOR_TYPE_META[item.vendor.type].label}
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-soft">
                       Fit score {item.fitScore}
                     </p>
-                  </td>
-                  <td className="px-4 py-4 text-soft">
-                    {VENDOR_TYPE_META[item.vendor.type].label}
                   </td>
                   {MATRIX_COLUMNS.map((column) => (
                     <td
