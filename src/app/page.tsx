@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import BrandWordmark from "@/components/BrandWordmark";
+import HeaderMenu from "@/components/HeaderMenu";
 import SiteFooter from "@/components/SiteFooter";
 
 const BENEFIT_POINTS = [
@@ -77,28 +78,7 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-6 md:px-8 lg:px-10">
           <header className="flex items-center justify-between gap-6 py-7">
             <BrandWordmark inverse />
-
-            <nav className="hidden items-center gap-8 text-sm font-semibold text-white/78 lg:flex">
-              <a href="#hvordan" className="transition hover:text-white">
-                Hvordan
-              </a>
-              <Link href="/about-nis2" className="transition hover:text-white">
-                Om NIS2
-              </Link>
-              <Link
-                href="/for-partners"
-                className="transition hover:text-white"
-              >
-                For partnere
-              </Link>
-            </nav>
-
-            <Link
-              href="/scan"
-              className="inline-flex border border-white/18 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/8"
-            >
-              Start scan
-            </Link>
+            <HeaderMenu inverse />
           </header>
 
           <div className="grid gap-12 pb-18 pt-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:pb-22">
