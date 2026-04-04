@@ -6,6 +6,7 @@ import {
   type VendorType,
 } from "@/lib/nis2BuildPack";
 import type { ReportSnapshot } from "@/lib/reportLinks";
+import { buildComplianceRecommendationsPath } from "@/lib/reportLinks";
 import type { StoredReportSession } from "@/lib/nis2Session";
 import { useStoredReportSession } from "@/lib/useStoredReportSession";
 import SpecialistHelpRequestForm from "./SpecialistHelpRequestForm";
@@ -50,6 +51,8 @@ export default function FullRecommendationExperience({
         ),
       )
     : [];
+  const complianceRecommendationsHref =
+    buildComplianceRecommendationsPath(sessionId);
 
   if (!result && !snapshot) {
     return (
@@ -118,6 +121,12 @@ export default function FullRecommendationExperience({
           className="inline-flex border border-line bg-paper px-5 py-3 text-sm font-semibold text-ink transition hover:bg-white"
         >
           Tilbage til resultatet
+        </Link>
+        <Link
+          href={complianceRecommendationsHref}
+          className="inline-flex bg-sage px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
+        >
+          Fortsæt til compliance anbefalinger
         </Link>
       </div>
     </div>

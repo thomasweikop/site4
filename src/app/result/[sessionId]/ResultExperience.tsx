@@ -282,7 +282,7 @@ export default function ResultExperience({
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href={specialistHelpHref}
-                  className="inline-flex bg-sage px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
+                  className="inline-flex bg-[#4c555d] px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#3e464d]"
                 >
                   Ja
                 </Link>
