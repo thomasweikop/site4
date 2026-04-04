@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getSuperadminOverview } from "@/lib/superadminStore";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Superadmin | ComplyCheck",
@@ -8,35 +8,33 @@ export const metadata: Metadata = {
 
 const CARDS = [
   {
-    key: "logCount",
+    href: "/superadmin/log",
     label: "Log",
     copy: "Hændelser fra brugere og superadmin på tværs af flow og redigeringer.",
   },
   {
-    key: "vendorCount",
+    href: "/superadmin/specialister",
     label: "Specialister",
     copy: "Profiler i specialistdatabasen som kan søges, justeres og vedligeholdes.",
   },
   {
-    key: "userCount",
+    href: "/superadmin/brugere",
     label: "Brugere",
     copy: "Indsendte kontaktoplysninger og eksisterende leads fra sessions.",
   },
   {
-    key: "questionCount",
+    href: "/superadmin/sporgsmal",
     label: "Spørgsmål",
     copy: "Spørgsmål, kategorier og anbefalingstekster i screeningflowet.",
   },
   {
-    key: "adminCount",
+    href: "/superadmin/admin",
     label: "Admin",
     copy: "Superadmin-brugere med adgang til backoffice.",
   },
 ] as const;
 
-export default async function SuperadminOverviewPage() {
-  const overview = await getSuperadminOverview();
-
+export default function SuperadminOverviewPage() {
   return (
     <div className="space-y-8">
       <section className="border border-line bg-white p-8 shadow-[var(--shadow)]">
@@ -54,20 +52,21 @@ export default async function SuperadminOverviewPage() {
 
       <section className="grid gap-5 md:grid-cols-2">
         {CARDS.map((card) => (
-          <article
-            key={card.key}
+          <Link
+            key={card.href}
+            href={card.href}
             className="border border-line bg-white p-8 shadow-[var(--shadow)]"
           >
             <p className="text-[0.74rem] font-semibold uppercase tracking-[0.26em] text-[#697b9e]">
               {card.label}
             </p>
-            <p className="mt-4 text-5xl font-semibold tracking-[-0.04em] text-[#050a1f]">
-              {overview[card.key]}
+            <p className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-[#050a1f]">
+              Gå til modul
             </p>
             <p className="mt-4 max-w-md text-sm leading-6 text-soft">
               {card.copy}
             </p>
-          </article>
+          </Link>
         ))}
       </section>
     </div>

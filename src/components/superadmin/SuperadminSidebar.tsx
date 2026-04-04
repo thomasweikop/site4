@@ -6,37 +6,24 @@ import { useState } from "react";
 
 type SuperadminSidebarProps = {
   email: string;
-  counts: {
-    logCount: number;
-    vendorCount: number;
-    userCount: number;
-    questionCount: number;
-    adminCount: number;
-  };
 };
-
-type CountKey = keyof SuperadminSidebarProps["counts"];
 
 type NavItem = {
   href: string;
   label: string;
-  countKey?: CountKey;
 };
 
 const NAV_ITEMS = [
-  { href: "/superadmin", label: "Overblik", countKey: "logCount" },
-  { href: "/superadmin/log", label: "Log", countKey: "logCount" },
-  { href: "/superadmin/specialister", label: "Specialister", countKey: "vendorCount" },
-  { href: "/superadmin/brugere", label: "Brugere", countKey: "userCount" },
-  { href: "/superadmin/sporgsmal", label: "Spørgsmål", countKey: "questionCount" },
+  { href: "/superadmin", label: "Overblik" },
+  { href: "/superadmin/log", label: "Log" },
+  { href: "/superadmin/specialister", label: "Specialister" },
+  { href: "/superadmin/brugere", label: "Brugere" },
+  { href: "/superadmin/sporgsmal", label: "Spørgsmål" },
   { href: "/superadmin/scoring", label: "Scoring" },
-  { href: "/superadmin/admin", label: "Admin", countKey: "adminCount" },
+  { href: "/superadmin/admin", label: "Admin" },
 ] satisfies NavItem[];
 
-export default function SuperadminSidebar({
-  email,
-  counts,
-}: SuperadminSidebarProps) {
+export default function SuperadminSidebar({ email }: SuperadminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [pendingLogout, setPendingLogout] = useState(false);
@@ -69,9 +56,6 @@ export default function SuperadminSidebar({
               item.href === "/superadmin"
                 ? pathname === "/superadmin"
                 : pathname.startsWith(item.href);
-            const countValue = item.countKey
-              ? counts[item.countKey]
-              : undefined;
 
             return (
               <Link
@@ -79,22 +63,11 @@ export default function SuperadminSidebar({
                 href={item.href}
                 className={
                   active
-                    ? "flex items-center justify-between rounded-[1.6rem] bg-[#050a1f] px-6 py-5 text-lg font-semibold text-white"
-                    : "flex items-center justify-between rounded-[1.6rem] px-6 py-5 text-lg font-semibold text-ink transition hover:bg-paper"
+                    ? "flex items-center rounded-[1.6rem] bg-[#050a1f] px-6 py-5 text-lg font-semibold text-white"
+                    : "flex items-center rounded-[1.6rem] px-6 py-5 text-lg font-semibold text-ink transition hover:bg-paper"
                 }
               >
                 <span>{item.label}</span>
-                {countValue !== undefined ? (
-                  <span
-                    className={
-                      active
-                        ? "rounded-full bg-white/18 px-3 py-1 text-sm text-white"
-                        : "rounded-full bg-paper px-3 py-1 text-sm text-soft"
-                    }
-                  >
-                    {countValue}
-                  </span>
-                ) : null}
               </Link>
             );
           })}
