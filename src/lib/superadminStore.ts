@@ -305,8 +305,26 @@ async function ensureSchema() {
       `;
 
       await sql`
+        create table if not exists nis2_report_sessions (
+          id text primary key,
+          created_at timestamptz not null default now(),
+          updated_at timestamptz not null default now(),
+          source text not null default 'scan',
+          profile jsonb not null,
+          answers jsonb not null,
+          unlocked_at timestamptz null,
+          unlock_lead jsonb null
+        )
+      `;
+
+      await sql`
         create index if not exists superadmin_event_log_created_at_idx
         on superadmin_event_log (created_at desc)
+      `;
+
+      await sql`
+        create index if not exists nis2_report_sessions_updated_at_idx
+        on nis2_report_sessions (updated_at desc)
       `;
 
       await sql`
@@ -773,7 +791,7 @@ export async function updateSubmittedUser(
 }
 
 export async function getSuperadminOverview() {
-  const [logs, vendors, users, questions, admins] = await Promise.all([
+  const [logs, vendors, users, questions, admins] = await Promise.allSettled([
     listSuperadminLogs(500),
     listEditableVendors(),
     listSubmittedUsers(),
@@ -782,10 +800,10 @@ export async function getSuperadminOverview() {
   ]);
 
   return {
-    logCount: logs.length,
-    vendorCount: vendors.length,
-    userCount: users.length,
-    questionCount: questions.length,
-    adminCount: admins.length,
+    logCount: logs.status === "fulfilled" ? logs.value.length : 0,
+    vendorCount: vendors.status === "fulfilled" ? vendors.value.length : 0,
+    userCount: users.status === "fulfilled" ? users.value.length : 0,
+    questionCount: questions.status === "fulfilled" ? questions.value.length : 0,
+    adminCount: admins.status === "fulfilled" ? admins.value.length : 0,
   };
 }
