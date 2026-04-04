@@ -10,6 +10,17 @@ export default function SuperadminLoginForm() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!email.trim()) {
+      setError("Email er påkrævet.");
+      return;
+    }
+
+    if (!password.trim()) {
+      setError("Password er påkrævet.");
+      return;
+    }
+
     setPending(true);
     setError(null);
 
@@ -62,9 +73,9 @@ export default function SuperadminLoginForm() {
           <input
             id="superadmin-email"
             type="email"
-            required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
+            autoComplete="username"
             className="w-full border border-line bg-paper px-4 py-3 text-sm text-ink outline-none transition focus:border-[#2a5a4f]"
           />
         </div>
@@ -79,9 +90,9 @@ export default function SuperadminLoginForm() {
           <input
             id="superadmin-password"
             type="password"
-            required
             value={password}
             onChange={(event) => setPassword(event.target.value)}
+            autoComplete="current-password"
             className="w-full border border-line bg-paper px-4 py-3 text-sm text-ink outline-none transition focus:border-[#2a5a4f]"
           />
         </div>
@@ -89,7 +100,7 @@ export default function SuperadminLoginForm() {
 
       <button
         type="submit"
-        disabled={pending}
+        disabled={pending || !email.trim() || !password.trim()}
         className="mt-6 inline-flex bg-[#050a1f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#101937] disabled:opacity-50"
       >
         {pending ? "Logger ind..." : "Log ind"}
