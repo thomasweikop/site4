@@ -199,9 +199,9 @@ export default function SpecialistsMatrixExperience({
               Specialister og de områder de typisk er gode til
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-soft md:text-base">
-              Tabellen viser alle 125 profiler i kataloget. Brug filtrene til at
-              indsnævre overblikket og gå derefter videre til de anbefalede
-              eksperter.
+              Tabellen viser alle {result.vendorDirectoryCount} profiler i
+              kataloget. Brug filtrene til at indsnævre overblikket og gå
+              derefter videre til de anbefalede eksperter.
             </p>
             {selectedArea ? (
               <p className="mt-4 text-sm leading-7 text-soft md:text-base">

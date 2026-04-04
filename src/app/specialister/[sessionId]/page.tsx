@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
+import { VENDOR_DIRECTORY } from "@/lib/nis2BuildPack";
 import { getDbReportSession } from "@/lib/reportSessionStore";
 import SpecialistsMatrixExperience from "./SpecialistsMatrixExperience";
+
+const TOTAL_VENDOR_COUNT = VENDOR_DIRECTORY.length;
 
 export const metadata: Metadata = {
   title: "Specialistoverblik | ComplyCheck",
   description:
-    "Se specialistmatrixen med alle 125 leverandører og de områder de matcher bedst for virksomhedens NIS2-behov.",
+    `Se specialistmatrixen med alle ${TOTAL_VENDOR_COUNT} leverandører og de områder de matcher bedst for virksomhedens NIS2-behov.`,
 };
 
 export default async function SessionSpecialistsPage({

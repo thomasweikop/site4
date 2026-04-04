@@ -7,10 +7,12 @@ import {
   type VendorType,
 } from "@/lib/nis2BuildPack";
 
+const TOTAL_VENDOR_COUNT = VENDOR_DIRECTORY.length;
+
 export const metadata: Metadata = {
   title: "Specialist Liste | ComplyCheck",
   description:
-    "Se hele specialistkataloget med 125 leverandører fordelt på legal, GRC, technical, SOC og audit.",
+    `Se hele specialistkataloget med ${TOTAL_VENDOR_COUNT} leverandørprofiler fordelt på legal, GRC, technical, SOC og audit.`,
 };
 
 const TYPE_ORDER: VendorType[] = ["legal", "grc", "technical", "soc", "audit"];
@@ -27,7 +29,7 @@ export default function SpecialistsPage() {
               Specialist liste
             </p>
             <h1 className="mt-4 text-balance font-display text-4xl leading-none text-ink md:text-[3.25rem]">
-              Alle 125 leverandører i kataloget
+              Alle {TOTAL_VENDOR_COUNT} leverandørprofiler i kataloget
             </h1>
             <p className="mt-4 max-w-4xl text-sm leading-7 text-soft md:text-base">
               Listen er organiseret efter leverandørtype og viser de profiler der
@@ -89,7 +91,7 @@ export default function SpecialistsPage() {
                           Market fit
                         </th>
                         <th className="border-b border-line px-4 py-3 text-left font-semibold text-ink">
-                          Vurdering af kompetencer
+                          Vurdering af NIS2 kompetencer
                         </th>
                         <th className="border-b border-line px-4 py-3 text-left font-semibold text-ink">
                           Website

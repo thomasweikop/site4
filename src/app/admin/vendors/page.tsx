@@ -3,9 +3,11 @@ import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import { VENDOR_DIRECTORY } from "@/lib/nis2BuildPack";
 
+const TOTAL_VENDOR_COUNT = VENDOR_DIRECTORY.length;
+
 export const metadata: Metadata = {
   title: "Admin Vendors | ComplyCheck",
-  description: "Internt katalog over de 125 leverandørprofiler i match-motoren.",
+  description: `Internt katalog over de ${TOTAL_VENDOR_COUNT} leverandørprofiler i match-motoren.`,
 };
 
 export default function AdminVendorsPage() {
