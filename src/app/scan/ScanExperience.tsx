@@ -10,6 +10,7 @@ import {
   saveScanDraft,
 } from "@/lib/nis2Session";
 import {
+  ANSWER_OPTIONS,
   COMPANY_SIZE_OPTIONS,
   INDUSTRY_OPTIONS,
   ROLE_OPTIONS,
@@ -38,7 +39,12 @@ type ScanExperienceProps = {
 const NOOP_SUBSCRIBE = () => () => {};
 const EMPTY_PROFILE: ProfileState = {};
 const EMPTY_ANSWERS: ScanAnswers = {};
-const RANDOM_ANSWER_VALUES: ScanAnswerValue[] = ["yes", "partial", "no"];
+const RANDOM_ANSWER_VALUES: ScanAnswerValue[] = [
+  "yes",
+  "partial",
+  "no",
+  "unknown",
+];
 
 function pickRandomValue<T>(values: readonly T[]) {
   return values[Math.floor(Math.random() * values.length)];
@@ -314,7 +320,7 @@ export default function ScanExperience({
               <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[#4c655d]">
                 Profilér resultatet
               </p>
-              <h2 className="mt-3 max-w-3xl font-display text-4xl leading-none text-ink md:text-[2.7rem]">
+              <h2 className="mt-3 max-w-3xl font-display text-[2.3rem] leading-[0.96] text-ink md:text-[2.45rem]">
                 Før virksomheden scores, skal der bruges lidt kontekst.
               </h2>
               <p className="mt-4 max-w-2xl text-base leading-7 text-soft">
@@ -401,26 +407,22 @@ export default function ScanExperience({
               <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[#4c655d]">
                 {currentQuestion?.category}
               </p>
-              <h2 className="mt-3 max-w-3xl font-display text-4xl leading-none text-ink md:text-[2.7rem]">
+              <h2 className="mt-3 max-w-3xl font-display text-[2.65rem] leading-[0.92] text-ink md:text-[2.95rem]">
                 {currentQuestion?.question}
               </h2>
             </div>
 
-            <div className="mt-6 grid gap-2.5">
-              {[
-                { value: "yes", label: "Ja" },
-                { value: "partial", label: "Delvist" },
-                { value: "no", label: "Nej" },
-              ].map((option) => {
+            <div className="mt-6 grid gap-2">
+              {ANSWER_OPTIONS.map((option) => {
                 const selected = currentAnswer === option.value;
 
                 return (
                   <button
                     key={option.value}
                     type="button"
-                    onClick={() => setAnswer(option.value as ScanAnswerValue)}
+                    onClick={() => setAnswer(option.value)}
                     className={classNames(
-                      "border px-4 py-4 text-left transition",
+                      "border px-4 py-3 text-left transition",
                       selected
                         ? "border-[#2a5a4f] bg-[#eff3ec]"
                         : "border-line bg-paper hover:bg-white",

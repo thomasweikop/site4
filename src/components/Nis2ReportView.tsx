@@ -147,6 +147,12 @@ export default function Nis2ReportView({
                   {result.breakdown.no}
                 </p>
               </div>
+              <div className="border border-line bg-paper px-4 py-4">
+                <p className="text-sm font-semibold text-ink">Ved ikke</p>
+                <p className="mt-1 text-2xl font-semibold text-ink">
+                  {result.breakdown.unknown}
+                </p>
+              </div>
             </div>
           </div>
 

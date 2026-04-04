@@ -46,6 +46,13 @@ export const ANSWER_OPTIONS = [
     pointsLabel: "1 point",
     description: "Et tydeligt gap der bør indgå i den første handlingsplan.",
   },
+  {
+    value: "unknown",
+    label: "Ved ikke",
+    pointsLabel: "2 point",
+    description:
+      "Der mangler overblik eller dokumentation nok til at kunne svare sikkert.",
+  },
 ] as const;
 
 export const COMPANY_SIZE_OPTIONS = [
@@ -75,6 +82,7 @@ const ANSWER_POINTS = {
   yes: 10,
   partial: 4,
   no: 1,
+  unknown: 2,
 } as const;
 
 const USER_DIMENSION_LABELS: Record<DimensionKey, string> = {
@@ -387,6 +395,7 @@ type AnswerBreakdown = {
   yes: number;
   partial: number;
   no: number;
+  unknown: number;
 };
 
 type ScoreBand = (typeof SCORE_BANDS)[number];
@@ -403,7 +412,9 @@ function getBand(percentage: number): ScoreBand {
 }
 
 function getAnswerLabel(answer: ScanAnswerValue) {
-  return ANSWER_OPTIONS.find((option) => option.value === answer)?.label ?? "Nej";
+  return (
+    ANSWER_OPTIONS.find((option) => option.value === answer)?.label ?? "Ved ikke"
+  );
 }
 
 function getOptionLabel<T extends readonly { value: string; label: string }[]>(
@@ -543,7 +554,8 @@ function getBlockers(
   return details
     .filter(
       (item) =>
-        SCORING_CONFIG.criticalBlockers.includes(item.id) && item.answer === "no",
+        SCORING_CONFIG.criticalBlockers.includes(item.id) &&
+        (item.answer === "no" || item.answer === "unknown"),
     )
     .map((item) => {
       const areaKey = getBlockerAreaKey(item.id);
@@ -1001,10 +1013,11 @@ export function calculateScanResult(
     yes: 0,
     partial: 0,
     no: 0,
+    unknown: 0,
   };
 
   const details = SCAN_QUESTIONS.map((question) => {
-    const answer = answers[question.id] ?? "no";
+    const answer = answers[question.id] ?? "unknown";
     breakdown[answer] += 1;
 
     const weightedMax = question.weight * 10;
