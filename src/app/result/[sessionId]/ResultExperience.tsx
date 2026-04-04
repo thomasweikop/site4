@@ -258,7 +258,7 @@ export default function ResultExperience({
               </Link>
             </div>
 
-            <div className="mt-10 border border-line bg-paper p-6 md:p-8">
+            <div className="mt-10 border border-line bg-white p-6 md:p-8">
               <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
                 Specialist-hjælp
               </p>
