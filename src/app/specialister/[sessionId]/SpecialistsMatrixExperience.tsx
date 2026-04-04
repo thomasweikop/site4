@@ -13,7 +13,6 @@ import type { StoredReportSession } from "@/lib/nis2Session";
 import { INDUSTRY_OPTIONS, type IndustryValue } from "@/lib/nis2Scan";
 import {
   buildFollowupQuestionsPath,
-  buildRecommendedExpertsPath,
 } from "@/lib/reportLinks";
 import { getMatrixKeysForAnalysisArea } from "@/lib/analysisAreaMatrix";
 import { useStoredReportSession } from "@/lib/useStoredReportSession";
@@ -298,12 +297,12 @@ export default function SpecialistsMatrixExperience({
         </div>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link
-            href={buildRecommendedExpertsPath(sessionId)}
+          <a
+            href="#search-results"
             className="inline-flex bg-sage px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
           >
             Søg
-          </Link>
+          </a>
           <Link
             href={buildFollowupQuestionsPath(sessionId)}
             className="inline-flex border border-line bg-paper px-6 py-3 text-sm font-semibold text-ink transition hover:bg-white"
@@ -319,7 +318,10 @@ export default function SpecialistsMatrixExperience({
         </div>
       </section>
 
-      <section className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
+      <section
+        id="search-results"
+        className="scroll-mt-28 border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8"
+      >
         <div className="overflow-x-auto">
           <table className="min-w-[1800px] border-collapse text-sm">
             <thead className="bg-paper">
