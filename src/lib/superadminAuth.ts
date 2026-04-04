@@ -37,7 +37,15 @@ export function verifySuperadminToken(token?: string | null) {
     return null;
   }
 
-  const [email, expiresAt, signature] = token.split(".");
+  const tokenParts = token.split(".");
+
+  if (tokenParts.length < 3) {
+    return null;
+  }
+
+  const signature = tokenParts.at(-1);
+  const expiresAt = tokenParts.at(-2);
+  const email = tokenParts.slice(0, -2).join(".");
 
   if (!email || !expiresAt || !signature) {
     return null;
