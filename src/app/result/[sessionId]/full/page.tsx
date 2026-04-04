@@ -6,9 +6,9 @@ import { getDbReportSession } from "@/lib/reportSessionStore";
 import FullRecommendationExperience from "./FullRecommendationExperience";
 
 export const metadata: Metadata = {
-  title: "Vigtigste Initiativer | ComplyCheck",
+  title: "Specialist-hjælp | ComplyCheck",
   description:
-    "Se de vigtigste initiativer og det samlede specialistoverblik bag virksomhedens NIS2-analyse.",
+    "Vælg områder og specialistspor, og få næste specialistoverblik sendt til email.",
 };
 
 type FullRecommendationPageProps = {

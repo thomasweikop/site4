@@ -167,6 +167,36 @@ export function buildFullRecommendationUrl(
   )}`;
 }
 
+export function buildResultPath(sessionId: string) {
+  return `/result/${sessionId}`;
+}
+
+export function buildResultUrl(sessionId: string) {
+  return `${getSiteUrl()}${buildResultPath(sessionId)}`;
+}
+
+export function buildSpecialistHelpPath(
+  sessionId: string,
+  encodedSnapshot?: string,
+) {
+  return buildFullRecommendationPath(sessionId, encodedSnapshot);
+}
+
+export function buildSpecialistHelpUrl(
+  sessionId: string,
+  encodedSnapshot?: string,
+) {
+  return buildFullRecommendationUrl(sessionId, encodedSnapshot);
+}
+
+export function buildComplianceRecommendationsPath(sessionId: string) {
+  return `/result/${sessionId}/anbefalinger`;
+}
+
+export function buildComplianceRecommendationsUrl(sessionId: string) {
+  return `${getSiteUrl()}${buildComplianceRecommendationsPath(sessionId)}`;
+}
+
 export function buildSpecialistsPath() {
   return "/specialists";
 }

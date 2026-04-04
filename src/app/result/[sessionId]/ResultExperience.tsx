@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useState } from "react";
 import {
   buildAreaDetailPath,
-  buildFullRecommendationPath,
+  buildComplianceRecommendationsPath,
   buildReportSnapshot,
+  buildSpecialistHelpPath,
   encodeReportSnapshot,
 } from "@/lib/reportLinks";
-import RecommendedExpertSections from "@/components/RecommendedExpertSections";
 import ReportUnlockForm from "@/components/ReportUnlockForm";
 import {
   getSessionReport,
@@ -62,6 +62,9 @@ export default function ResultExperience({
   );
   const [sessionOverride, setSessionOverride] =
     useState<StoredReportSession | null>(null);
+  const [specialistHelpDecision, setSpecialistHelpDecision] = useState<
+    "no" | null
+  >(null);
   const session = sessionOverride ?? storedSession;
 
   if (!clientReady) {
@@ -115,10 +118,12 @@ export default function ResultExperience({
     result,
   });
   const encodedReportSnapshot = encodeReportSnapshot(reportSnapshot);
-  const fullRecommendationHref = buildFullRecommendationPath(
+  const specialistHelpHref = buildSpecialistHelpPath(
     sessionId,
     encodedReportSnapshot,
   );
+  const complianceRecommendationsHref =
+    buildComplianceRecommendationsPath(sessionId);
 
   function handleUnlocked(lead: UnlockLead) {
     const updated = markReportUnlocked(sessionId, lead);
@@ -152,11 +157,17 @@ export default function ResultExperience({
             <h1 className="mt-4 text-balance font-display text-4xl leading-none text-ink md:text-[3.05rem]">
               Den initielle analyse er gennemført
             </h1>
-            <p className="mt-5 max-w-3xl text-sm leading-7 text-soft md:text-base">
-              Samlet score:{" "}
-              <span className="font-semibold text-ink">{result.percentage}%</span>.
-              {" "}Status: {statusNarrative}
-            </p>
+            <div className="mt-8 border border-line bg-paper px-6 py-6 text-center md:px-8 md:py-8">
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
+                Samlet score
+              </p>
+              <p className="mt-3 text-5xl font-semibold tracking-[-0.05em] text-ink md:text-[4.75rem]">
+                {result.percentage}%
+              </p>
+              <p className="mt-4 text-sm leading-7 text-soft md:text-base">
+                Status: {statusNarrative}
+              </p>
+            </div>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-soft md:text-base">
               Analysen er et første billede af virksomhedens NIS2-niveau baseret
               på egne besvarelser. Resultatet kan bruges til at prioritere de
@@ -231,27 +242,58 @@ export default function ResultExperience({
               </div>
             </div>
 
-            <div className="mt-10 space-y-4">
-              <div>
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-                  Anbefaling på specialister
-                </p>
-                <p className="mt-4 max-w-4xl text-sm leading-7 text-soft md:text-base">
-                  Nedenfor vises de specialister der matcher de vigtigste områder
-                  i den initielle analyse. Dermed kan virksomheden gå direkte
-                  videre til en konkret markedsdialog uden ekstra klik.
-                </p>
-              </div>
-              <RecommendedExpertSections result={result} sessionId={sessionId} />
-            </div>
-
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                href={fullRecommendationHref}
+                href={complianceRecommendationsHref}
                 className="inline-flex bg-sage px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
               >
-                Fortsæt til actions
+                Fortsæt til compliance anbefalinger
               </Link>
+            </div>
+
+            <div className="mt-10 border border-line bg-paper p-6 md:p-8">
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
+                Specialist-hjælp
+              </p>
+              <h2 className="mt-4 text-balance font-display text-[2rem] leading-none text-ink md:text-[2.5rem]">
+                Ønsker virksomheden hjælp til at identificere specialister?
+              </h2>
+              <p className="mt-4 max-w-4xl text-sm leading-7 text-soft md:text-base">
+                Hvis virksomheden ønsker hjælp til at identificere specialister
+                der kan hjælpe videre på de vigtigste områder, kan ComplyCheck
+                samle næste specialistspor og sende det videre på email.
+              </p>
+              <ul className="mt-5 grid gap-2 text-sm leading-7 text-soft md:text-base">
+                {result.topAnalysisAreas.map((area) => (
+                  <li key={area.key} className="flex items-start gap-3">
+                    <span className="mt-[2px] text-ink">•</span>
+                    <span>{area.label}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link
+                  href={specialistHelpHref}
+                  className="inline-flex bg-sage px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
+                >
+                  Ja
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setSpecialistHelpDecision("no")}
+                  className="inline-flex border border-line bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:bg-paper"
+                >
+                  Nej
+                </button>
+              </div>
+
+              {specialistHelpDecision === "no" ? (
+                <p className="mt-4 text-sm leading-6 text-soft">
+                  Det er helt fint. Specialist-hjælp kan altid vælges senere via
+                  den email der allerede er sendt til virksomheden.
+                </p>
+              ) : null}
             </div>
           </div>
         </section>

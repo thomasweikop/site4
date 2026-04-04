@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import {
+  VENDOR_TYPE_META,
+  type VendorType,
+} from "@/lib/nis2BuildPack";
 import type { ReportSnapshot } from "@/lib/reportLinks";
 import type { StoredReportSession } from "@/lib/nis2Session";
 import { useStoredReportSession } from "@/lib/useStoredReportSession";
-import {
-  buildActionRequestPath,
-  buildRecommendedExpertsPath,
-} from "@/lib/reportLinks";
+import SpecialistHelpRequestForm from "./SpecialistHelpRequestForm";
 
 type FullRecommendationExperienceProps = {
   sessionId: string;
@@ -33,12 +34,22 @@ export default function FullRecommendationExperience({
     );
   }
 
-  const areas =
-    result?.topAnalysisAreas ?? snapshot?.topAnalysisAreas ?? [];
-  const company =
-    session?.unlockLead?.company?.trim() || snapshot?.company || "Virksomheden";
-  const recommendedExpertsHref = buildRecommendedExpertsPath(sessionId);
-  const actionRequestHref = buildActionRequestPath(sessionId);
+  const areaOptions = result
+    ? result.topAnalysisAreas.map((area) => ({
+        key: area.key,
+        label: area.label,
+      }))
+    : (snapshot?.topAnalysisAreas ?? []).map((area, index) => ({
+        key: `${area.label}-${index}`,
+        label: area.label,
+      }));
+  const initialTrackTypes = result
+    ? Array.from(
+        new Set(
+          result.partnerRecommendations.map((recommendation) => recommendation.type),
+        ),
+      )
+    : [];
 
   if (!result && !snapshot) {
     return (
@@ -74,72 +85,41 @@ export default function FullRecommendationExperience({
   return (
     <div className="space-y-6">
       <section className="border border-line bg-white p-8 shadow-[var(--shadow)] md:p-10">
+        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
+          Specialist-hjælp
+        </p>
         <h1 className="mt-4 max-w-5xl text-balance font-display text-4xl leading-none text-ink md:text-[3.2rem]">
-          Vælg næste action
+          Vælg hvilke specialistspor der skal prioriteres
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-7 text-soft md:text-base">
-          Vælg næste skridt baseret på de vigtigste områder i analysen af{" "}
-          {company}.
+          Nedenfor vælges de områder og typer af specialist-hjælp som bør indgå
+          i næste søgning. Når virksomheden har valgt fokus, sender ComplyCheck
+          næste specialistoverblik på email.
         </p>
-        <div className="mt-8 grid gap-6">
-          <article className="border border-line bg-paper p-6">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#4c655d]">
-              1 Find de rette rådgivere
-            </p>
-            <p className="mt-4 text-sm leading-7 text-soft md:text-base">
-              Vi har screenet det danske marked for rådgivere og specialister med
-              fokus på NIS2-relaterede kompetencer. Ud fra virksomhedens
-              vigtigste fokusområder kan listen bruges som en hurtig shortlist,
-              før virksomheden vælger hvem der skal kontaktes først. Det giver et
-              mere fokuseret udgangspunkt for næste dialog.
-            </p>
-
-            <div className="mt-6">
-              <p className="text-sm font-semibold text-ink">
-                Vis en liste med specialister indenfor:
-              </p>
-              <ul className="mt-4 grid gap-2 text-sm leading-7 text-soft md:text-base">
-                {areas.map((area) => (
-                  <li key={area.label}>• {area.label}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="mt-8">
-              <Link
-                href={recommendedExpertsHref}
-                className="inline-flex bg-sage px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
-              >
-                Vis rådgivere
-              </Link>
-            </div>
-          </article>
-
-          <article className="border border-line bg-paper p-6">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#4c655d]">
-              2 Målrettede initiativer
-            </p>
-            <p className="mt-4 text-sm leading-7 text-soft md:text-base">
-              Målrettede initiativer kræver mere information om virksomheden end
-              den indledende screening kan give alene. ComplyCheck kan hjælpe med
-              at skabe et bedre overblik over gaps, den konkrete prioritering og
-              hvilke rådgivere der er bedst egnet til at løfte næste skridt.
-              Det gør det lettere at omsætte analysen til en realistisk
-              actionliste og et mere konkret beslutningsgrundlag for
-              virksomheden.
-            </p>
-
-            <div className="mt-8">
-              <Link
-                href={actionRequestHref}
-                className="inline-flex bg-sage px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
-              >
-                Send mail
-              </Link>
-            </div>
-          </article>
-        </div>
       </section>
+
+      <SpecialistHelpRequestForm
+        sessionId={sessionId}
+        initialCompany={session?.unlockLead?.company ?? snapshot?.company}
+        initialName={session?.unlockLead?.name}
+        initialTitle={session?.unlockLead?.title}
+        initialEmail={session?.unlockLead?.email}
+        areaOptions={areaOptions}
+        initialTrackTypes={
+          initialTrackTypes.length > 0
+            ? (initialTrackTypes as VendorType[])
+            : (Object.keys(VENDOR_TYPE_META).slice(0, 3) as VendorType[])
+        }
+      />
+
+      <div className="flex flex-wrap gap-3">
+        <Link
+          href={`/result/${sessionId}`}
+          className="inline-flex border border-line bg-paper px-5 py-3 text-sm font-semibold text-ink transition hover:bg-white"
+        >
+          Tilbage til resultatet
+        </Link>
+      </div>
     </div>
   );
 }

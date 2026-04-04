@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { sendMail } from "@/lib/mail/sendMail";
 import {
-  buildFullRecommendationUrl,
-  buildSessionSpecialistsUrl,
+  buildResultUrl,
+  buildSpecialistHelpUrl,
 } from "@/lib/reportLinks";
 import { markDbReportUnlocked } from "@/lib/reportSessionStore";
 
@@ -73,10 +73,10 @@ export async function POST(request: Request) {
     Boolean,
   );
   const reportSnapshot = (body.reportSnapshot ?? "").trim();
-  const fullRecommendationUrl = reportSnapshot
-    ? buildFullRecommendationUrl(sessionId, reportSnapshot)
+  const specialistHelpUrl = reportSnapshot
+    ? buildSpecialistHelpUrl(sessionId, reportSnapshot)
     : "";
-  const specialistsUrl = buildSessionSpecialistsUrl(sessionId);
+  const resultUrl = buildResultUrl(sessionId);
 
   if (!sessionId || !company || !name || !email) {
     return NextResponse.json(
@@ -118,8 +118,8 @@ export async function POST(request: Request) {
     buildList("Blockers", blockers),
     buildList("Initielle anbefalinger", nextSteps),
     buildList("Partneranbefalinger", partnerRecommendations),
-    fullRecommendationUrl ? `Fuld anbefaling: ${fullRecommendationUrl}` : "",
-    `Specialist liste: ${specialistsUrl}`,
+    resultUrl ? `Resultat: ${resultUrl}` : "",
+    specialistHelpUrl ? `Specialist-hjælp: ${specialistHelpUrl}` : "",
     "",
     "Besked:",
     message || "Ingen ekstra besked.",
@@ -148,11 +148,15 @@ export async function POST(request: Request) {
     ${buildHtmlList("Initielle anbefalinger", nextSteps)}
     ${buildHtmlList("Partneranbefalinger", partnerRecommendations)}
     ${
-      fullRecommendationUrl
-        ? `<p><strong>Fuld anbefaling:</strong> <a href="${escapeHtml(fullRecommendationUrl)}">${escapeHtml(fullRecommendationUrl)}</a></p>`
+      resultUrl
+        ? `<p><strong>Resultat:</strong> <a href="${escapeHtml(resultUrl)}">${escapeHtml(resultUrl)}</a></p>`
         : ""
     }
-    <p><strong>Specialist liste:</strong> <a href="${escapeHtml(specialistsUrl)}">${escapeHtml(specialistsUrl)}</a></p>
+    ${
+      specialistHelpUrl
+        ? `<p><strong>Specialist-hjælp:</strong> <a href="${escapeHtml(specialistHelpUrl)}">${escapeHtml(specialistHelpUrl)}</a></p>`
+        : ""
+    }
     <p><strong>Besked:</strong></p>
     <p>${safeMessage}</p>
   `;
@@ -190,11 +194,18 @@ export async function POST(request: Request) {
     buildList("Initielle anbefalinger", nextSteps),
     buildList("Prioriterede konsulentprofiler", partnerRecommendations),
     "",
-    "Se mere detaljerede anbefalinger",
-    fullRecommendationUrl || "",
+    "Se analysens resultat",
+    resultUrl,
     "",
-    "Anbefalede specialister",
-    specialistsUrl,
+    "Ønsker virksomheden hjælp til at identificere specialister der kan hjælpe på de vigtigste områder?",
+    "Vælg hvilke områder og specialistspor der ønskes hjælp indenfor. Så sender ComplyCheck næste specialistoverblik på email.",
+    specialistHelpUrl || "",
+    "",
+    "Det bliver sendt til:",
+    `Virksomhed: ${company}`,
+    `Navn: ${name}`,
+    `Titel: ${title || "Ikke angivet"}`,
+    `Email: ${email}`,
     "",
     "Anbefalingerne er lavet som et første modenhedsbillede og bør læses som beslutningsgrundlag for næste prioritering.",
   ]
@@ -203,10 +214,12 @@ export async function POST(request: Request) {
 
   const buttonBaseStyle =
     "display:inline-block;padding:12px 18px;border:1px solid #cfd6cc;font-weight:600;text-decoration:none;margin-right:12px;margin-top:8px;";
-  const fullRecommendationButton = fullRecommendationUrl
-    ? `<a href="${escapeHtml(fullRecommendationUrl)}" style="${buttonBaseStyle}background:#073832;color:#ffffff;border-color:#073832;">Se mere detaljerede anbefalinger</a>`
+  const resultButton = resultUrl
+    ? `<a href="${escapeHtml(resultUrl)}" style="${buttonBaseStyle}background:#073832;color:#ffffff;border-color:#073832;">Se analysens resultat</a>`
     : "";
-  const specialistButton = `<a href="${escapeHtml(specialistsUrl)}" style="${buttonBaseStyle}background:#ffffff;color:#073832;">Specialist liste</a>`;
+  const specialistHelpButton = specialistHelpUrl
+    ? `<a href="${escapeHtml(specialistHelpUrl)}" style="${buttonBaseStyle}background:#ffffff;color:#073832;">Vælg specialist-hjælp</a>`
+    : "";
 
   const userHtml = `
     <p>Hej ${safeName},</p>
@@ -223,14 +236,20 @@ export async function POST(request: Request) {
     ${buildHtmlList("Eventuelle blockers", blockers)}
     ${buildHtmlList("Initielle anbefalinger", nextSteps)}
     ${buildHtmlList("Prioriterede konsulentprofiler", partnerRecommendations)}
-    <p><strong>Se mere detaljerede anbefalinger</strong></p>
+    <p><strong>Se analysens resultat</strong></p>
     <p>
-      ${fullRecommendationButton}
+      ${resultButton}
     </p>
-    <p><strong>Anbefalede specialister</strong></p>
+    <p><strong>Ønsker virksomheden hjælp til at identificere specialister der kan hjælpe på de vigtigste områder?</strong></p>
+    <p>Vælg hvilke områder og specialistspor der ønskes hjælp indenfor. Så sender ComplyCheck næste specialistoverblik på email.</p>
     <p>
-      ${specialistButton}
+      ${specialistHelpButton}
     </p>
+    <p><strong>Det bliver sendt til</strong></p>
+    <p><strong>Virksomhed:</strong> ${safeCompany}<br />
+    <strong>Navn:</strong> ${safeName}<br />
+    <strong>Titel:</strong> ${safeTitle}<br />
+    <strong>Email:</strong> ${safeEmail}</p>
     <p>Anbefalingerne er lavet som et første modenhedsbillede og bør læses som beslutningsgrundlag for næste prioritering.</p>
   `;
 
