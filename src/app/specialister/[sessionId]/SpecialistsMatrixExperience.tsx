@@ -350,7 +350,7 @@ export default function SpecialistsMatrixExperience({
         className="scroll-mt-28 border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8"
       >
         <div className="overflow-x-auto">
-          <table className="min-w-[1800px] border-collapse text-sm">
+          <table className="min-w-[1420px] border-collapse text-sm">
             <thead className="bg-paper">
               <tr>
                 <th className="border-b border-line px-4 py-3 text-left font-semibold text-ink">
@@ -362,9 +362,11 @@ export default function SpecialistsMatrixExperience({
                 {MATRIX_COLUMNS.map((column) => (
                   <th
                     key={column.key}
-                    className="border-b border-line px-4 py-3 text-center font-semibold text-ink"
+                    className="h-[170px] w-[58px] border-b border-line px-2 py-3 align-bottom text-center font-semibold text-ink"
                   >
-                    {column.label}
+                    <span className="inline-block whitespace-nowrap [writing-mode:vertical-rl] rotate-180">
+                      {column.label}
+                    </span>
                   </th>
                 ))}
                 <th className="border-b border-line px-4 py-3 text-left font-semibold text-ink">
