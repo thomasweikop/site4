@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function SuperadminLoginForm() {
-  const router = useRouter();
   const [email, setEmail] = useState("thomas.weikop@gmail.com");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -29,8 +27,7 @@ export default function SuperadminLoginForm() {
         return;
       }
 
-      router.push("/superadmin");
-      router.refresh();
+      window.location.href = "/superadmin";
     } catch {
       setError("Netværksfejl under login.");
     } finally {
