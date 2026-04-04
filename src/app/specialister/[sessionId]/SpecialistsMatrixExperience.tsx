@@ -302,7 +302,7 @@ export default function SpecialistsMatrixExperience({
             href={buildRecommendedExpertsPath(sessionId)}
             className="inline-flex bg-sage px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
           >
-            Anbefalede eksperter
+            Søg
           </Link>
           <Link
             href={buildFollowupQuestionsPath(sessionId)}
