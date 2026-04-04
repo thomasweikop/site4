@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import PercentageRing from "@/components/PercentageRing";
 import {
   buildAreaDetailPath,
   buildComplianceRecommendationsPath,
@@ -219,9 +220,15 @@ export default function ResultExperience({
                             {area.label}
                           </h2>
                           <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[#4c655d]">
-                            {area.complianceLabel} · {area.percentage}%
+                            {area.complianceLabel}
                           </p>
                         </div>
+                        <PercentageRing
+                          percentage={area.percentage}
+                          label={area.label}
+                          size={98}
+                          strokeWidth={11}
+                        />
                       </div>
 
                       <p className="mt-4 text-sm leading-7 text-soft md:text-base">

@@ -36,14 +36,14 @@ export const ANSWER_OPTIONS = [
   {
     value: "partial",
     label: "Delvist",
-    pointsLabel: "5 point",
+    pointsLabel: "4 point",
     description:
       "Noget er på plads, men modenheden er for ujævn til at være tryg.",
   },
   {
     value: "no",
     label: "Nej",
-    pointsLabel: "0 point",
+    pointsLabel: "1 point",
     description: "Et tydeligt gap der bør indgå i den første handlingsplan.",
   },
 ] as const;
@@ -73,8 +73,8 @@ export const ROLE_OPTIONS = [
 
 const ANSWER_POINTS = {
   yes: 10,
-  partial: 5,
-  no: 0,
+  partial: 4,
+  no: 1,
 } as const;
 
 const USER_DIMENSION_LABELS: Record<DimensionKey, string> = {

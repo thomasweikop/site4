@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import PercentageRing from "@/components/PercentageRing";
 import { buildSessionSpecialistsPath } from "@/lib/reportLinks";
 import { getMatrixKeysForAnalysisArea } from "@/lib/analysisAreaMatrix";
 import type { ScanResult } from "@/lib/nis2Scan";
@@ -86,10 +87,16 @@ export default function RecommendedExpertSections({
               <p className="mt-3 max-w-3xl text-sm leading-7 text-soft md:text-base">
                 {area.description}
               </p>
+              <p className="mt-3 text-xs uppercase tracking-[0.18em] text-[#4c655d]">
+                {area.complianceLabel}
+              </p>
             </div>
-            <span className="border border-line bg-paper px-4 py-2 text-sm text-ink">
-              {area.complianceLabel} · {area.percentage}%
-            </span>
+            <PercentageRing
+              percentage={area.percentage}
+              label={area.label}
+              size={102}
+              strokeWidth={11}
+            />
           </div>
 
           <div className="mt-6 grid gap-4">

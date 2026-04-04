@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import PercentageRing from "@/components/PercentageRing";
 import {
   getExpandedGuidanceBullets,
   getGuidanceAreaByKey,
@@ -79,8 +80,16 @@ export default function AreaDetailExperience({
         </p>
 
         {areaResult ? (
-          <div className="mt-6 inline-flex border border-line bg-paper px-4 py-2 text-sm text-ink">
-            {areaResult.complianceLabel} · {areaResult.percentage}%
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <div className="text-sm uppercase tracking-[0.18em] text-[#4c655d]">
+              {areaResult.complianceLabel}
+            </div>
+            <PercentageRing
+              percentage={areaResult.percentage}
+              label={areaDefinition.label}
+              size={102}
+              strokeWidth={11}
+            />
           </div>
         ) : null}
       </section>
