@@ -166,7 +166,7 @@ export default function RecommendedExpertSections({
                         rel="noreferrer"
                         className="inline-flex bg-sage px-4 py-2 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
                       >
-                        Find rette kontaktperson
+                        Kontakt selskabet
                       </a>
                     </div>
                   </div>

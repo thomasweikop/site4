@@ -57,6 +57,23 @@ TARGET_COUNTS = {
     "Audit": 41,
 }
 
+SIZE_FIT_OVERRIDES = {
+    "Legal": {
+        "ComplianceLaw": "SMB, mid-market, enterprise",
+        "Codex Advokater": "SMB, mid-market",
+        "DANDERS & MORE": "SMB, mid-market",
+        "DELACOUR": "SMB, mid-market, enterprise",
+        "Elmann": "SMB, mid-market",
+        "Focus Advokater": "SMB, mid-market, enterprise",
+        "HjulmandKaptain": "SMB, mid-market, enterprise",
+        "Kielberg Advokater": "SMB, mid-market",
+        "Lund Elmer Sandager": "SMB, mid-market, enterprise",
+        "Roesgaard Advokater": "SMB, mid-market, enterprise",
+        "TVC Advokatfirma": "SMB, mid-market, enterprise",
+        "WSCO Advokatpartnerselskab": "SMB, mid-market",
+    }
+}
+
 TEMPLATE_BY_TYPE = {
     "Legal": "Horten",
     "GRC": "NorthGRC",
@@ -861,6 +878,9 @@ def translate_existing_row(row: dict[str, str]) -> dict[str, str]:
     )
     updated["Recommended_role"] = DEFAULT_ROLE_BY_TYPE[updated["Primary_type"]]
     updated["Recommended_when"] = DEFAULT_ROLE_BY_TYPE[updated["Primary_type"]]
+    override = SIZE_FIT_OVERRIDES.get(updated["Primary_type"], {}).get(updated["Company"])
+    if override:
+        updated["Size_fit"] = override
     return updated
 
 

@@ -196,7 +196,7 @@ export default function SpecialistsMatrixExperience({
               Specialistoverblik
             </p>
             <h1 className="mt-4 text-balance font-display text-4xl leading-none text-ink md:text-[3.25rem]">
-              Specialister og de områder de typisk er gode til
+              Søgning på relevante rådgivere
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-soft md:text-base">
               Tabellen viser alle {result.vendorDirectoryCount} profiler i
