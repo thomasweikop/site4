@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Nis2Badge from "@/components/Nis2Badge";
 
 type HeaderMenuProps = {
   inverse?: boolean;
@@ -22,9 +23,6 @@ const OTHER_SITE_ITEMS = [
 ] as const;
 
 export default function HeaderMenu({ inverse = false }: HeaderMenuProps) {
-  const badgeClassName = inverse
-    ? "bg-black text-white"
-    : "bg-black text-white";
   const summaryClassName = inverse
     ? "border border-white/18 bg-transparent text-white hover:bg-white/8"
     : "border border-line bg-white text-ink hover:bg-[#f4f0e7]";
@@ -40,11 +38,7 @@ export default function HeaderMenu({ inverse = false }: HeaderMenuProps) {
 
   return (
     <div className="flex items-center gap-3">
-      <span
-        className={`inline-flex px-4 py-2 text-sm font-semibold uppercase tracking-[0.16em] ${badgeClassName}`}
-      >
-        NIS2
-      </span>
+      <Nis2Badge className="h-11 w-11 shrink-0" />
 
       <details className="group relative">
         <summary
