@@ -1,14 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ANSWER_OPTIONS, SCAN_QUESTIONS } from "@/lib/nis2Scan";
 import BrandWordmark from "@/components/BrandWordmark";
 import SiteFooter from "@/components/SiteFooter";
-import Nis2LeadForm from "./Nis2LeadForm";
 
 const BENEFIT_POINTS = [
   "Et første, hurtigt overblik over governance, beredskab og adgangsstyring.",
   "Et fælles beslutningsgrundlag for ledelse, IT og sikkerhedsansvarlige.",
-  "Et mere roligt næste skridt mod rådgivning, teknologi og intern prioritering.",
+  "Et enkel model til rådgivning, teknologi og intern prioritering.",
 ];
 
 const HOW_IT_WORKS = [
@@ -31,24 +29,6 @@ const HOW_IT_WORKS = [
     step: "04",
     title: "Brug det som beslutningsgrundlag",
     text: "Scoren er ikke målet i sig selv, men et mere konkret grundlag for næste prioritering.",
-  },
-] as const;
-
-const FAQ_ITEMS = [
-  {
-    question: "Er dette en juridisk afgørelse af om vi er omfattet?",
-    answer:
-      "Nej. Screeningen er et første modenheds- og gap-billede. Den erstatter ikke en egentlig juridisk eller regulatorisk vurdering.",
-  },
-  {
-    question: "Hvor lang tid tager screeningen?",
-    answer:
-      "Målet er 2-3 minutter. Den er lavet til at kunne gennemføres hurtigt uden at organisationen først skal samle omfattende dokumentation.",
-  },
-  {
-    question: "Hvad får vi ud af resultatet?",
-    answer:
-      "Virksomheden får en vægtet score, de vigtigste mangler og de første anbefalede næste skridt, så resultatet kan bruges i en reel intern drøftelse.",
   },
 ] as const;
 
@@ -102,12 +82,6 @@ export default function Home() {
               <a href="#hvordan" className="transition hover:text-white">
                 Hvordan
               </a>
-              <a href="#spoergsmaal" className="transition hover:text-white">
-                Spørgsmål
-              </a>
-              <a href="#score" className="transition hover:text-white">
-                Score
-              </a>
               <Link href="/about-nis2" className="transition hover:text-white">
                 Om NIS2
               </Link>
@@ -117,9 +91,6 @@ export default function Home() {
               >
                 For partnere
               </Link>
-              <a href="#kontakt" className="transition hover:text-white">
-                Kontakt
-              </a>
             </nav>
 
             <Link
@@ -243,111 +214,6 @@ export default function Home() {
               </article>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section
-        id="spoergsmaal"
-        className="border-y border-line bg-paper px-6 py-18 md:px-8 md:py-20 lg:px-10"
-      >
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.06fr_0.94fr]">
-          <div>
-            <SectionHeading
-              eyebrow="Screening"
-              title="De 10 spørgsmål fokuserer på de områder der typisk betyder mest først."
-              text="Governance, risiko, incident response, leverandører, adgang og test er valgt, fordi de giver et forholdsvis stærkt første signal."
-            />
-
-            <div className="mt-10 grid gap-4">
-              {SCAN_QUESTIONS.map((item) => (
-                <article
-                  key={item.id}
-                  className="border border-line bg-white px-5 py-5 shadow-[var(--shadow)]"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[#4c655d]">
-                        {item.category}
-                      </p>
-                      <h3 className="mt-2 text-lg font-semibold text-ink">
-                        {item.question}
-                      </h3>
-                    </div>
-                    <div className="border border-line bg-paper px-3 py-1 text-xs font-semibold text-soft">
-                      {item.id}
-                    </div>
-                  </div>
-
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {ANSWER_OPTIONS.map((answer) => (
-                      <span
-                        key={answer.value}
-                        className="border border-line bg-paper px-3 py-2 text-sm font-medium text-soft"
-                      >
-                        {answer.label}
-                      </span>
-                    ))}
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-
-          <div id="score" className="space-y-6">
-            <div className="border border-line bg-white p-6 shadow-[var(--shadow)]">
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-                Eksempel på output
-              </p>
-              <div className="mt-5 flex items-end justify-between gap-4">
-                <div>
-                  <p className="font-display text-6xl leading-none text-ink">
-                    62%
-                  </p>
-                  <p className="mt-3 text-sm text-soft">Delvist compliant</p>
-                </div>
-                <div className="border border-[#d2d8cb] bg-[#f2f3ee] px-4 py-2 text-sm font-medium text-ink">
-                  Behov for prioritering
-                </div>
-              </div>
-
-              <div className="mt-6 h-2 overflow-hidden bg-[#dde5df]">
-                <div className="h-full w-[62%] bg-[#2a5a4f]" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="kontakt" className="px-6 py-18 md:px-8 md:py-20 lg:px-10">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.82fr_1.18fr]">
-          <div>
-            <SectionHeading
-              eyebrow="Kontakt"
-              title="Når resultatet peger på mangler, er næste skridt at prioritere dem roligt og i den rigtige rækkefølge."
-              text="Brug formularen, hvis resultatet skal omsættes til en mere konkret drøftelse om governance, teknologi eller implementering."
-            />
-
-            <div className="mt-8 grid gap-3">
-              {FAQ_ITEMS.map((item) => (
-                <article
-                  key={item.question}
-                  className="border border-line bg-white px-5 py-5 shadow-[var(--shadow)]"
-                >
-                  <h3 className="text-lg font-semibold text-ink">
-                    {item.question}
-                  </h3>
-                  <p className="mt-3 text-sm leading-6 text-soft">
-                    {item.answer}
-                  </p>
-                </article>
-              ))}
-            </div>
-          </div>
-
-          <Nis2LeadForm
-            sourceTag="NIS2 landing lead"
-            description="Skriv kort hvor virksomheden står, og hvad virksomheden gerne vil have afklaret efter screeningen. Oplysningerne bruges til at vende tilbage med et mere konkret næste skridt."
-          />
         </div>
       </section>
 
