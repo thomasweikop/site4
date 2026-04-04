@@ -205,10 +205,10 @@ export default function ResultExperience({
 
             <div className="mt-6">
               <Link
-                href="/om-complycheck"
+                href={complianceRecommendationsHref}
                 className="inline-flex bg-sage px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
               >
-                Om ComplyCheck
+                Fortsæt til compliance anbefalinger
               </Link>
             </div>
 
