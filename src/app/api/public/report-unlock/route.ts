@@ -104,7 +104,7 @@ export async function POST(request: Request) {
   );
 
   const internalText = [
-    "Ny unlock af NIS2-anbefalinger",
+    "Ny bestilling af NIS2-anbefalinger",
     "",
     `Session: ${sessionId}`,
     `Virksomhed: ${company}`,
@@ -130,7 +130,7 @@ export async function POST(request: Request) {
     .join("\n");
 
   const internalHtml = `
-    <p>Ny unlock af NIS2-anbefalinger</p>
+    <p>Ny bestilling af NIS2-anbefalinger</p>
     <p><strong>Session:</strong> ${escapeHtml(sessionId)}</p>
     <p><strong>Virksomhed:</strong> ${safeCompany}</p>
     <p><strong>Navn:</strong> ${safeName}</p>
@@ -159,7 +159,7 @@ export async function POST(request: Request) {
 
   const internalResult = await sendMail({
     to: process.env.NIS2_CONTACT_EMAIL || "thomas.weikop@gmail.com",
-    subject: `NIS2 anbefalinger unlock fra ${name}`,
+    subject: `NIS2 anbefalinger bestilt af ${name}`,
     text: internalText,
     html: internalHtml,
     fromName: "ComplyCheck",
@@ -169,7 +169,7 @@ export async function POST(request: Request) {
 
   if (!internalResult.sent) {
     return NextResponse.json(
-      { error: "Anbefalingerne kunne ikke låses op lige nu." },
+      { error: "Anbefalingerne kunne ikke sendes lige nu." },
       { status: 500 },
     );
   }

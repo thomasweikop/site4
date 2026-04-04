@@ -76,13 +76,13 @@ export default function ReportUnlockForm({
       const payload = (await response.json()) as { error?: string };
 
       if (!response.ok) {
-        setError(payload.error || "Kunne ikke hente anbefalingerne.");
+        setError(payload.error || "Kunne ikke sende anbefalingerne.");
         return;
       }
 
       onUnlocked(lead);
     } catch {
-      setError("Netværksfejl under oplåsning.");
+      setError("Netværksfejl under afsendelse.");
     } finally {
       setPending(false);
     }

@@ -76,7 +76,7 @@ export default async function AdminSessionsPage() {
                             {result.percentage}%
                           </span>
                           <span className="border border-line bg-white px-3 py-1 text-xs font-semibold text-soft">
-                            {session.unlockedAt ? "Unlocked" : "Locked"}
+                            {session.unlockedAt ? "Bestilt" : "Ikke bestilt"}
                           </span>
                         </div>
                       </div>

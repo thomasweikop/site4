@@ -69,7 +69,7 @@ export default function AdminSessionsClient() {
                   {result.percentage}%
                 </span>
                 <span className="border border-line bg-paper px-3 py-1 text-xs font-semibold text-soft">
-                  {session.unlockedAt ? "Unlocked" : "Locked"}
+                  {session.unlockedAt ? "Bestilt" : "Ikke bestilt"}
                 </span>
               </div>
             </div>
