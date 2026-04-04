@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { sendMail } from "@/lib/mail/sendMail";
 import {
+  buildComplianceRecommendationsUrl,
   buildResultUrl,
   buildSpecialistHelpUrl,
 } from "@/lib/reportLinks";
@@ -56,6 +57,14 @@ function buildHtmlList(label: string, values: string[]) {
     .join("")}</ul>`;
 }
 
+function trimExecutiveSummary(summary?: string) {
+  if (!summary) {
+    return "";
+  }
+
+  return summary.replace(/^Virksomhedens samlede score er \d+%\.\s*/u, "").trim();
+}
+
 export async function POST(request: Request) {
   const body = (await request.json()) as UnlockBody;
   const sessionId = (body.sessionId ?? "").trim();
@@ -73,10 +82,13 @@ export async function POST(request: Request) {
     Boolean,
   );
   const reportSnapshot = (body.reportSnapshot ?? "").trim();
+  const trimmedExecutiveSummary = trimExecutiveSummary(body.executiveSummary);
   const specialistHelpUrl = reportSnapshot
     ? buildSpecialistHelpUrl(sessionId, reportSnapshot)
     : "";
   const resultUrl = buildResultUrl(sessionId);
+  const complianceRecommendationsUrl =
+    buildComplianceRecommendationsUrl(sessionId);
 
   if (!sessionId || !company || !name || !email) {
     return NextResponse.json(
@@ -185,23 +197,17 @@ export async function POST(request: Request) {
     "",
     `Virksomhed: ${company}`,
     `Samlet score: ${body.score ?? "Ukendt"}%`,
-    `Status: ${body.status ?? "Ukendt"}`,
     "",
-    body.executiveSummary ?? "",
+    trimmedExecutiveSummary,
     "",
     buildList("Laveste dimensioner", weakestDimensions),
     buildList("Eventuelle blockers", blockers),
     buildList("Initielle anbefalinger", nextSteps),
-    buildList("Prioriterede konsulentprofiler", partnerRecommendations),
     "",
-    "Se analysens resultat",
-    resultUrl,
+    "Vis compliance anbefalinger",
+    complianceRecommendationsUrl,
     "",
-    "Ønsker virksomheden hjælp til at identificere specialister der kan hjælpe på de vigtigste områder?",
-    "Vælg hvilke områder og specialistspor der ønskes hjælp indenfor. Så sender ComplyCheck næste specialistoverblik på email.",
-    specialistHelpUrl || "",
-    "",
-    "Det bliver sendt til:",
+    "Kontakt information:",
     `Virksomhed: ${company}`,
     `Navn: ${name}`,
     `Titel: ${title || "Ikke angivet"}`,
@@ -214,11 +220,8 @@ export async function POST(request: Request) {
 
   const buttonBaseStyle =
     "display:inline-block;padding:12px 18px;border:1px solid #cfd6cc;font-weight:600;text-decoration:none;margin-right:12px;margin-top:8px;";
-  const resultButton = resultUrl
-    ? `<a href="${escapeHtml(resultUrl)}" style="${buttonBaseStyle}background:#073832;color:#ffffff;border-color:#073832;">Se analysens resultat</a>`
-    : "";
-  const specialistHelpButton = specialistHelpUrl
-    ? `<a href="${escapeHtml(specialistHelpUrl)}" style="${buttonBaseStyle}background:#ffffff;color:#073832;">Vælg specialist-hjælp</a>`
+  const complianceRecommendationsButton = complianceRecommendationsUrl
+    ? `<a href="${escapeHtml(complianceRecommendationsUrl)}" style="${buttonBaseStyle}background:#073832;color:#ffffff;border-color:#073832;">Vis compliance anbefalinger</a>`
     : "";
 
   const userHtml = `
@@ -226,27 +229,19 @@ export async function POST(request: Request) {
     <p><strong>NIS2 anbefalinger for ${safeCompany}</strong></p>
     <p><strong>Virksomhed:</strong> ${safeCompany}</p>
     <p><strong>Samlet score:</strong> ${body.score ?? "Ukendt"}%</p>
-    <p><strong>Status:</strong> ${escapeHtml(body.status ?? "Ukendt")}</p>
     ${
-      body.executiveSummary
-        ? `<p><strong>Resume:</strong> ${escapeHtml(body.executiveSummary)}</p>`
+      trimmedExecutiveSummary
+        ? `<p><strong>Resume:</strong> ${escapeHtml(trimmedExecutiveSummary)}</p>`
         : ""
     }
     ${buildHtmlList("Laveste dimensioner", weakestDimensions)}
     ${buildHtmlList("Eventuelle blockers", blockers)}
     ${buildHtmlList("Initielle anbefalinger", nextSteps)}
-    ${buildHtmlList("Prioriterede konsulentprofiler", partnerRecommendations)}
-    <p><strong>Se analysens resultat</strong></p>
     <p>
-      ${resultButton}
+      ${complianceRecommendationsButton}
     </p>
-    <p><strong>Ønsker virksomheden hjælp til at identificere specialister der kan hjælpe på de vigtigste områder?</strong></p>
-    <p>Vælg hvilke områder og specialistspor der ønskes hjælp indenfor. Så sender ComplyCheck næste specialistoverblik på email.</p>
-    <p>
-      ${specialistHelpButton}
-    </p>
-    <p><strong>Det bliver sendt til</strong></p>
-    <p><strong>Virksomhed:</strong> ${safeCompany}<br />
+    <p><strong>Kontakt information:</strong><br />
+    <strong>Virksomhed:</strong> ${safeCompany}<br />
     <strong>Navn:</strong> ${safeName}<br />
     <strong>Titel:</strong> ${safeTitle}<br />
     <strong>Email:</strong> ${safeEmail}</p>
