@@ -5,6 +5,7 @@ import {
   buildResultUrl,
 } from "@/lib/reportLinks";
 import { markDbReportUnlocked } from "@/lib/reportSessionStore";
+import { createSuperadminLog } from "@/lib/superadminStore";
 
 type UnlockBody = {
   sessionId?: string;
@@ -254,6 +255,24 @@ export async function POST(request: Request) {
     email,
     phone,
     message,
+  });
+
+  await createSuperadminLog({
+    actorType: "user",
+    actorEmail: email,
+    action: "ordered_recommendations",
+    entityType: "report_session",
+    entityId: sessionId,
+    payload: {
+      sessionId,
+      company,
+      name,
+      title,
+      email,
+      phone,
+      score: body.score,
+      profileSummary,
+    },
   });
 
   return NextResponse.json({ ok: true });

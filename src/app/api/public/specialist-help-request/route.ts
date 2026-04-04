@@ -8,6 +8,7 @@ import {
   getDbReportSession,
   markDbReportUnlocked,
 } from "@/lib/reportSessionStore";
+import { createSuperadminLog } from "@/lib/superadminStore";
 
 type SpecialistHelpBody = {
   sessionId?: string;
@@ -202,6 +203,23 @@ export async function POST(request: Request) {
     email,
     phone: existingSession?.unlockLead?.phone ?? "",
     message: existingSession?.unlockLead?.message ?? "",
+  });
+
+  await createSuperadminLog({
+    actorType: "user",
+    actorEmail: email,
+    action: "requested_specialist_help",
+    entityType: "report_session",
+    entityId: sessionId,
+    payload: {
+      sessionId,
+      company,
+      name,
+      title,
+      email,
+      selectedAreas,
+      selectedTracks,
+    },
   });
 
   return NextResponse.json({ ok: true });

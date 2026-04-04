@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { sendMail } from "@/lib/mail/sendMail";
+import { createSuperadminLog } from "@/lib/superadminStore";
 
 type ActionRequestBody = {
   company?: string;
@@ -105,6 +106,24 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
+
+  await createSuperadminLog({
+    actorType: "user",
+    actorEmail: email,
+    action: "requested_targeted_initiatives",
+    entityType: "report_session",
+    entityId: sessionId || undefined,
+    payload: {
+      sessionId,
+      company,
+      name,
+      title,
+      email,
+      phone,
+      consent,
+      areas,
+    },
+  });
 
   return NextResponse.json({ ok: true });
 }

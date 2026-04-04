@@ -106,6 +106,13 @@ export default function HeaderMenu({ inverse = false }: HeaderMenuProps) {
           >
             Om ComplyCheck
           </Link>
+
+          <Link
+            href="/superadmin/login"
+            className={`block px-4 py-3 text-sm font-semibold ${itemClassName}`}
+          >
+            Superadmin login
+          </Link>
         </div>
       </details>
     </div>

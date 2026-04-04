@@ -9,6 +9,7 @@ import type {
   ScanProfile,
 } from "@/lib/nis2Scan";
 import { createDbReportSession, isReportDatabaseConfigured } from "@/lib/reportSessionStore";
+import { createSuperadminLog } from "@/lib/superadminStore";
 
 type CreateSessionBody = {
   profile?: Partial<ScanProfile>;
@@ -36,7 +37,12 @@ const VALID_ROLES = new Set<RoleValue>([
   "operations",
   "management",
 ]);
-const VALID_ANSWERS = new Set<ScanAnswerValue>(["yes", "partial", "no"]);
+const VALID_ANSWERS = new Set<ScanAnswerValue>([
+  "yes",
+  "partial",
+  "no",
+  "unknown",
+]);
 
 function isValidProfile(profile?: Partial<ScanProfile>): profile is ScanProfile {
   return Boolean(
@@ -90,6 +96,19 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
+
+  await createSuperadminLog({
+    actorType: "user",
+    action: "created_report_session",
+    entityType: "report_session",
+    entityId: session.id,
+    payload: {
+      sessionId: session.id,
+      source: session.source,
+      profile: session.profile,
+      answers: session.answers,
+    },
+  });
 
   return NextResponse.json({
     id: session.id,
