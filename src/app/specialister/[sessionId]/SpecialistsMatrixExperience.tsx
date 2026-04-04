@@ -97,6 +97,15 @@ export default function SpecialistsMatrixExperience({
   const [sizeFilter, setSizeFilter] = useState<SizeFilter>("all");
   const [sectorFilter, setSectorFilter] = useState<SectorFilter>("all");
   const [recommendedOnly, setRecommendedOnly] = useState(false);
+  const [areaFilterKey, setAreaFilterKey] = useState<string | undefined>(
+    initialAreaKey,
+  );
+
+  const hasManualSearchFilters =
+    typeFilter !== "all" || sizeFilter !== "all" || sectorFilter !== "all";
+  const effectiveAreaFilterKey = hasManualSearchFilters
+    ? undefined
+    : areaFilterKey;
 
   const vendors = useMemo(() => {
     if (!result) {
@@ -122,8 +131,10 @@ export default function SpecialistsMatrixExperience({
         return false;
       }
 
-      if (initialAreaKey) {
-        const matchingMatrixKeys = getMatrixKeysForAnalysisArea(initialAreaKey);
+      if (effectiveAreaFilterKey) {
+        const matchingMatrixKeys = getMatrixKeysForAnalysisArea(
+          effectiveAreaFilterKey,
+        );
 
         if (
           matchingMatrixKeys.length > 0 &&
@@ -136,7 +147,7 @@ export default function SpecialistsMatrixExperience({
       return true;
     });
   }, [
-    initialAreaKey,
+    effectiveAreaFilterKey,
     recommendedOnly,
     result,
     sectorFilter,
@@ -184,7 +195,8 @@ export default function SpecialistsMatrixExperience({
   }
 
   const selectedArea =
-    result.topAnalysisAreas.find((area) => area.key === initialAreaKey) ?? null;
+    result.topAnalysisAreas.find((area) => area.key === effectiveAreaFilterKey) ??
+    null;
 
   return (
     <div className="space-y-6">
@@ -211,6 +223,12 @@ export default function SpecialistsMatrixExperience({
                 .
               </p>
             ) : null}
+            {initialAreaKey && hasManualSearchFilters ? (
+              <p className="mt-4 text-sm leading-7 text-soft md:text-base">
+                Egne søgefiltre er aktive, så områdefilteret fra den forrige
+                side er sat på pause.
+              </p>
+            ) : null}
           </div>
 
           <div className="grid min-w-[220px] gap-3">
@@ -230,6 +248,15 @@ export default function SpecialistsMatrixExperience({
                 {result.priorityAreas.map((area) => area.label).join(", ")}
               </p>
             </div>
+            {initialAreaKey ? (
+              <button
+                type="button"
+                onClick={() => setAreaFilterKey(undefined)}
+                className="inline-flex justify-center border border-line bg-white px-4 py-3 text-sm font-semibold text-ink transition hover:bg-paper"
+              >
+                Nulstil områdefilter
+              </button>
+            ) : null}
           </div>
         </div>
 
