@@ -1,54 +1,14 @@
-"use client";
+type SuperadminLoginFormProps = {
+  error?: string;
+};
 
-import { useState } from "react";
-
-export default function SuperadminLoginForm() {
-  const [email, setEmail] = useState("thomas.weikop@gmail.com");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
-
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (!email.trim()) {
-      setError("Email er påkrævet.");
-      return;
-    }
-
-    if (!password.trim()) {
-      setError("Password er påkrævet.");
-      return;
-    }
-
-    setPending(true);
-    setError(null);
-
-    try {
-      const response = await fetch("/api/superadmin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const payload = (await response.json()) as { error?: string };
-
-      if (!response.ok) {
-        setError(payload.error || "Login mislykkedes.");
-        return;
-      }
-
-      window.location.href = "/superadmin";
-    } catch {
-      setError("Netværksfejl under login.");
-    } finally {
-      setPending(false);
-    }
-  }
-
+export default function SuperadminLoginForm({
+  error,
+}: SuperadminLoginFormProps) {
   return (
     <form
-      onSubmit={handleSubmit}
+      action="/api/superadmin/login"
+      method="post"
       className="border border-line bg-white p-8 shadow-[var(--shadow)]"
     >
       <p className="text-[0.72rem] font-semibold uppercase tracking-[0.24em] text-[#697b9e]">
@@ -72,10 +32,11 @@ export default function SuperadminLoginForm() {
           </label>
           <input
             id="superadmin-email"
+            name="email"
             type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            defaultValue="thomas.weikop@gmail.com"
             autoComplete="username"
+            required
             className="w-full border border-line bg-paper px-4 py-3 text-sm text-ink outline-none transition focus:border-[#2a5a4f]"
           />
         </div>
@@ -89,10 +50,10 @@ export default function SuperadminLoginForm() {
           </label>
           <input
             id="superadmin-password"
+            name="password"
             type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
             autoComplete="current-password"
+            required
             className="w-full border border-line bg-paper px-4 py-3 text-sm text-ink outline-none transition focus:border-[#2a5a4f]"
           />
         </div>
@@ -100,10 +61,9 @@ export default function SuperadminLoginForm() {
 
       <button
         type="submit"
-        disabled={pending || !email.trim() || !password.trim()}
-        className="mt-6 inline-flex bg-[#050a1f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#101937] disabled:opacity-50"
+        className="mt-6 inline-flex bg-[#050a1f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#101937]"
       >
-        {pending ? "Logger ind..." : "Log ind"}
+        Log ind
       </button>
 
       {error ? <p className="mt-4 text-sm text-[#b64848]">{error}</p> : null}

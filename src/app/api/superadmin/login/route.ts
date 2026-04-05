@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import {
   createSuperadminToken,
   getSuperadminCookieOptions,
   hashAdminPassword,
+  SUPERADMIN_COOKIE_NAME,
 } from "@/lib/superadminAuth";
 import {
   createSuperadminLog,
@@ -16,40 +16,51 @@ type LoginBody = {
   password?: string;
 };
 
+function createErrorRedirect(request: Request, message: string, status = 303) {
+  const url = new URL("/superadmin/login", request.url);
+  url.searchParams.set("error", message);
+  return NextResponse.redirect(url, status);
+}
+
 export async function POST(request: Request) {
+  const contentType = request.headers.get("content-type") ?? "";
+  const isJson = contentType.includes("application/json");
+
   if (!isSuperadminDatabaseConfigured()) {
-    return NextResponse.json(
-      { error: "DATABASE_URL mangler for superadmin." },
-      { status: 503 },
-    );
+    const error = "DATABASE_URL mangler for superadmin.";
+    return isJson
+      ? NextResponse.json({ error }, { status: 503 })
+      : createErrorRedirect(request, error);
   }
 
-  const body = (await request.json()) as LoginBody;
-  const email = (body.email ?? "").trim().toLowerCase();
-  const password = body.password ?? "";
+  let email = "";
+  let password = "";
+
+  if (isJson) {
+    const body = (await request.json()) as LoginBody;
+    email = (body.email ?? "").trim().toLowerCase();
+    password = body.password ?? "";
+  } else {
+    const formData = await request.formData();
+    email = String(formData.get("email") ?? "").trim().toLowerCase();
+    password = String(formData.get("password") ?? "");
+  }
 
   if (!email || !password) {
-    return NextResponse.json(
-      { error: "Email og password er påkrævet." },
-      { status: 400 },
-    );
+    const error = "Email og password er påkrævet.";
+    return isJson
+      ? NextResponse.json({ error }, { status: 400 })
+      : createErrorRedirect(request, error);
   }
 
   const user = await findSuperadminUserByEmail(email);
 
   if (!user || user.password_hash !== hashAdminPassword(password)) {
-    return NextResponse.json(
-      { error: "Forkert login." },
-      { status: 401 },
-    );
+    const error = "Forkert login.";
+    return isJson
+      ? NextResponse.json({ error }, { status: 401 })
+      : createErrorRedirect(request, error);
   }
-
-  const cookieStore = await cookies();
-  cookieStore.set(
-    "complycheck_superadmin",
-    createSuperadminToken(user.email),
-    getSuperadminCookieOptions(),
-  );
 
   await createSuperadminLog({
     actorType: "superadmin",
@@ -60,5 +71,15 @@ export async function POST(request: Request) {
     payload: { email: user.email },
   });
 
-  return NextResponse.json({ ok: true, email: user.email });
+  const response = isJson
+    ? NextResponse.json({ ok: true, email: user.email })
+    : NextResponse.redirect(new URL("/superadmin", request.url), 303);
+
+  response.cookies.set(
+    SUPERADMIN_COOKIE_NAME,
+    createSuperadminToken(user.email),
+    getSuperadminCookieOptions(),
+  );
+
+  return response;
 }
