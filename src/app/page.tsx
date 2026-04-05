@@ -4,32 +4,26 @@ import BrandWordmark from "@/components/BrandWordmark";
 import HeaderMenu from "@/components/HeaderMenu";
 import SiteFooter from "@/components/SiteFooter";
 
-const BENEFIT_POINTS = [
-  "Et første, hurtigt overblik over governance, beredskab og adgangsstyring.",
-  "Et fælles beslutningsgrundlag for ledelse, IT og sikkerhedsansvarlige.",
-  "Et enkel model til rådgivning, teknologi og intern prioritering.",
-];
-
 const HOW_IT_WORKS = [
   {
     step: "01",
-    title: "Svar på 10 spørgsmål",
-    text: "Formatet er enkelt nok til at kunne bruges af både ledelse og IT uden forberedelse.",
+    title: "Besvar 10 spørgsmål",
+    text: "Svarene bygger på virksomhedens egen forståelse af nuværende setup.",
   },
   {
     step: "02",
-    title: "Få en vægtet vurdering",
-    text: "Risikovurdering, incident response og MFA vægtes højere for at give et mere realistisk billede.",
+    title: "Få en vægtet indikation",
+    text: "Nogle områder tillægges større betydning for at afspejle typiske risici.",
   },
   {
     step: "03",
-    title: "Se de største mangler",
-    text: "Resultatet peger på de områder hvor organisationen typisk bør begynde.",
+    title: "Se mulige mangler",
+    text: "Resultatet peger på områder, hvor der kan være behov for yderligere afdækning.",
   },
   {
     step: "04",
-    title: "Brug det som beslutningsgrundlag",
-    text: "Scoren er ikke målet i sig selv, men et mere konkret grundlag for næste prioritering.",
+    title: "Brug det som startpunkt",
+    text: "En indledende ramme for videre dialog, prioritering og evt. ekstern rådgivning.",
   },
 ] as const;
 
@@ -148,22 +142,33 @@ export default function Home() {
       </section>
 
       <section className="border-b border-line bg-paper px-6 py-18 md:px-8 md:py-20 lg:px-10">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.86fr_1.14fr]">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.82fr_1.18fr]">
           <SectionHeading
             eyebrow="Overblik"
-            title="Et struktureret udgangspunkt for næste prioritering."
-            text="Formålet er ikke at erstatte et større compliance-program. Formålet er at skabe et nøgternt udgangspunkt, som organisationen kan arbejde videre fra."
+            title="En første indikation - ikke en konklusion."
+            text="ComplyCheck giver et hurtigt billede af virksomhedens compliance-niveau baseret på virksomhedens egne svar."
           />
 
-          <div className="grid gap-4 md:grid-cols-3">
-            {BENEFIT_POINTS.map((item) => (
-              <article
-                key={item}
-                className="border border-line bg-white px-5 py-6 shadow-[var(--shadow)]"
-              >
-                <p className="text-base leading-7 text-soft">{item}</p>
-              </article>
-            ))}
+          <div className="border border-line bg-white px-6 py-7 shadow-[var(--shadow)] md:px-8 md:py-8">
+            <div className="max-w-3xl space-y-4 text-base leading-8 text-soft">
+              <p>
+                Det er ikke en analyse, revision eller vurdering foretaget af
+                rådgivere.
+              </p>
+              <p>
+                Formålet er at give en indledende indikation af, hvor
+                virksomheden står - og hvor der potentielt kan være mangler.
+              </p>
+              <p>
+                Et simpelt udgangspunkt, som kan bruges til at starte den
+                videre dialog internt.
+              </p>
+              <p>Resultatet bør ses som en pejling, ikke en facitliste.</p>
+              <p>
+                Det erstatter ikke et egentligt compliance-program eller en
+                dybere gennemgang.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -172,25 +177,29 @@ export default function Home() {
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.78fr_1.22fr]">
           <SectionHeading
             eyebrow="Sådan virker det"
-            title="En kort screening med et tydeligt beslutningsgrundlag."
-            text="Screeningen er bygget til at give et første, brugbart billede af modenhed, ikke en overfladisk quiz eller et tungt værktøj."
+            title="10 spørgsmål. En indledende pejling."
+            text="Screeningen er kort og baseret på egen vurdering. Den giver et hurtigt indtryk - ikke et fuldstændigt billede."
           />
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="border border-line bg-white shadow-[var(--shadow)]">
             {HOW_IT_WORKS.map((item) => (
               <article
                 key={item.step}
-                className="border border-line bg-white p-6 shadow-[var(--shadow)]"
+                className="border-b border-line px-6 py-6 last:border-b-0 md:px-8"
               >
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-                  {item.step}
-                </p>
-                <h3 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-ink">
-                  {item.title}
-                </h3>
-                <p className="mt-3 text-base leading-7 text-soft">
-                  {item.text}
-                </p>
+                <div className="grid gap-4 md:grid-cols-[72px_1fr] md:items-start">
+                  <p className="text-[0.78rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d] md:pt-1">
+                    {item.step}
+                  </p>
+                  <div>
+                    <h3 className="text-2xl font-semibold tracking-[-0.03em] text-ink">
+                      {item.title}
+                    </h3>
+                    <p className="mt-3 text-base leading-7 text-soft">
+                      {item.text}
+                    </p>
+                  </div>
+                </div>
               </article>
             ))}
           </div>
