@@ -151,7 +151,7 @@ export default function Home() {
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.86fr_1.14fr]">
           <SectionHeading
             eyebrow="Overblik"
-            title="Et mere roligt og anvendeligt udgangspunkt."
+            title="Et struktureret udgangspunkt for næste prioritering."
             text="Formålet er ikke at erstatte et større compliance-program. Formålet er at skabe et nøgternt udgangspunkt, som organisationen kan arbejde videre fra."
           />
 
@@ -172,7 +172,7 @@ export default function Home() {
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.78fr_1.22fr]">
           <SectionHeading
             eyebrow="Sådan virker det"
-            title="En kort screening med et mere sobert output."
+            title="En kort screening med et tydeligt beslutningsgrundlag."
             text="Screeningen er bygget til at give et første, brugbart billede af modenhed, ikke en overfladisk quiz eller et tungt værktøj."
           />
 
