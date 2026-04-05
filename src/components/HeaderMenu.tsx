@@ -1,5 +1,4 @@
 import Link from "next/link";
-import RegulationBadge from "@/components/RegulationBadge";
 
 type HeaderMenuProps = {
   inverse?: boolean;
@@ -42,8 +41,6 @@ export default function HeaderMenu({
 
   return (
     <div className="flex items-center gap-3">
-      <RegulationBadge label={siteLabel} className="h-11 w-11 shrink-0" />
-
       <details className="group relative">
         <summary
           className={`flex h-11 w-11 cursor-pointer list-none items-center justify-center transition [&::-webkit-details-marker]:hidden ${summaryClassName}`}

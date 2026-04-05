@@ -20,14 +20,14 @@ const STAR_POSITIONS = [
 
 function getFontSize(label: string) {
   if (label.length >= 6) {
-    return 10;
+    return 9;
   }
 
   if (label.length >= 5) {
-    return 11.5;
+    return 10.5;
   }
 
-  return 14;
+  return 12.5;
 }
 
 export default function RegulationBadge({
@@ -38,11 +38,11 @@ export default function RegulationBadge({
 
   return (
     <span
-      className={`inline-flex items-center justify-center overflow-hidden rounded-[0.4rem] border border-[#243f74] bg-[#1a3568] ${className}`.trim()}
+      className={`inline-flex items-center justify-center overflow-hidden rounded-[0.4rem] border border-[#1e325f] bg-[#122b59] ${className}`.trim()}
       aria-hidden="true"
     >
       <svg viewBox="0 0 56 56" className="h-full w-full">
-        <rect width="56" height="56" fill="#1a3568" />
+        <rect width="56" height="56" fill="#122b59" />
 
         {STAR_POSITIONS.map(([x, y], index) => (
           <polygon
