@@ -217,30 +217,27 @@ export default function ResultExperience({
                 <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
                   Vigtigste konklusioner
                 </p>
-                <div className="mt-4 grid gap-4">
+                <div className="mt-4 grid gap-4 lg:grid-cols-3">
                   {result.topAnalysisAreas.map((area) => (
                     <article
                       key={area.key}
                       className="border border-line bg-paper p-5"
                     >
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div>
-                          <h2 className="text-xl font-semibold text-ink">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0 flex-1">
+                          <h2 className="text-xl font-semibold leading-tight text-ink">
                             {area.label}
                           </h2>
-                          <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[#4c655d]">
-                            {area.complianceLabel}
-                          </p>
                         </div>
                         <PercentageRing
                           percentage={area.percentage}
                           label={area.label}
-                          size={98}
+                          size={84}
                           strokeWidth={11}
                         />
                       </div>
 
-                      <p className="mt-4 text-sm leading-7 text-soft md:text-base">
+                      <p className="mt-4 text-sm leading-6 text-soft">
                         {area.description}
                       </p>
 
