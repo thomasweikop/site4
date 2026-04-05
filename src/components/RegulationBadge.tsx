@@ -1,4 +1,5 @@
-type Nis2BadgeProps = {
+type RegulationBadgeProps = {
+  label?: string;
   className?: string;
 };
 
@@ -17,14 +18,31 @@ const STAR_POSITIONS = [
   [19, 11],
 ] as const;
 
-export default function Nis2Badge({ className = "" }: Nis2BadgeProps) {
+function getFontSize(label: string) {
+  if (label.length >= 6) {
+    return 10;
+  }
+
+  if (label.length >= 5) {
+    return 11.5;
+  }
+
+  return 14;
+}
+
+export default function RegulationBadge({
+  label = "NIS2",
+  className = "",
+}: RegulationBadgeProps) {
+  const normalizedLabel = label.trim().toUpperCase();
+
   return (
     <span
-      className={`inline-flex items-center justify-center overflow-hidden rounded-[0.4rem] border border-[#174b46] bg-[#123f41] ${className}`.trim()}
+      className={`inline-flex items-center justify-center overflow-hidden rounded-[0.4rem] border border-[#243f74] bg-[#1a3568] ${className}`.trim()}
       aria-hidden="true"
     >
       <svg viewBox="0 0 56 56" className="h-full w-full">
-        <rect width="56" height="56" fill="#123f41" />
+        <rect width="56" height="56" fill="#1a3568" />
 
         {STAR_POSITIONS.map(([x, y], index) => (
           <polygon
@@ -40,11 +58,12 @@ export default function Nis2Badge({ className = "" }: Nis2BadgeProps) {
           y="33"
           fill="white"
           textAnchor="middle"
-          fontSize="14"
+          fontSize={getFontSize(normalizedLabel)}
           fontWeight="800"
           fontFamily="Helvetica Neue, Helvetica, Arial, sans-serif"
+          letterSpacing={normalizedLabel.length > 4 ? "0.2" : "0.4"}
         >
-          NIS2
+          {normalizedLabel}
         </text>
       </svg>
     </span>

@@ -1,8 +1,9 @@
 import Link from "next/link";
-import Nis2Badge from "@/components/Nis2Badge";
+import RegulationBadge from "@/components/RegulationBadge";
 
 type HeaderMenuProps = {
   inverse?: boolean;
+  siteLabel?: string;
 };
 
 const NIS2_SITE_ITEMS = [
@@ -22,7 +23,10 @@ const OTHER_SITE_ITEMS = [
   { label: "CRA" },
 ] as const;
 
-export default function HeaderMenu({ inverse = false }: HeaderMenuProps) {
+export default function HeaderMenu({
+  inverse = false,
+  siteLabel = "NIS2",
+}: HeaderMenuProps) {
   const summaryClassName = inverse
     ? "border border-white/18 bg-transparent text-white hover:bg-white/8"
     : "border border-line bg-white text-ink hover:bg-[#f4f0e7]";
@@ -38,7 +42,7 @@ export default function HeaderMenu({ inverse = false }: HeaderMenuProps) {
 
   return (
     <div className="flex items-center gap-3">
-      <Nis2Badge className="h-11 w-11 shrink-0" />
+      <RegulationBadge label={siteLabel} className="h-11 w-11 shrink-0" />
 
       <details className="group relative">
         <summary
@@ -59,7 +63,7 @@ export default function HeaderMenu({ inverse = false }: HeaderMenuProps) {
             <p
               className={`text-[0.68rem] font-semibold uppercase tracking-[0.24em] ${sectionLabelClassName}`}
             >
-              ComplyCheck NIS2
+              {`ComplyCheck ${siteLabel}`}
             </p>
           </div>
 
