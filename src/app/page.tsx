@@ -89,7 +89,7 @@ export default function Home() {
                 drøftelse bør begynde.
               </p>
 
-              <div className="mt-10 flex flex-wrap gap-4">
+              <div className="mt-10 flex flex-wrap items-center gap-x-7 gap-y-4">
                 <Link
                   href="/scan"
                   className="inline-flex items-center gap-2 border border-[#d8ddd2] bg-white px-7 py-4 text-sm font-semibold !text-[#073832] transition hover:bg-[#f2eee6]"
@@ -101,17 +101,17 @@ export default function Home() {
                   >
                     <path d="M4 2.75v10.5L12.5 8 4 2.75Z" />
                   </svg>
-                  Start screening
+                  Start test
                 </Link>
                 <a
                   href="#hvordan"
-                  className="inline-flex border border-white/18 bg-transparent px-7 py-4 text-sm font-semibold text-white transition hover:bg-white/6"
+                  className="text-sm font-semibold text-white underline decoration-white/26 underline-offset-4 transition hover:text-white/82"
                 >
                   Læs hvordan det virker
                 </a>
                 <Link
                   href="/scan?random=1"
-                  className="inline-flex items-center border border-white/18 bg-transparent px-7 py-4 text-sm font-semibold text-white/82 transition hover:bg-white/6 hover:text-white"
+                  className="text-sm font-semibold text-white underline decoration-white/26 underline-offset-4 transition hover:text-white/82"
                 >
                   Test tilfældigt resultat
                 </Link>
