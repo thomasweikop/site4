@@ -321,7 +321,7 @@ export default function ScanExperience({
                 Profilér resultatet
               </p>
               <h2 className="mt-3 max-w-3xl font-display text-[2.3rem] leading-[0.96] text-ink md:text-[2.45rem]">
-                Før virksomheden scores, skal der bruges lidt kontekst.
+                Baggrundsinformation inden testen
               </h2>
               <p className="mt-4 max-w-2xl text-base leading-7 text-soft">
                 Det gør anbefalingerne mere brugbare, fordi anbefalinger og
