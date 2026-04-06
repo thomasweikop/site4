@@ -223,7 +223,7 @@ export default function RecommendedExpertSections({
                 {area.description}
               </p>
             </div>
-            <div className="flex w-full max-w-[12.25rem] flex-col items-center justify-self-center">
+            <div className="mx-auto flex w-[12.25rem] flex-col items-center justify-self-center">
               <p className="mb-3 text-center text-[0.76rem] font-medium uppercase tracking-[0.28em] text-[#6fa3cf]">
                 {area.complianceLabel}
               </p>
@@ -271,7 +271,7 @@ export default function RecommendedExpertSections({
                   </p>
                 </div>
 
-                <div className="flex flex-col items-center justify-center gap-2.5">
+                <div className="mx-auto flex w-[12.25rem] flex-col items-center justify-center gap-2.5">
                   <MatchScoreDisplay score={item.fitScore} />
                   <a
                     href={item.vendor.website}
