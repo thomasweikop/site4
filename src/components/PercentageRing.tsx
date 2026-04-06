@@ -59,7 +59,7 @@ export default function PercentageRing({
           y={hasCaption ? "44%" : "50%"}
           dominantBaseline={hasCaption ? "auto" : "middle"}
           textAnchor="middle"
-          fill="#5b85ac"
+          fill="#6fa3cf"
           fontSize={size * valueScale}
           fontWeight="700"
           style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}

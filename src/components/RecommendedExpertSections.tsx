@@ -77,22 +77,17 @@ function MatchScoreDisplay({
   const normalizedScore = Math.max(0, Math.min(100, score));
   const wrapperClass = compact
     ? "flex w-full max-w-[8.5rem] flex-col items-center self-end"
-    : "flex w-full max-w-[9rem] flex-col items-center self-end";
-  const labelClass = compact
-    ? "w-full pt-2 text-center text-[0.76rem] font-medium uppercase tracking-[0.32em] text-[#174f46]"
-    : "w-full pt-2 text-center text-[0.82rem] font-medium uppercase tracking-[0.34em] text-[#174f46]";
-  const valueClass = compact
-    ? "mt-3 text-[3.15rem] font-semibold leading-none tracking-[-0.06em] text-[#0f4b42]"
-    : "mt-3 text-[4.2rem] font-semibold leading-none tracking-[-0.07em] text-[#0f4b42]";
+    : "flex w-full max-w-[8.5rem] flex-col items-center self-end";
+  const labelClass =
+    "w-full pt-2 text-center text-[0.76rem] font-medium uppercase tracking-[0.32em] text-[#174f46]";
+  const valueClass =
+    "mt-3 text-[3.15rem] font-semibold leading-none tracking-[-0.06em] text-[#0f4b42]";
   const barWidthClass = compact ? "mt-3 h-[0.55rem] w-full" : "mt-3 h-[0.6rem] w-full";
 
   return (
     <div className={wrapperClass}>
       <div className="h-px w-full bg-[#174f46]" />
-      <div className={labelClass}>
-        <div>SPECIALIST</div>
-        <div>MATCH SCORE</div>
-      </div>
+      <div className={labelClass}>MATCH SCORE</div>
       <div className={valueClass}>{normalizedScore}</div>
       <div className={`${barWidthClass} bg-[#d6d7d6]`}>
         <div
@@ -134,11 +129,11 @@ export default function RecommendedExpertSections({
               <p className="mt-3 max-w-3xl text-sm leading-7 text-soft md:text-base">
                 {area.description}
               </p>
-              <p className="mt-3 text-xs uppercase tracking-[0.18em] text-[#4c655d]">
+            </div>
+            <div className="flex w-[9rem] flex-col items-center justify-self-center">
+              <p className="mb-3 text-center text-[0.76rem] font-medium uppercase tracking-[0.28em] text-[#6fa3cf]">
                 {area.complianceLabel}
               </p>
-            </div>
-            <div className="flex w-[9rem] justify-center justify-self-center">
               <PercentageRing
                 percentage={area.percentage}
                 label={area.label}
