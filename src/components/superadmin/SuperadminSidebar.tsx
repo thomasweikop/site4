@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { href: "/superadmin", label: "Overblik" },
   { href: "/superadmin/log", label: "Log" },
   { href: "/superadmin/specialister", label: "Specialister" },
+  { href: "/superadmin/logoer", label: "Logoer" },
   { href: "/superadmin/brugere", label: "Brugere" },
   { href: "/superadmin/sporgsmal", label: "Spørgsmål" },
   { href: "/superadmin/scoring", label: "Scoring" },

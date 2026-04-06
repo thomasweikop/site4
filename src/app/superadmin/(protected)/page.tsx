@@ -18,6 +18,11 @@ const CARDS = [
     copy: "Profiler i specialistdatabasen som kan søges, justeres og vedligeholdes.",
   },
   {
+    href: "/superadmin/logoer",
+    label: "Logoer",
+    copy: "Gennemgå kandidat-logoer i batches og godkend dem hurtigt til live visning.",
+  },
+  {
     href: "/superadmin/brugere",
     label: "Brugere",
     copy: "Indsendte kontaktoplysninger og eksisterende leads fra sessions.",
