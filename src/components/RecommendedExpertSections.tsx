@@ -223,7 +223,7 @@ export default function RecommendedExpertSections({
                 {area.description}
               </p>
             </div>
-            <div className="mx-auto flex w-[12.25rem] flex-col items-center justify-self-center">
+            <div className="mx-auto flex w-[12.25rem] flex-col items-center justify-self-center md:mr-5 md:justify-self-end">
               <p className="mb-3 text-center text-[0.76rem] font-medium uppercase tracking-[0.28em] text-[#6fa3cf]">
                 {area.complianceLabel}
               </p>
