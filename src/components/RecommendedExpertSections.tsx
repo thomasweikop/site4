@@ -48,7 +48,7 @@ export function getAreaSpecialists(result: ScanResult) {
       usedCompanyNames.add(normalizedCompanyName);
       specialists.push(item);
 
-      if (specialists.length === 3) {
+      if (specialists.length === 4) {
         break;
       }
     }
@@ -101,36 +101,38 @@ export default function RecommendedExpertSections({
             />
           </div>
 
-          <div className="mt-6 grid gap-4">
-            {specialists.map((item, index) => {
-              const specialties =
-                item.matchedAreaLabels.length > 0
-                  ? item.matchedAreaLabels
-                  : item.vendor.capabilityAreaLabels.slice(0, 4);
+          {(() => {
+            const recommended = specialists[0];
+            const additionalSpecialists = specialists.slice(1, 4);
 
-              return (
-                <article
-                  key={`${area.key}-${item.vendor.name}`}
-                  className="grid gap-4 border border-line bg-paper p-5 md:grid-cols-[1.05fr_1.65fr]"
-                >
+            if (!recommended) {
+              return null;
+            }
+
+            const recommendedSpecialties =
+              recommended.matchedAreaLabels.length > 0
+                ? recommended.matchedAreaLabels
+                : recommended.vendor.capabilityAreaLabels.slice(0, 4);
+
+            return (
+              <div className="mt-6 space-y-4">
+                <article className="grid gap-5 border border-line bg-paper p-5 md:grid-cols-[0.7fr_1.3fr_auto] md:items-start">
                   <div>
                     <div className="flex flex-wrap items-center gap-3">
-                      <p className="text-lg font-semibold text-ink">
-                        {item.vendor.name}
+                      <p className="text-2xl font-semibold tracking-[-0.03em] text-ink">
+                        {recommended.vendor.name}
                       </p>
-                      {index === 0 ? (
-                        <span className="bg-[#73acd6] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] !text-white">
-                          Anbefalet
-                        </span>
-                      ) : null}
+                      <span className="bg-[#73acd6] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] !text-white">
+                        Anbefalet
+                      </span>
                     </div>
 
-                    <div className="mt-6">
+                    <div className="mt-4 max-w-[17rem] border border-line bg-white px-5 py-5 text-center">
                       <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#5d6e68]">
                         Match score
                       </p>
-                      <p className="mt-2 text-4xl font-semibold leading-none tracking-[-0.04em] text-ink md:text-[3rem]">
-                        {item.fitScore}%
+                      <p className="mt-2 text-[3.4rem] font-semibold leading-none tracking-[-0.05em] text-ink">
+                        {recommended.fitScore}%
                       </p>
                     </div>
                   </div>
@@ -138,53 +140,122 @@ export default function RecommendedExpertSections({
                   <div>
                     <p className="text-sm font-semibold text-ink">Specialer</p>
                     <ul className="mt-2 space-y-1 text-sm leading-6 text-soft">
-                      {item.vendor.specialtyHighlights.map((line) => (
+                      {recommended.vendor.specialtyHighlights
+                        .slice(0, 3)
+                        .map((line) => (
+                          <li
+                            key={`${recommended.vendor.name}-${line}`}
+                            className="grid grid-cols-[auto_1fr] items-start gap-x-2"
+                          >
+                            <span aria-hidden="true">•</span>
+                            <span>{line}</span>
+                          </li>
+                        ))}
+                      {recommendedSpecialties.length > 0 ? (
                         <li
-                          key={`${item.vendor.name}-${line}`}
-                          className="grid grid-cols-[auto_1fr] items-start gap-x-2"
-                        >
-                          <span aria-hidden="true">•</span>
-                          <span>{line}</span>
-                        </li>
-                      ))}
-                      {specialties.length > 0 ? (
-                        <li
-                          key={`${item.vendor.name}-match`}
+                          key={`${recommended.vendor.name}-match`}
                           className="grid grid-cols-[auto_1fr] items-start gap-x-2"
                         >
                           <span aria-hidden="true">•</span>
                           <span>
-                            Match i denne analyse: {specialties.join(", ")}
+                            Match i denne analyse:{" "}
+                            {recommendedSpecialties.join(", ")}
                           </span>
                         </li>
                       ) : null}
                     </ul>
                   </div>
 
-                  <div className="flex items-start md:col-span-2 md:justify-end">
-                    <div className="flex flex-col items-start gap-3 md:items-end">
-                      <a
-                        href={item.vendor.website}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-sm font-medium text-[#1b4f45] underline decoration-[#1b4f45]/30 underline-offset-4 transition hover:text-[#0d4b43]"
-                      >
-                        Website
-                      </a>
-                      <a
-                        href={item.vendor.website}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex bg-sage px-4 py-2 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
-                      >
-                        Modtag materiale om {area.label}
-                      </a>
-                    </div>
+                  <div className="flex flex-col items-start gap-3 md:items-end">
+                    <a
+                      href={recommended.vendor.website}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-sm font-medium text-[#1b4f45] underline decoration-[#1b4f45]/30 underline-offset-4 transition hover:text-[#0d4b43]"
+                    >
+                      Website
+                    </a>
+                    <a
+                      href={recommended.vendor.website}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex bg-sage px-4 py-2 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
+                    >
+                      Modtag materiale om {area.label}
+                    </a>
                   </div>
                 </article>
-              );
-            })}
-          </div>
+
+                {additionalSpecialists.length > 0 ? (
+                  <div className="space-y-3">
+                    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[#5d6e68]">
+                      Supplerende profiler
+                    </p>
+                    <div className="grid gap-4 lg:grid-cols-3">
+                      {additionalSpecialists.map((item) => {
+                        const compactSpecialties =
+                          item.matchedAreaLabels.length > 0
+                            ? item.matchedAreaLabels.slice(0, 2)
+                            : item.vendor.capabilityAreaLabels.slice(0, 2);
+
+                        return (
+                          <article
+                            key={`${area.key}-${item.vendor.name}`}
+                            className="flex h-full flex-col justify-between border border-line bg-paper p-4"
+                          >
+                            <div>
+                              <p className="text-lg font-semibold leading-tight text-ink">
+                                {item.vendor.name}
+                              </p>
+                              <div className="mt-4 border border-line bg-white px-4 py-4 text-center">
+                                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#5d6e68]">
+                                  Match score
+                                </p>
+                                <p className="mt-2 text-4xl font-semibold leading-none tracking-[-0.04em] text-ink">
+                                  {item.fitScore}%
+                                </p>
+                              </div>
+                              {compactSpecialties.length > 0 ? (
+                                <div className="mt-4 flex flex-wrap gap-2">
+                                  {compactSpecialties.map((specialty) => (
+                                    <span
+                                      key={`${item.vendor.name}-${specialty}`}
+                                      className="border border-line bg-white px-2.5 py-1 text-xs text-ink"
+                                    >
+                                      {specialty}
+                                    </span>
+                                  ))}
+                                </div>
+                              ) : null}
+                            </div>
+
+                            <div className="mt-5 flex items-center justify-between gap-3">
+                              <a
+                                href={item.vendor.website}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-sm font-medium text-[#1b4f45] underline decoration-[#1b4f45]/30 underline-offset-4 transition hover:text-[#0d4b43]"
+                              >
+                                Website
+                              </a>
+                              <a
+                                href={item.vendor.website}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex bg-sage px-3 py-2 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
+                              >
+                                Modtag materiale
+                              </a>
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            );
+          })()}
 
           <div className="mt-6 flex justify-end">
             <Link
