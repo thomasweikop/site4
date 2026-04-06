@@ -165,11 +165,11 @@ function MatchScoreDisplay({ score }: MatchScoreDisplayProps) {
 
   return (
     <div className="flex w-full max-w-[15rem] flex-col items-stretch">
-      <div className="border border-[#1c5a50] bg-white px-5 py-4 text-center">
+      <div className="border border-[#2a5851] bg-[#fffdfa] px-5 py-4 text-center">
         <div className="text-[0.72rem] font-medium uppercase tracking-[0.34em] text-[#174f46]">
           MATCH SCORE
         </div>
-        <div className="mt-2 text-[3.1rem] font-semibold leading-none tracking-[-0.06em] text-[#0f4b42]">
+        <div className="mt-2 text-[3.15rem] font-semibold leading-none tracking-[-0.06em] text-[#0f4b42]">
           {normalizedScore}
         </div>
       </div>
@@ -241,17 +241,17 @@ export default function RecommendedExpertSections({
             {featuredSpecialists.map((item) => (
               <article
                 key={`${area.key}-${item.vendor.name}`}
-                className="grid items-start gap-6 border border-line bg-paper p-6 md:grid-cols-[10.5rem_minmax(0,1fr)_15rem]"
+                className="grid items-center gap-6 border border-[#d6dfda] bg-[#fcf9f3] p-7 md:grid-cols-[11rem_minmax(0,1fr)_15rem]"
               >
                 <div className="flex justify-center md:justify-start">
-                  <div className="flex h-[10.8rem] w-[10.8rem] items-center justify-center border border-[#1c5a50] bg-white">
-                    <div className="flex h-[5rem] w-[7.8rem] items-center justify-center bg-[#f7f7f7] text-xs font-medium uppercase tracking-[0.22em] text-[#7c8a86]">
+                  <div className="flex h-[11rem] w-[11rem] items-center justify-center border border-[#2a5851] bg-[#fffdfa]">
+                    <div className="flex h-[5.4rem] w-[8.2rem] items-center justify-center border border-[#ececeb] bg-white text-[0.62rem] font-medium uppercase tracking-[0.26em] text-[#9aa5a0]">
                       Logo
                     </div>
                   </div>
                 </div>
 
-                <div className="flex min-h-[10.8rem] flex-col justify-between gap-4">
+                <div className="flex min-h-[11rem] flex-col justify-center gap-4">
                   <div className="flex flex-wrap items-center gap-3">
                     <a
                       href={item.vendor.website}
@@ -266,18 +266,18 @@ export default function RecommendedExpertSections({
                     </span>
                   </div>
 
-                  <p className="max-w-4xl text-[0.92rem] leading-8 text-soft">
+                  <p className="max-w-4xl text-[0.96rem] font-medium leading-8 text-[#5f706b]">
                     {getSpecialistSummary(item.vendor)}
                   </p>
                 </div>
 
-                <div className="flex min-h-[10.8rem] flex-col items-center justify-between gap-4">
+                <div className="flex min-h-[11rem] flex-col items-center justify-center gap-3">
                   <MatchScoreDisplay score={item.fitScore} />
                   <a
                     href={item.vendor.website}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex justify-center bg-sage px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
+                    className="inline-flex w-full max-w-[15rem] justify-center bg-sage px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
                   >
                     Modtag materiale
                   </a>
