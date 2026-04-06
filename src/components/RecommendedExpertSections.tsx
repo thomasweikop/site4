@@ -214,7 +214,7 @@ export default function RecommendedExpertSections({
           id={area.key}
           className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8"
         >
-          <div className="grid items-start gap-4 md:grid-cols-[minmax(0,1fr)_12.25rem]">
+          <div className="relative md:pr-[16rem]">
             <div>
               <h2 className="text-3xl font-semibold tracking-[-0.03em] text-ink">
                 {area.label}
@@ -223,7 +223,7 @@ export default function RecommendedExpertSections({
                 {area.description}
               </p>
             </div>
-            <div className="mx-auto flex w-[12.25rem] flex-col items-center justify-self-center md:mr-5 md:justify-self-end">
+            <div className="mx-auto mt-4 flex w-[12.25rem] flex-col items-center md:absolute md:right-[3.25rem] md:top-0 md:mt-0">
               <p className="mb-3 text-center text-[0.76rem] font-medium uppercase tracking-[0.28em] text-[#6fa3cf]">
                 {area.complianceLabel}
               </p>
