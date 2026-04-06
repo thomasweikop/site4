@@ -38,7 +38,11 @@
       "training-awareness": 19,
       "backup-recovery-continuity": 46,
       "audit-assurance": 100
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://www.deloitte.com/content/dam/assets-shared/logos/svg/a-d/deloitte.svg",
+    "logoOfficialSourceUrl": "https://www2.deloitte.com/dk/da.html",
+    "logoNotes": "Fundet på officiel side. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "audit:11:EY Denmark",
@@ -120,7 +124,11 @@
       "training-awareness": 0,
       "backup-recovery-continuity": 0,
       "audit-assurance": 100
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://kpmg.com/content/experience-fragments/kpmgpublic/dk/da/site/header/master/_jcr_content/root/header_v2_copy/logo.coreimg.svg/1748257796557/logo.svg",
+    "logoOfficialSourceUrl": "https://kpmg.com/dk/da/home.html",
+    "logoNotes": "Fundet på officiel side. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "audit:13:LRQA Assurance",
@@ -853,7 +861,11 @@
       "training-awareness": 0,
       "backup-recovery-continuity": 0,
       "audit-assurance": 46
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://www.beierholm.dk/sites/beierholm.dk/themes/custom/dds_premium/build-assets/dist/images/logo.svg",
+    "logoOfficialSourceUrl": "https://www.beierholm.dk",
+    "logoNotes": "Fundet på officiel side. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "audit:30:BHL Revision",
@@ -1405,7 +1417,11 @@
       "training-awareness": 19,
       "backup-recovery-continuity": 38,
       "audit-assurance": 100
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://www.grantthornton.dk/dist/images/grantthornton_logo-180x180.png",
+    "logoOfficialSourceUrl": "https://www.grantthornton.dk",
+    "logoNotes": "Fundet som officiel logoasset på website. Mindre ikonvariant, afventer visuel godkendelse."
   },
   {
     "vendorKey": "audit:6:Inforevision",
@@ -2013,7 +2029,11 @@
       "training-awareness": 19,
       "backup-recovery-continuity": 0,
       "audit-assurance": 46
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://alexandra.dk/wp-content/uploads/2020/02/Alexandra-Instituttet_Logo_Sort_DK.webp",
+    "logoOfficialSourceUrl": "https://alexandra.dk",
+    "logoNotes": "Fundet på officiel side. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "grc:20:Cyber Partners",
@@ -2054,7 +2074,11 @@
       "training-awareness": 100,
       "backup-recovery-continuity": 19,
       "audit-assurance": 38
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://cyberpartners.dk/wp-content/uploads/2025/11/CP-logo.png",
+    "logoOfficialSourceUrl": "https://cyberpartners.dk",
+    "logoNotes": "Fundet på officiel side. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "grc:21:Devoteam Denmark",
@@ -2247,7 +2271,11 @@
       "training-awareness": 19,
       "backup-recovery-continuity": 0,
       "audit-assurance": 100
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://proces360.com/_next/image?url=%2Fimages%2Flogo-proces360.png&w=256&q=75",
+    "logoOfficialSourceUrl": "https://proces360.com",
+    "logoNotes": "Fundet som officiel logoasset via website. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "grc:26:SecureFirst",
@@ -2448,7 +2476,11 @@
       "training-awareness": 0,
       "backup-recovery-continuity": 0,
       "audit-assurance": 28
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://dpo-danmark.dk/wp-content/uploads/2024/12/DPO-DK-logo-2024_v4.png",
+    "logoOfficialSourceUrl": "https://dpo-danmark.dk",
+    "logoNotes": "Fundet på officiel side. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "grc:30:Vicath EQ",
@@ -2925,7 +2957,11 @@
       "training-awareness": 100,
       "backup-recovery-continuity": 19,
       "audit-assurance": 100
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://ifcr.dk/wp-content/themes/ifcr/assets/images/ifcr-logo-white-2025.svg",
+    "logoOfficialSourceUrl": "https://ifcr.dk",
+    "logoNotes": "SVG fra officiel theme asset. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "grc:42:NetIP",
@@ -3130,7 +3166,11 @@
       "training-awareness": 19,
       "backup-recovery-continuity": 0,
       "audit-assurance": 100
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://lekon.dk/wp-content/uploads/2019/08/Lekon-logo-1.png",
+    "logoOfficialSourceUrl": "https://lekon.dk",
+    "logoNotes": "Fundet på officiel side. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "grc:5:Nesp.ONE",
@@ -3168,7 +3208,11 @@
       "training-awareness": 0,
       "backup-recovery-continuity": 83,
       "audit-assurance": 74
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://nespone.com/wp-content/uploads/2025/03/Nespone_logo-header.png",
+    "logoOfficialSourceUrl": "https://nespone.com",
+    "logoNotes": "Fundet på officiel side efter redirect fra nespone.dk til nespone.com. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "grc:6:NIBIS Konsulenterne",
@@ -3209,7 +3253,11 @@
       "training-awareness": 0,
       "backup-recovery-continuity": 19,
       "audit-assurance": 46
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://nibis.dk/wp-content/uploads/2025/03/NIBIS_logo.png",
+    "logoOfficialSourceUrl": "https://nibis.dk",
+    "logoNotes": "Fundet på officiel side. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "grc:7:NorthGRC",
@@ -3247,7 +3295,11 @@
       "training-awareness": 74,
       "backup-recovery-continuity": 19,
       "audit-assurance": 100
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://www.northgrc.com/hubfs/Website%202026/Header%20and%20Footer/Logo_no%20tagline.png",
+    "logoOfficialSourceUrl": "https://www.northgrc.com/da/",
+    "logoNotes": "Fundet på officiel side. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "grc:8:Accenture Denmark Cyber Strategy & GRC",
@@ -3728,7 +3780,11 @@
       "training-awareness": 56,
       "backup-recovery-continuity": 19,
       "audit-assurance": 46
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://clemenslaw.dk/app/uploads/2024/10/Clemens_law_logo_pos.svg",
+    "logoOfficialSourceUrl": "https://clemenslaw.dk",
+    "logoNotes": "Fundet på officiel side. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "legal:20:HjulmandKaptain",
@@ -4137,7 +4193,11 @@
       "training-awareness": 0,
       "backup-recovery-continuity": 0,
       "audit-assurance": 38
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://images.squarespace-cdn.com/content/v1/6826fda267739f6adee82786/d02357e5-81c7-47c9-9ae8-bc008946b400/ComplianceLaw_vector_Gra%CC%8A_blur_RGB_Prim%C3%A6r_website%400.25x.png",
+    "logoOfficialSourceUrl": "https://www.compliancelaw.dk",
+    "logoNotes": "Fundet som officielt logoasset på website. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "legal:30:DANDERS & MORE",
@@ -4566,7 +4626,11 @@
       "training-awareness": 46,
       "backup-recovery-continuity": 0,
       "audit-assurance": 0
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://focus-advokater.dk/wp-content/themes/focus-advokater-wordpress-theme/public/img/logo.svg",
+    "logoOfficialSourceUrl": "https://focus-advokater.dk",
+    "logoNotes": "Fundet på officiel side. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "legal:40:Plesner",
@@ -4723,7 +4787,11 @@
       "training-awareness": 0,
       "backup-recovery-continuity": 0,
       "audit-assurance": 0
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://www.horten.dk/dist/resources/images/logo_1.png",
+    "logoOfficialSourceUrl": "https://www.horten.dk",
+    "logoNotes": "Fundet på officiel side. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "legal:5:Poul Schmith / Kammeradvokaten",
@@ -5759,7 +5827,11 @@
       "training-awareness": 47,
       "backup-recovery-continuity": 100,
       "audit-assurance": 46
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://itm8.dk/hubfs/BRANDING/itm8-rgb-neg.png",
+    "logoOfficialSourceUrl": "https://itm8.dk",
+    "logoNotes": "Fundet på officiel side. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "soc:30:Wipro Cyber Defense Center",
@@ -6974,7 +7046,11 @@
       "training-awareness": 0,
       "backup-recovery-continuity": 0,
       "audit-assurance": 0
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://admire.dk/wp-content/uploads/2019/03/logo.svg",
+    "logoOfficialSourceUrl": "https://www.admire.dk",
+    "logoNotes": "Fundet på officiel side. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "technical:20:mnemonic Incident & Security Engineering",
@@ -8208,7 +8284,11 @@
       "training-awareness": 0,
       "backup-recovery-continuity": 28,
       "audit-assurance": 0
-    }
+    },
+    "logoStatus": "candidate",
+    "logoCandidateUrl": "https://conscia.com/dk/wp-content/uploads/2025/06/conscia_logo_no_tagline.svg",
+    "logoOfficialSourceUrl": "https://conscia.com/dk",
+    "logoNotes": "Fundet på officiel side. Afventer visuel godkendelse."
   },
   {
     "vendorKey": "technical:50:Tietoevry Denmark",
