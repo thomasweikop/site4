@@ -94,8 +94,10 @@ export default function RecommendedExpertSections({
             <PercentageRing
               percentage={area.percentage}
               label={area.label}
-              size={102}
-              strokeWidth={11}
+              size={126}
+              strokeWidth={12}
+              valueScale={0.28}
+              captionLines={["COMPLIANCE", "SCORE"]}
             />
           </div>
 
@@ -121,6 +123,15 @@ export default function RecommendedExpertSections({
                           Anbefalet
                         </span>
                       ) : null}
+                    </div>
+
+                    <div className="mt-6">
+                      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#5d6e68]">
+                        Match score
+                      </p>
+                      <p className="mt-2 text-4xl font-semibold leading-none tracking-[-0.04em] text-ink md:text-[3rem]">
+                        {item.fitScore}%
+                      </p>
                     </div>
                   </div>
 
@@ -166,7 +177,7 @@ export default function RecommendedExpertSections({
                         rel="noreferrer"
                         className="inline-flex bg-sage px-4 py-2 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
                       >
-                        Kontakt selskabet
+                        Modtag materiale om {area.label}
                       </a>
                     </div>
                   </div>
@@ -188,6 +199,14 @@ export default function RecommendedExpertSections({
           </div>
         </section>
       ))}
+
+      <div className="px-1 text-xs leading-6 text-[#6a7b76]">
+        Match score er et samlet estimat af hvor godt specialistens primære
+        profil, dækkede NIS2-områder, market fit, branchematch og øvrige
+        kompetencesignal passer til virksomhedens aktuelle behov i den
+        indledende screening. Scoren er vejledende og bør bruges som et
+        prioriteringssignal, ikke som en endelig faglig vurdering.
+      </div>
     </div>
   );
 }

@@ -3,6 +3,8 @@ type PercentageRingProps = {
   size?: number;
   strokeWidth?: number;
   label?: string;
+  captionLines?: string[];
+  valueScale?: number;
 };
 
 export default function PercentageRing({
@@ -10,6 +12,8 @@ export default function PercentageRing({
   size = 92,
   strokeWidth = 10,
   label = "Score",
+  captionLines,
+  valueScale = 0.23,
 }: PercentageRingProps) {
   const normalizedPercentage = Math.max(0, Math.min(100, percentage));
   const radius = (size - strokeWidth) / 2;
@@ -17,6 +21,9 @@ export default function PercentageRing({
   const dashOffset =
     circumference - (normalizedPercentage / 100) * circumference;
   const center = size / 2;
+  const hasCaption = Array.isArray(captionLines) && captionLines.length > 0;
+  const captionFontSize = size * 0.09;
+  const captionBaseY = center + size * 0.2;
 
   return (
     <div
@@ -47,16 +54,35 @@ export default function PercentageRing({
         />
         <text
           x="50%"
-          y="50%"
-          dominantBaseline="middle"
+          y={hasCaption ? "44%" : "50%"}
+          dominantBaseline={hasCaption ? "auto" : "middle"}
           textAnchor="middle"
           fill="#1a5148"
-          fontSize={size * 0.23}
+          fontSize={size * valueScale}
           fontWeight="700"
           style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
         >
           {normalizedPercentage}%
         </text>
+        {hasCaption
+          ? captionLines.map((line, index) => (
+              <text
+                key={`${line}-${index}`}
+                x="50%"
+                y={captionBaseY + index * (captionFontSize + 2)}
+                textAnchor="middle"
+                fill="#5d6e68"
+                fontSize={captionFontSize}
+                fontWeight="700"
+                letterSpacing="0.12em"
+                style={{
+                  fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                }}
+              >
+                {line}
+              </text>
+            ))
+          : null}
       </svg>
     </div>
   );
