@@ -223,7 +223,7 @@ export default function RecommendedExpertSections({
                 {area.description}
               </p>
             </div>
-            <div className="mx-auto mt-4 flex w-[12.25rem] flex-col items-center md:absolute md:right-[3.25rem] md:top-0 md:mt-0">
+            <div className="mx-auto mt-4 flex w-[12.25rem] flex-col items-center md:hidden">
               <p className="mb-3 text-center text-[0.76rem] font-medium uppercase tracking-[0.28em] text-[#6fa3cf]">
                 {area.complianceLabel}
               </p>
@@ -234,6 +234,20 @@ export default function RecommendedExpertSections({
                 strokeWidth={12}
                 valueScale={0.52}
               />
+            </div>
+            <div className="pointer-events-none absolute inset-x-0 top-0 hidden md:grid md:grid-cols-[8.75rem_minmax(0,1fr)_12.25rem] md:gap-5 md:px-5">
+              <div className="col-start-3 flex w-[12.25rem] flex-col items-center">
+                <p className="mb-3 text-center text-[0.76rem] font-medium uppercase tracking-[0.28em] text-[#6fa3cf]">
+                  {area.complianceLabel}
+                </p>
+                <PercentageRing
+                  percentage={area.percentage}
+                  label={area.label}
+                  size={128}
+                  strokeWidth={12}
+                  valueScale={0.52}
+                />
+              </div>
             </div>
           </div>
 
