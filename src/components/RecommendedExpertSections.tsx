@@ -240,21 +240,18 @@ export default function RecommendedExpertSections({
               <article className="grid items-start gap-6 border border-line bg-paper p-5 md:grid-cols-[minmax(0,1fr)_8.5rem]">
                 <div className="flex min-h-[13.5rem] flex-col gap-4">
                   <div className="flex flex-wrap items-center gap-3">
-                    <p className="text-[1.55rem] font-semibold leading-tight tracking-[-0.04em] text-ink">
+                    <a
+                      href={primarySpecialist.vendor.website}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[1.55rem] font-semibold leading-tight tracking-[-0.04em] text-ink underline decoration-[#1b4f45]/20 underline-offset-4 transition hover:text-[#0d4b43]"
+                    >
                       {primarySpecialist.vendor.name}
-                    </p>
+                    </a>
                     <span className="bg-[#73acd6] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] !text-white">
                       Anbefalet
                     </span>
                   </div>
-                  <a
-                    href={primarySpecialist.vendor.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-block text-sm font-medium text-[#1b4f45] underline decoration-[#1b4f45]/30 underline-offset-4 transition hover:text-[#0d4b43]"
-                  >
-                    Website
-                  </a>
 
                   <p className="text-sm font-semibold text-ink">Specialer</p>
                   <ul className="mt-2 space-y-1 text-[0.8rem] leading-6 text-soft">
@@ -274,7 +271,7 @@ export default function RecommendedExpertSections({
                     href={primarySpecialist.vendor.website}
                     target="_blank"
                     rel="noreferrer"
-                    className="mt-auto inline-flex self-start bg-sage px-4 py-2 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
+                    className="mt-auto inline-flex self-center bg-sage px-4 py-2 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
                   >
                     Modtag materiale
                   </a>
@@ -294,28 +291,25 @@ export default function RecommendedExpertSections({
                     className="grid items-start gap-6 border border-line bg-paper p-4 md:grid-cols-[minmax(0,1fr)_8rem]"
                   >
                     <div className="flex min-h-[8rem] flex-col gap-3">
-                      <p className="text-[1.25rem] font-semibold leading-tight tracking-[-0.03em] text-ink">
-                        {item.vendor.name}
-                      </p>
                       <a
                         href={item.vendor.website}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-block text-sm font-medium text-[#1b4f45] underline decoration-[#1b4f45]/30 underline-offset-4 transition hover:text-[#0d4b43]"
+                        className="text-[1.25rem] font-semibold leading-tight tracking-[-0.03em] text-ink underline decoration-[#1b4f45]/20 underline-offset-4 transition hover:text-[#0d4b43]"
                       >
-                        Website
+                        {item.vendor.name}
                       </a>
                       <a
                         href={item.vendor.website}
                         target="_blank"
                         rel="noreferrer"
-                        className="mt-auto inline-flex self-start bg-sage px-4 py-2 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
+                        className="mt-auto inline-flex self-center bg-sage px-4 py-2 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
                       >
                         Modtag materiale
                       </a>
                     </div>
 
-                    <div className="flex flex-col items-end justify-start">
+                    <div className="flex w-full justify-center md:justify-center">
                       <MatchScoreDisplay score={item.fitScore} compact />
                     </div>
                   </article>
