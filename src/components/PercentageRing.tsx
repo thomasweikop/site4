@@ -58,7 +58,6 @@ export default function PercentageRing({
           x="50%"
           y={hasCaption ? "44%" : "50%"}
           dominantBaseline={hasCaption ? "auto" : "middle"}
-          dy={hasCaption ? undefined : "0.08em"}
           textAnchor="middle"
           fill="#6fa3cf"
           fontSize={size * valueScale}
