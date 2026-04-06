@@ -229,7 +229,7 @@ export default function ResultExperience({
                       </div>
 
                       <p className="mt-4 text-sm leading-6 text-soft">
-                        {area.description}
+                        Observation: {area.description}
                       </p>
 
                       <div className="mt-5">
