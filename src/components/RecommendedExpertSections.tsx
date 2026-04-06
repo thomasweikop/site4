@@ -79,8 +79,8 @@ function MatchScoreDisplay({
     ? "flex w-full max-w-[8.5rem] flex-col items-center self-end"
     : "flex w-full max-w-[9rem] flex-col items-center self-end";
   const labelClass = compact
-    ? "w-full border-y border-[#174f46] py-1 text-center text-[0.76rem] font-medium uppercase tracking-[0.32em] text-[#174f46]"
-    : "w-full border-y border-[#174f46] py-1 text-center text-[0.82rem] font-medium uppercase tracking-[0.34em] text-[#174f46]";
+    ? "w-full pt-2 text-center text-[0.76rem] font-medium uppercase tracking-[0.32em] text-[#174f46]"
+    : "w-full pt-2 text-center text-[0.82rem] font-medium uppercase tracking-[0.34em] text-[#174f46]";
   const valueClass = compact
     ? "mt-3 text-[3.15rem] font-semibold leading-none tracking-[-0.06em] text-[#0f4b42]"
     : "mt-3 text-[4.2rem] font-semibold leading-none tracking-[-0.07em] text-[#0f4b42]";
@@ -88,7 +88,11 @@ function MatchScoreDisplay({
 
   return (
     <div className={wrapperClass}>
-      <div className={labelClass}>Match score</div>
+      <div className="h-px w-full bg-[#174f46]" />
+      <div className={labelClass}>
+        <div>SPECIALIST</div>
+        <div>MATCH SCORE</div>
+      </div>
       <div className={valueClass}>{normalizedScore}</div>
       <div className={`${barWidthClass} bg-[#d6d7d6]`}>
         <div
