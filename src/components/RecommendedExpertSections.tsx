@@ -65,6 +65,41 @@ type RecommendedExpertSectionsProps = {
   result: ScanResult;
 };
 
+type MatchScoreDisplayProps = {
+  score: number;
+  compact?: boolean;
+};
+
+function MatchScoreDisplay({
+  score,
+  compact = false,
+}: MatchScoreDisplayProps) {
+  const normalizedScore = Math.max(0, Math.min(100, score));
+  const wrapperClass = compact
+    ? "flex w-full max-w-[8.5rem] flex-col items-center self-end"
+    : "flex w-full max-w-[9rem] flex-col items-center self-end";
+  const labelClass = compact
+    ? "w-full border-y border-[#174f46] py-1 text-center text-[0.76rem] font-medium uppercase tracking-[0.32em] text-[#174f46]"
+    : "w-full border-y border-[#174f46] py-1 text-center text-[0.82rem] font-medium uppercase tracking-[0.34em] text-[#174f46]";
+  const valueClass = compact
+    ? "mt-3 text-[3.15rem] font-semibold leading-none tracking-[-0.06em] text-[#0f4b42]"
+    : "mt-3 text-[4.2rem] font-semibold leading-none tracking-[-0.07em] text-[#0f4b42]";
+  const barWidthClass = compact ? "mt-3 h-[0.55rem] w-full" : "mt-3 h-[0.6rem] w-full";
+
+  return (
+    <div className={wrapperClass}>
+      <div className={labelClass}>Match score</div>
+      <div className={valueClass}>{normalizedScore}</div>
+      <div className={`${barWidthClass} bg-[#d6d7d6]`}>
+        <div
+          className="h-full bg-[#0f4b42]"
+          style={{ width: `${normalizedScore}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function RecommendedExpertSections({
   result,
 }: RecommendedExpertSectionsProps) {
@@ -153,13 +188,8 @@ export default function RecommendedExpertSections({
                   </a>
                 </div>
 
-                <div className="flex flex-col items-center justify-start text-center md:items-end md:text-center">
-                  <p className="text-[1.15rem] font-semibold leading-none tracking-[-0.03em] text-ink">
-                    Match score
-                  </p>
-                  <p className="mt-1 text-[1.15rem] font-semibold leading-none tracking-[-0.03em] text-ink">
-                    {primarySpecialist.fitScore}
-                  </p>
+                <div className="flex flex-col items-end justify-start">
+                  <MatchScoreDisplay score={primarySpecialist.fitScore} />
                 </div>
               </article>
             ) : null}
@@ -193,13 +223,8 @@ export default function RecommendedExpertSections({
                       </a>
                     </div>
 
-                    <div className="flex flex-col items-center justify-start text-center md:items-end md:text-center">
-                      <p className="text-[0.95rem] font-semibold leading-none tracking-[-0.02em] text-ink">
-                        Match score
-                      </p>
-                      <p className="mt-1 text-[0.95rem] font-semibold leading-none tracking-[-0.02em] text-ink">
-                        {item.fitScore}
-                      </p>
+                    <div className="flex flex-col items-end justify-start">
+                      <MatchScoreDisplay score={item.fitScore} compact />
                     </div>
                   </article>
                 ))}
