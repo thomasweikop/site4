@@ -189,6 +189,11 @@ export default function RecommendedExpertSections({
     specialist.specialtyHighlights[0] ||
     specialist.bestFor;
 
+  const shouldShowApprovedLogo = (
+    specialist: ScanResult["vendorFits"][number]["vendor"],
+  ) =>
+    specialist.logoStatus === "approved" && Boolean(specialist.logoCandidateUrl);
+
   return (
     <div className="space-y-6">
       {groupedSpecialists.map(
@@ -260,9 +265,21 @@ export default function RecommendedExpertSections({
               >
                 <div className="flex justify-center md:justify-start">
                   <div className="flex h-[8.8rem] w-[8.8rem] items-center justify-center border border-[#2a5851] bg-[#fffdfa]">
-                    <div className="flex h-[4.2rem] w-[6.4rem] items-center justify-center border border-[#ececeb] bg-white text-[0.58rem] font-medium uppercase tracking-[0.26em] text-[#9aa5a0]">
-                      Logo
-                    </div>
+                    {shouldShowApprovedLogo(item.vendor) ? (
+                      <div className="flex h-[4.2rem] w-[6.4rem] items-center justify-center border border-[#ececeb] bg-white p-2">
+                        <img
+                          src={item.vendor.logoCandidateUrl}
+                          alt={`${item.vendor.name} logo`}
+                          className="max-h-full max-w-full object-contain"
+                          loading="lazy"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex h-[4.2rem] w-[6.4rem] items-center justify-center border border-[#ececeb] bg-white text-[0.58rem] font-medium uppercase tracking-[0.26em] text-[#9aa5a0]">
+                        Logo
+                      </div>
+                    )}
                   </div>
                 </div>
 

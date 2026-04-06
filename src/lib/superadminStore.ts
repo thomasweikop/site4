@@ -10,6 +10,7 @@ import {
 import {
   VENDOR_DIRECTORY,
   buildVendorKey,
+  type VendorLogoStatus,
   type VendorProfileTier,
   type VendorDirectoryEntry,
   type VendorSizeFit,
@@ -68,6 +69,10 @@ export type EditableVendor = {
   casesPerYear: number | null;
   dedicatedSpecialists: number | null;
   manualBoostScore: number;
+  logoStatus: VendorLogoStatus;
+  logoCandidateUrl: string;
+  logoOfficialSourceUrl: string;
+  logoNotes: string;
 };
 
 export type EditableQuestion = {
@@ -215,6 +220,10 @@ function buildDefaultEditableVendor(vendor: VendorDirectoryEntry): EditableVendo
     casesPerYear: vendor.casesPerYear,
     dedicatedSpecialists: vendor.dedicatedSpecialists,
     manualBoostScore: vendor.manualBoostScore,
+    logoStatus: vendor.logoStatus,
+    logoCandidateUrl: vendor.logoCandidateUrl,
+    logoOfficialSourceUrl: vendor.logoOfficialSourceUrl,
+    logoNotes: vendor.logoNotes,
   };
 }
 

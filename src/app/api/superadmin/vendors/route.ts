@@ -41,6 +41,7 @@ export async function PATCH(request: Request) {
       key: body.key,
       name: body.name,
       type: body.type,
+      logoStatus: body.logoStatus,
     },
   });
 

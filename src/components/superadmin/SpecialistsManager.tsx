@@ -13,8 +13,16 @@ export default function SpecialistsManager({
   const [vendors, setVendors] = useState(initialVendors);
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [logoStatusFilter, setLogoStatusFilter] = useState("all");
   const [savingKey, setSavingKey] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+
+  const logoStatusLabels: Record<EditableVendor["logoStatus"], string> = {
+    missing: "Mangler",
+    candidate: "Kandidat fundet",
+    approved: "Godkendt",
+    rejected: "Afvist",
+  };
 
   const filteredVendors = useMemo(() => {
     return vendors.filter((vendor) => {
@@ -27,11 +35,18 @@ export default function SpecialistsManager({
         vendor.websiteSignalTags.join(" "),
         vendor.bestMatchAreas.join(" "),
         vendor.capabilityAreaLabels.join(" "),
+        vendor.logoNotes,
+        vendor.logoOfficialSourceUrl,
+        vendor.logoCandidateUrl,
       ]
         .join(" ")
         .toLowerCase();
 
       if (typeFilter !== "all" && vendor.type !== typeFilter) {
+        return false;
+      }
+
+      if (logoStatusFilter !== "all" && vendor.logoStatus !== logoStatusFilter) {
         return false;
       }
 
@@ -41,7 +56,7 @@ export default function SpecialistsManager({
 
       return haystack.includes(query.trim().toLowerCase());
     });
-  }, [query, typeFilter, vendors]);
+  }, [logoStatusFilter, query, typeFilter, vendors]);
 
   function updateVendor(
     vendorKey: string,
@@ -103,7 +118,7 @@ export default function SpecialistsManager({
           scoring og kontaktoplysninger på en enkel måde.
         </p>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
+        <div className="mt-6 grid gap-4 md:grid-cols-[minmax(0,1fr)_220px_220px]">
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -121,6 +136,17 @@ export default function SpecialistsManager({
             <option value="technical">Technical</option>
             <option value="soc">SOC</option>
             <option value="audit">Audit</option>
+          </select>
+          <select
+            value={logoStatusFilter}
+            onChange={(event) => setLogoStatusFilter(event.target.value)}
+            className="w-full border border-line bg-paper px-4 py-3 text-sm text-ink outline-none transition focus:border-[#2a5a4f]"
+          >
+            <option value="all">Alle logo-statusser</option>
+            <option value="missing">Mangler</option>
+            <option value="candidate">Kandidat fundet</option>
+            <option value="approved">Godkendt</option>
+            <option value="rejected">Afvist</option>
           </select>
         </div>
 
@@ -159,6 +185,9 @@ export default function SpecialistsManager({
                   </span>
                   <span className="border border-line bg-paper px-3 py-1 text-xs font-semibold text-soft">
                     Profil {vendor.profileTier}
+                  </span>
+                  <span className="border border-line bg-paper px-3 py-1 text-xs font-semibold text-soft">
+                    Logo {logoStatusLabels[vendor.logoStatus]}
                   </span>
                 </div>
               </div>
@@ -220,6 +249,72 @@ export default function SpecialistsManager({
                     onChange={(event) =>
                       updateVendor(vendor.key, { website: event.target.value })
                     }
+                    className="border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
+                  />
+                </label>
+
+                <label className="grid gap-2 text-sm">
+                  <span className="font-semibold text-ink">Logo-status</span>
+                  <select
+                    value={vendor.logoStatus}
+                    onChange={(event) =>
+                      updateVendor(vendor.key, {
+                        logoStatus: event.target
+                          .value as EditableVendor["logoStatus"],
+                      })
+                    }
+                    className="border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
+                  >
+                    <option value="missing">Mangler</option>
+                    <option value="candidate">Kandidat fundet</option>
+                    <option value="approved">Godkendt</option>
+                    <option value="rejected">Afvist</option>
+                  </select>
+                </label>
+
+                <label className="grid gap-2 text-sm md:col-span-2">
+                  <span className="font-semibold text-ink">
+                    Kandidat-logo URL
+                  </span>
+                  <input
+                    value={vendor.logoCandidateUrl}
+                    onChange={(event) =>
+                      updateVendor(vendor.key, {
+                        logoCandidateUrl: event.target.value,
+                      })
+                    }
+                    placeholder="https://..."
+                    className="border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
+                  />
+                </label>
+
+                <label className="grid gap-2 text-sm md:col-span-2">
+                  <span className="font-semibold text-ink">
+                    Officiel kildeside
+                  </span>
+                  <input
+                    value={vendor.logoOfficialSourceUrl}
+                    onChange={(event) =>
+                      updateVendor(vendor.key, {
+                        logoOfficialSourceUrl: event.target.value,
+                      })
+                    }
+                    placeholder="https://..."
+                    className="border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
+                  />
+                </label>
+
+                <label className="grid gap-2 text-sm md:col-span-2">
+                  <span className="font-semibold text-ink">Logo-noter</span>
+                  <textarea
+                    value={vendor.logoNotes}
+                    onChange={(event) =>
+                      updateVendor(vendor.key, {
+                        logoNotes: event.target.value,
+                      })
+                    }
+                    rows={2}
+                    placeholder="Noter om kilde, kvalitet eller hvorfor et forslag er afvist"
                     className="border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
                   />
                 </label>
@@ -421,6 +516,46 @@ export default function SpecialistsManager({
                     className="border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
                   />
                 </label>
+              </div>
+
+              <div className="mt-5 grid gap-4 border border-line bg-paper p-4 md:grid-cols-[180px_minmax(0,1fr)]">
+                <div className="flex items-center justify-center border border-line bg-white p-4">
+                  {vendor.logoCandidateUrl ? (
+                    <img
+                      src={vendor.logoCandidateUrl}
+                      alt={`Kandidat-logo for ${vendor.name}`}
+                      className="max-h-20 max-w-full object-contain"
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="text-center text-xs uppercase tracking-[0.22em] text-soft">
+                      Intet logo endnu
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-2 text-sm leading-6 text-soft">
+                  <p>
+                    Status lige nu:{" "}
+                    <span className="font-semibold text-ink">
+                      {logoStatusLabels[vendor.logoStatus]}
+                    </span>
+                  </p>
+                  <p>
+                    Logoet bliver kun vist live på sitet, når status er sat til{" "}
+                    <span className="font-semibold text-ink">Godkendt</span>.
+                  </p>
+                  {vendor.logoOfficialSourceUrl ? (
+                    <a
+                      href={vendor.logoOfficialSourceUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex border border-line bg-white px-3 py-2 text-xs font-semibold text-ink transition hover:bg-paper"
+                    >
+                      Åbn officiel kildeside
+                    </a>
+                  ) : null}
+                </div>
               </div>
 
               <div className="mt-5 grid gap-3 border border-line bg-paper p-4 text-xs text-soft md:grid-cols-4">

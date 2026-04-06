@@ -11,6 +11,11 @@ export type DimensionKey =
 export type VendorType = "legal" | "grc" | "technical" | "soc" | "audit";
 export type VendorSizeFit = "smb" | "mid-market" | "enterprise";
 export type VendorProfileTier = "directory" | "verified" | "subscription";
+export type VendorLogoStatus =
+  | "missing"
+  | "candidate"
+  | "approved"
+  | "rejected";
 
 export type GranularAreaKey =
   | "governance-responsibility"
@@ -129,6 +134,10 @@ type RawVendorEnrichmentRow = {
   manualBoostScore?: number;
   sourceUrls?: string[];
   matrixSignalScores?: Partial<Record<MatrixAreaKey, number>>;
+  logoStatus?: string;
+  logoCandidateUrl?: string;
+  logoOfficialSourceUrl?: string;
+  logoNotes?: string;
 };
 
 export type MatrixColumn = {
@@ -173,6 +182,10 @@ export type VendorDirectoryEntry = {
   manualBoostScore: number;
   sourceUrls: string[];
   matrixSignalScores: Partial<Record<MatrixAreaKey, number>>;
+  logoStatus: VendorLogoStatus;
+  logoCandidateUrl: string;
+  logoOfficialSourceUrl: string;
+  logoNotes: string;
   capabilityBreadthScore: number;
   profileCompletenessScore: number;
   blockerCoverage: {
@@ -419,6 +432,24 @@ function normalizeVendorProfileTier(value?: string): VendorProfileTier {
   }
 
   return "directory";
+}
+
+function normalizeVendorLogoStatus(value?: string): VendorLogoStatus {
+  const normalized = value?.trim().toLowerCase();
+
+  if (normalized === "candidate") {
+    return "candidate";
+  }
+
+  if (normalized === "approved" || normalized === "godkendt") {
+    return "approved";
+  }
+
+  if (normalized === "rejected" || normalized === "afvist") {
+    return "rejected";
+  }
+
+  return "missing";
 }
 
 function normalizeWebsiteSignalTags(tags: string[] = []) {
@@ -711,6 +742,11 @@ export const VENDOR_DIRECTORY: VendorDirectoryEntry[] = vendorMatrix.map(
     const sourceUrls = Array.from(
       new Set((enrichment?.sourceUrls ?? []).filter(Boolean)),
     );
+    const logoStatus = normalizeVendorLogoStatus(enrichment?.logoStatus);
+    const logoCandidateUrl = enrichment?.logoCandidateUrl?.trim() || "";
+    const logoOfficialSourceUrl =
+      enrichment?.logoOfficialSourceUrl?.trim() || "";
+    const logoNotes = enrichment?.logoNotes?.trim() || "";
     const matrixSignalScores = normalizeMatrixSignalScores(
       enrichment?.matrixSignalScores,
     );
@@ -778,6 +814,10 @@ export const VENDOR_DIRECTORY: VendorDirectoryEntry[] = vendorMatrix.map(
       manualBoostScore,
       sourceUrls,
       matrixSignalScores,
+      logoStatus,
+      logoCandidateUrl,
+      logoOfficialSourceUrl,
+      logoNotes,
       capabilityBreadthScore,
       profileCompletenessScore,
       blockerCoverage: {
