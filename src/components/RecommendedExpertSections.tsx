@@ -205,6 +205,14 @@ export default function RecommendedExpertSections({
           additionalSpecialists,
         }) => {
           const additionalColumns = splitIntoColumns(additionalSpecialists, 5);
+          const featuredSpecialists = [
+            primarySpecialist,
+            ...secondarySpecialists,
+          ].filter(
+            (
+              item,
+            ): item is NonNullable<typeof primarySpecialist> => item !== null,
+          );
 
           return (
         <section
@@ -236,17 +244,20 @@ export default function RecommendedExpertSections({
           </div>
 
           <div className="mt-6 space-y-3">
-            {primarySpecialist ? (
-              <article className="grid items-start gap-6 border border-line bg-paper p-5 md:grid-cols-[minmax(0,1fr)_8.5rem]">
+            {featuredSpecialists.map((item) => (
+              <article
+                key={`${area.key}-${item.vendor.name}`}
+                className="grid items-start gap-6 border border-line bg-paper p-5 md:grid-cols-[minmax(0,1fr)_8.5rem]"
+              >
                 <div className="flex min-h-[13.5rem] flex-col gap-4">
                   <div className="flex flex-wrap items-center gap-3">
                     <a
-                      href={primarySpecialist.vendor.website}
+                      href={item.vendor.website}
                       target="_blank"
                       rel="noreferrer"
                       className="text-[1.55rem] font-semibold leading-tight tracking-[-0.04em] text-ink underline decoration-[#1b4f45]/20 underline-offset-4 transition hover:text-[#0d4b43]"
                     >
-                      {primarySpecialist.vendor.name}
+                      {item.vendor.name}
                     </a>
                     <span className="bg-[#73acd6] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] !text-white">
                       Anbefalet
@@ -255,20 +266,18 @@ export default function RecommendedExpertSections({
 
                   <p className="text-sm font-semibold text-ink">Specialer</p>
                   <ul className="mt-2 space-y-1 text-[0.8rem] leading-6 text-soft">
-                    {primarySpecialist.vendor.specialtyHighlights
-                      .slice(0, 4)
-                      .map((line) => (
-                        <li
-                          key={`${primarySpecialist.vendor.name}-${line}`}
-                          className="grid grid-cols-[auto_1fr] items-start gap-x-2"
-                        >
-                          <span aria-hidden="true">•</span>
-                          <span>{line}</span>
-                        </li>
-                      ))}
+                    {item.vendor.specialtyHighlights.slice(0, 4).map((line) => (
+                      <li
+                        key={`${item.vendor.name}-${line}`}
+                        className="grid grid-cols-[auto_1fr] items-start gap-x-2"
+                      >
+                        <span aria-hidden="true">•</span>
+                        <span>{line}</span>
+                      </li>
+                    ))}
                   </ul>
                   <a
-                    href={primarySpecialist.vendor.website}
+                    href={item.vendor.website}
                     target="_blank"
                     rel="noreferrer"
                     className="mt-auto inline-flex self-center bg-sage px-4 py-2 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
@@ -278,44 +287,10 @@ export default function RecommendedExpertSections({
                 </div>
 
                 <div className="flex w-[8.5rem] justify-center justify-self-center">
-                  <MatchScoreDisplay score={primarySpecialist.fitScore} />
+                  <MatchScoreDisplay score={item.fitScore} />
                 </div>
               </article>
-            ) : null}
-
-            {secondarySpecialists.length > 0 ? (
-              <div className="space-y-3">
-                {secondarySpecialists.map((item) => (
-                  <article
-                    key={`${area.key}-${item.vendor.name}`}
-                    className="grid items-start gap-6 border border-line bg-paper p-4 md:grid-cols-[minmax(0,1fr)_8rem]"
-                  >
-                    <div className="flex min-h-[8rem] flex-col gap-3">
-                      <a
-                        href={item.vendor.website}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-[1.25rem] font-semibold leading-tight tracking-[-0.03em] text-ink underline decoration-[#1b4f45]/20 underline-offset-4 transition hover:text-[#0d4b43]"
-                      >
-                        {item.vendor.name}
-                      </a>
-                      <a
-                        href={item.vendor.website}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-auto inline-flex self-center bg-sage px-4 py-2 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
-                      >
-                        Modtag materiale
-                      </a>
-                    </div>
-
-                    <div className="flex w-full justify-center md:justify-center">
-                      <MatchScoreDisplay score={item.fitScore} compact />
-                    </div>
-                  </article>
-                ))}
-              </div>
-            ) : null}
+            ))}
 
             <AdditionalSpecialistsPanel
               areaKey={area.key}
