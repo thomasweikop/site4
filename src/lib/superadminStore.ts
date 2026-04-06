@@ -9,6 +9,8 @@ import {
 } from "@/lib/nis2Scan";
 import {
   VENDOR_DIRECTORY,
+  buildVendorKey,
+  type VendorProfileTier,
   type VendorDirectoryEntry,
   type VendorSizeFit,
   type VendorType,
@@ -40,6 +42,7 @@ export type EditableVendor = {
   baseKey: string;
   name: string;
   type: VendorType;
+  profileTier: VendorProfileTier;
   sizeFit: VendorSizeFit[];
   sectorFit: string;
   priceBand: string;
@@ -53,6 +56,18 @@ export type EditableVendor = {
   secondaryTypes: VendorType[];
   bestMatchAreas: string[];
   capabilityAreaLabels: string[];
+  websiteSummaryDa: string;
+  websiteSignalTags: string[];
+  websiteSignalScore: number;
+  websiteDepthScore: number;
+  websiteEvidenceScore: number;
+  capabilityBreadthScore: number;
+  profileCompletenessScore: number;
+  pagesScanned: number;
+  sourceUrls: string[];
+  casesPerYear: number | null;
+  dedicatedSpecialists: number | null;
+  manualBoostScore: number;
 };
 
 export type EditableQuestion = {
@@ -168,16 +183,13 @@ function toJsonValue(value: Record<string, unknown>) {
   return JSON.parse(JSON.stringify(value)) as postgres.JSONValue;
 }
 
-function createVendorKey(vendor: VendorDirectoryEntry) {
-  return `${vendor.type}:${vendor.rankInType}:${vendor.name}`;
-}
-
 function buildDefaultEditableVendor(vendor: VendorDirectoryEntry): EditableVendor {
   return {
-    key: createVendorKey(vendor),
-    baseKey: createVendorKey(vendor),
+    key: buildVendorKey(vendor),
+    baseKey: buildVendorKey(vendor),
     name: vendor.name,
     type: vendor.type,
+    profileTier: vendor.profileTier,
     sizeFit: vendor.sizeFit,
     sectorFit: vendor.sectorFit,
     priceBand: vendor.priceBand,
@@ -191,6 +203,18 @@ function buildDefaultEditableVendor(vendor: VendorDirectoryEntry): EditableVendo
     secondaryTypes: vendor.secondaryTypes,
     bestMatchAreas: vendor.bestMatchAreas,
     capabilityAreaLabels: vendor.capabilityAreaLabels,
+    websiteSummaryDa: vendor.websiteSummaryDa,
+    websiteSignalTags: vendor.websiteSignalTags,
+    websiteSignalScore: vendor.websiteSignalScore,
+    websiteDepthScore: vendor.websiteDepthScore,
+    websiteEvidenceScore: vendor.websiteEvidenceScore,
+    capabilityBreadthScore: vendor.capabilityBreadthScore,
+    profileCompletenessScore: vendor.profileCompletenessScore,
+    pagesScanned: vendor.pagesScanned,
+    sourceUrls: vendor.sourceUrls,
+    casesPerYear: vendor.casesPerYear,
+    dedicatedSpecialists: vendor.dedicatedSpecialists,
+    manualBoostScore: vendor.manualBoostScore,
   };
 }
 

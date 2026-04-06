@@ -360,6 +360,12 @@ export type RankedVendorFit = {
   sizeFit: number;
   sectorFit: number;
   blockerFit: number;
+  websiteEvidence: number;
+  prioritySignalFit: number;
+  capabilityBreadth: number;
+  profileCompleteness: number;
+  deliveryCapacity: number;
+  manualBoost: number;
   matchedAreas: MatrixAreaKey[];
   matchedAreaLabels: string[];
   preferredTypeMatch: "primary" | "adjacent" | "none";
@@ -768,6 +774,70 @@ function buildExpertRationale(
   return `${vendor.name} prioriteres højt, fordi profilen matcher virksomhedens vigtigste områder indenfor ${areaText.toLowerCase()} og er kvalificeret til ${vendor.recommendedRole.toLowerCase()}.`;
 }
 
+function clampPercentage(value: number) {
+  return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+function getPrioritySignalFitScore(
+  vendor: VendorDirectoryEntry,
+  relevantAreaKeys: MatrixAreaKey[],
+) {
+  if (relevantAreaKeys.length === 0) {
+    return vendor.websiteSignalScore;
+  }
+
+  const values = relevantAreaKeys.map((areaKey) => {
+    const signalScore = vendor.matrixSignalScores[areaKey];
+
+    if (typeof signalScore === "number") {
+      return signalScore;
+    }
+
+    return vendor.matrixAreas[areaKey] ? 65 : 0;
+  });
+
+  return clampPercentage(
+    values.reduce((sum, value) => sum + value, 0) / values.length,
+  );
+}
+
+function getDeliveryCapacityScore(vendor: VendorDirectoryEntry) {
+  const tierBase =
+    vendor.profileTier === "subscription"
+      ? 82
+      : vendor.profileTier === "verified"
+        ? 68
+        : 48;
+  const casesScore =
+    vendor.casesPerYear === null
+      ? Math.round(vendor.websiteSignalScore * 0.7)
+      : vendor.casesPerYear >= 60
+        ? 100
+        : vendor.casesPerYear >= 30
+          ? 84
+          : vendor.casesPerYear >= 15
+            ? 70
+            : vendor.casesPerYear >= 6
+              ? 56
+              : 42;
+  const specialistsScore =
+    vendor.dedicatedSpecialists === null
+      ? Math.round(vendor.capabilityBreadthScore * 0.75)
+      : vendor.dedicatedSpecialists >= 25
+        ? 100
+        : vendor.dedicatedSpecialists >= 12
+          ? 82
+          : vendor.dedicatedSpecialists >= 6
+            ? 64
+            : vendor.dedicatedSpecialists >= 3
+              ? 48
+              : 32;
+
+  return clampPercentage(
+    tierBase * 0.4 + casesScore * 0.3 + specialistsScore * 0.3,
+  );
+}
+
 function rankVendors(
   priorityAreas: PriorityArea[],
   blockers: BlockerItem[],
@@ -786,15 +856,26 @@ function rankVendors(
     const sizeFit = getSizeFitScore(vendor, sizeSegment);
     const sectorFit = getSectorFitScore(vendor, industry);
     const blockerFit = getBlockerFitScore(vendor, blockers);
+    const websiteEvidence = vendor.websiteEvidenceScore;
+    const prioritySignalFit = getPrioritySignalFitScore(vendor, relevantAreaKeys);
+    const capabilityBreadth = vendor.capabilityBreadthScore;
+    const profileCompleteness = vendor.profileCompletenessScore;
+    const deliveryCapacity = getDeliveryCapacityScore(vendor);
+    const manualBoost = clampPercentage(vendor.manualBoostScore);
 
-    // v4 fit score from the provided build spec.
-    const fitScore = Math.round(
+    const fitScore = clampPercentage(
       vendor.score * SCORING_CONFIG.fitWeights.qualificationScoreInitial +
         typeFit.value * SCORING_CONFIG.fitWeights.typeFit +
         areaFit.value * SCORING_CONFIG.fitWeights.areaFit +
         sizeFit * SCORING_CONFIG.fitWeights.sizeFit +
         sectorFit * SCORING_CONFIG.fitWeights.sectorFit +
-        blockerFit * SCORING_CONFIG.fitWeights.blockerFit,
+        blockerFit * SCORING_CONFIG.fitWeights.blockerFit +
+        websiteEvidence * SCORING_CONFIG.fitWeights.websiteEvidence +
+        prioritySignalFit * SCORING_CONFIG.fitWeights.prioritySignalFit +
+        capabilityBreadth * SCORING_CONFIG.fitWeights.capabilityBreadth +
+        profileCompleteness * SCORING_CONFIG.fitWeights.profileCompleteness +
+        deliveryCapacity * SCORING_CONFIG.fitWeights.deliveryCapacity +
+        manualBoost * SCORING_CONFIG.fitWeights.manualBoost,
     );
 
     return {
@@ -806,6 +887,12 @@ function rankVendors(
       sizeFit,
       sectorFit,
       blockerFit,
+      websiteEvidence,
+      prioritySignalFit,
+      capabilityBreadth,
+      profileCompleteness,
+      deliveryCapacity,
+      manualBoost,
       matchedAreas: areaFit.matchedAreas,
       matchedAreaLabels: areaFit.matchedAreas.map(getMatrixAreaLabel),
       preferredTypeMatch: typeFit.match,

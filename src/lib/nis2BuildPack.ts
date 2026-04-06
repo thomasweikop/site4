@@ -1,4 +1,5 @@
 import rawBuildSpec from "@/data/nis2_build_spec_v4.json";
+import rawVendorEnrichment from "@/data/nis2_vendor_enrichment_v2.json";
 import rawVendorMatrix from "@/data/nis2_vendor_area_matrix_real_v4.json";
 
 export type DimensionKey =
@@ -9,6 +10,7 @@ export type DimensionKey =
 
 export type VendorType = "legal" | "grc" | "technical" | "soc" | "audit";
 export type VendorSizeFit = "smb" | "mid-market" | "enterprise";
+export type VendorProfileTier = "directory" | "verified" | "subscription";
 
 export type GranularAreaKey =
   | "governance-responsibility"
@@ -114,6 +116,21 @@ type RawVendorRow = {
   Type_fit_nonmatch_score: string;
 };
 
+type RawVendorEnrichmentRow = {
+  vendorKey: string;
+  websiteSummaryDa?: string;
+  websiteSignalTags?: string[];
+  websiteSignalScore?: number;
+  websiteDepthScore?: number;
+  pagesScanned?: number;
+  profileTier?: string;
+  casesPerYear?: number | null;
+  dedicatedSpecialists?: number | null;
+  manualBoostScore?: number;
+  sourceUrls?: string[];
+  matrixSignalScores?: Partial<Record<MatrixAreaKey, number>>;
+};
+
 export type MatrixColumn = {
   key: MatrixAreaKey;
   label: string;
@@ -121,6 +138,7 @@ export type MatrixColumn = {
 };
 
 export type VendorDirectoryEntry = {
+  key: string;
   rankInType: number;
   name: string;
   type: VendorType;
@@ -143,6 +161,20 @@ export type VendorDirectoryEntry = {
   capabilityAreaLabels: string[];
   granularAreaLabels: string[];
   specialtyHighlights: string[];
+  websiteSummaryDa: string;
+  websiteSignalTags: string[];
+  websiteSignalScore: number;
+  websiteDepthScore: number;
+  websiteEvidenceScore: number;
+  pagesScanned: number;
+  profileTier: VendorProfileTier;
+  casesPerYear: number | null;
+  dedicatedSpecialists: number | null;
+  manualBoostScore: number;
+  sourceUrls: string[];
+  matrixSignalScores: Partial<Record<MatrixAreaKey, number>>;
+  capabilityBreadthScore: number;
+  profileCompletenessScore: number;
   blockerCoverage: {
     riskAssessment: boolean;
     incidentResponse: boolean;
@@ -156,6 +188,7 @@ export type VendorDirectoryEntry = {
 };
 
 const buildSpec = rawBuildSpec as unknown as RawBuildSpec;
+const vendorEnrichment = rawVendorEnrichment as RawVendorEnrichmentRow[];
 const vendorMatrix = rawVendorMatrix as RawVendorRow[];
 
 export const PRODUCT_NAME = buildSpec.product_name;
@@ -218,6 +251,20 @@ export const VENDOR_TYPE_META: Record<
     summary:
       "Relevant når ekstern validering, review, assurance og dokumentation over for kunder eller ledelse er central.",
   },
+};
+
+const WEBSITE_SIGNAL_LABEL_MAP: Record<string, string> = {
+  "Governance og ansvar": "Governance og ansvar",
+  "Politikker og dokumentation": "Politikker og dokumentation",
+  Risikovurdering: "Risikovurdering",
+  Leverandørstyring: "Leverandørstyring",
+  "Incident management": "Incident response",
+  "Logging og monitorering": "Logging & monitorering",
+  "Identity / MFA / PAM": "Identity / MFA / PAM",
+  "Asset- og adgangsoverblik": "Asset- og adgangsoverblik",
+  "Awareness og træning": "Træning & awareness",
+  "Business continuity & recovery": "Backup / recovery / continuity",
+  "Audit og assurance": "Audit / assurance",
 };
 
 export const GRANULAR_AREA_COLUMNS: MatrixColumn[] = [
@@ -356,6 +403,52 @@ function parseVendorTypes(value: string) {
   return parseList(value).map(normalizeVendorType);
 }
 
+function clampPercentage(value: number) {
+  return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+function normalizeVendorProfileTier(value?: string): VendorProfileTier {
+  const normalized = value?.trim().toLowerCase();
+
+  if (normalized === "verified") {
+    return "verified";
+  }
+
+  if (normalized === "subscription" || normalized === "subscriber") {
+    return "subscription";
+  }
+
+  return "directory";
+}
+
+function normalizeWebsiteSignalTags(tags: string[] = []) {
+  return Array.from(
+    new Set(
+      tags
+        .map((tag) => WEBSITE_SIGNAL_LABEL_MAP[tag.trim()] ?? tag.trim())
+        .filter(Boolean),
+    ),
+  );
+}
+
+function normalizeMatrixSignalScores(
+  scores?: Partial<Record<MatrixAreaKey, number>>,
+) {
+  if (!scores) {
+    return {} satisfies Partial<Record<MatrixAreaKey, number>>;
+  }
+
+  const normalizedEntries = Object.entries(scores)
+    .map(([key, value]) => [key, clampPercentage(Number(value) || 0)] as const)
+    .filter(([key]) =>
+      MATRIX_COLUMNS.some((column) => column.key === key),
+    );
+
+  return Object.fromEntries(
+    normalizedEntries,
+  ) as Partial<Record<MatrixAreaKey, number>>;
+}
+
 function hasMatrixMark(value: string) {
   return value.trim() === "●";
 }
@@ -363,6 +456,18 @@ function hasMatrixMark(value: string) {
 const GRANULAR_LABEL_TO_KEY = Object.fromEntries(
   GRANULAR_AREA_COLUMNS.map((column) => [column.label, column.key]),
 ) as Record<string, GranularAreaKey>;
+
+export function buildVendorKey(input: {
+  type: VendorType;
+  rankInType: number;
+  name: string;
+}) {
+  return `${input.type}:${input.rankInType}:${input.name}`;
+}
+
+const vendorEnrichmentMap = new Map(
+  vendorEnrichment.map((entry) => [entry.vendorKey, entry]),
+);
 
 function buildMatrixAreas(row: RawVendorRow): Record<MatrixAreaKey, boolean> {
   return {
@@ -390,14 +495,74 @@ function formatSectorFit(value: string) {
   return value.replace(/;\s*/g, ", ");
 }
 
+function calculateWebsiteEvidenceScore(
+  websiteSignalScore: number,
+  websiteDepthScore: number,
+) {
+  return clampPercentage(websiteSignalScore * 0.72 + websiteDepthScore * 0.28);
+}
+
+function calculateCapabilityBreadthScore(
+  dimensionCount: number,
+  granularAreaCount: number,
+) {
+  const dimensionRatio = Math.min(dimensionCount, DIMENSION_ORDER.length) /
+    DIMENSION_ORDER.length;
+  const granularRatio = Math.min(
+    granularAreaCount,
+    GRANULAR_AREA_COLUMNS.length,
+  ) / GRANULAR_AREA_COLUMNS.length;
+
+  return clampPercentage(dimensionRatio * 35 + granularRatio * 65);
+}
+
+function calculateProfileCompletenessScore(input: {
+  websiteSummaryDa: string;
+  websiteSignalTags: string[];
+  sourceUrls: string[];
+  pagesScanned: number;
+  profileTier: VendorProfileTier;
+  websiteSignalScore: number;
+  casesPerYear: number | null;
+  dedicatedSpecialists: number | null;
+}) {
+  const profileTierScore =
+    input.profileTier === "subscription"
+      ? 20
+      : input.profileTier === "verified"
+        ? 14
+        : 6;
+
+  const score =
+    (input.websiteSummaryDa ? 24 : 0) +
+    Math.min(input.websiteSignalTags.length, 5) * 7 +
+    Math.min(input.sourceUrls.length, 4) * 5 +
+    Math.min(input.pagesScanned, 4) * 4 +
+    profileTierScore +
+    (input.websiteSignalScore >= 70 ? 10 : input.websiteSignalScore >= 45 ? 5 : 0) +
+    (input.casesPerYear !== null ? 8 : 0) +
+    (input.dedicatedSpecialists !== null ? 8 : 0);
+
+  return clampPercentage(score);
+}
+
 function buildSpecialtyHighlights(input: {
   bestFor: string;
+  websiteSummaryDa: string;
+  websiteSignalTags: string[];
   bestMatchAreas: string[];
   granularAreaLabels: string[];
   sectorFit: string;
 }) {
+  const websiteSignalText =
+    input.websiteSignalTags.length > 0
+      ? `Signalspor fra website: ${input.websiteSignalTags
+          .slice(0, 4)
+          .join(", ")}`
+      : "";
   const lines = [
-    input.bestFor,
+    input.websiteSummaryDa || input.bestFor,
+    websiteSignalText,
     input.bestMatchAreas.length > 0
       ? `Primære fokusområder: ${input.bestMatchAreas.join(", ")}`
       : "",
@@ -411,7 +576,7 @@ function buildSpecialtyHighlights(input: {
       : "",
   ].filter(Boolean);
 
-  return Array.from(new Set(lines));
+  return Array.from(new Set(lines)).slice(0, 5);
 }
 
 export const FOLLOWUP_QUESTIONS = Object.fromEntries(
@@ -483,12 +648,18 @@ export const SCORING_CONFIG = {
   ),
   fitScoreFormula: buildSpec.fit_score_formula.formula,
   fitWeights: {
-    qualificationScoreInitial: 0.45,
-    typeFit: 0.2,
-    areaFit: 0.15,
-    sizeFit: 0.1,
+    qualificationScoreInitial: 0.2,
+    typeFit: 0.13,
+    areaFit: 0.14,
+    sizeFit: 0.06,
     sectorFit: 0.05,
-    blockerFit: 0.05,
+    blockerFit: 0.08,
+    websiteEvidence: 0.1,
+    prioritySignalFit: 0.1,
+    capabilityBreadth: 0.05,
+    profileCompleteness: 0.04,
+    deliveryCapacity: 0.03,
+    manualBoost: 0.02,
   },
   topAreaCount: TOP_AREA_COUNT,
   followupThreshold: FLOW_B_DIMENSION_THRESHOLD,
@@ -507,11 +678,66 @@ export const VENDOR_DIRECTORY: VendorDirectoryEntry[] = vendorMatrix.map(
     const bestFor = row.Best_for.trim();
     const sectorFit = row.Sector_fit.trim();
     const bestMatchAreas = parseList(row.Best_match_areas);
+    const rankInType = Number(row.Rank_in_type || 999);
+    const type = normalizeVendorType(row.Primary_type);
+    const name = row.Company.trim();
+    const key = buildVendorKey({
+      type,
+      rankInType,
+      name,
+    });
+    const enrichment = vendorEnrichmentMap.get(key);
+    const websiteSummaryDa = enrichment?.websiteSummaryDa?.trim() || "";
+    const websiteSignalTags = normalizeWebsiteSignalTags(
+      enrichment?.websiteSignalTags,
+    );
+    const websiteSignalScore = clampPercentage(
+      Number(enrichment?.websiteSignalScore) || 0,
+    );
+    const websiteDepthScore = clampPercentage(
+      Number(enrichment?.websiteDepthScore) || 0,
+    );
+    const pagesScanned = Math.max(0, Number(enrichment?.pagesScanned) || 0);
+    const profileTier = normalizeVendorProfileTier(enrichment?.profileTier);
+    const casesPerYear =
+      typeof enrichment?.casesPerYear === "number"
+        ? enrichment.casesPerYear
+        : null;
+    const dedicatedSpecialists =
+      typeof enrichment?.dedicatedSpecialists === "number"
+        ? enrichment.dedicatedSpecialists
+        : null;
+    const manualBoostScore = Number(enrichment?.manualBoostScore) || 0;
+    const sourceUrls = Array.from(
+      new Set((enrichment?.sourceUrls ?? []).filter(Boolean)),
+    );
+    const matrixSignalScores = normalizeMatrixSignalScores(
+      enrichment?.matrixSignalScores,
+    );
+    const capabilityBreadthScore = calculateCapabilityBreadthScore(
+      Number(row.Dimension_count || 0),
+      Number(row.Granular_area_count || 0),
+    );
+    const profileCompletenessScore = calculateProfileCompletenessScore({
+      websiteSummaryDa,
+      websiteSignalTags,
+      sourceUrls,
+      pagesScanned,
+      profileTier,
+      websiteSignalScore,
+      casesPerYear,
+      dedicatedSpecialists,
+    });
+    const websiteEvidenceScore = calculateWebsiteEvidenceScore(
+      websiteSignalScore,
+      websiteDepthScore,
+    );
 
     return {
-      rankInType: Number(row.Rank_in_type || 999),
-      name: row.Company.trim(),
-      type: normalizeVendorType(row.Primary_type),
+      key,
+      rankInType,
+      name,
+      type,
       secondaryTypes: parseVendorTypes(row.Secondary_types),
       adjacentTypes: parseVendorTypes(row.Adjacent_types),
       sizeFit: normalizeSizeFit(row.Size_fit),
@@ -534,10 +760,26 @@ export const VENDOR_DIRECTORY: VendorDirectoryEntry[] = vendorMatrix.map(
       granularAreaLabels,
       specialtyHighlights: buildSpecialtyHighlights({
         bestFor,
+        websiteSummaryDa,
+        websiteSignalTags,
         bestMatchAreas,
         granularAreaLabels,
         sectorFit,
       }),
+      websiteSummaryDa,
+      websiteSignalTags,
+      websiteSignalScore,
+      websiteDepthScore,
+      websiteEvidenceScore,
+      pagesScanned,
+      profileTier,
+      casesPerYear,
+      dedicatedSpecialists,
+      manualBoostScore,
+      sourceUrls,
+      matrixSignalScores,
+      capabilityBreadthScore,
+      profileCompletenessScore,
       blockerCoverage: {
         riskAssessment: hasMatrixMark(row.Blocker_risk_assessment),
         incidentResponse: hasMatrixMark(row.Blocker_incident_response),

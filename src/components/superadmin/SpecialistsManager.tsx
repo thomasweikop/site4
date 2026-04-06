@@ -21,8 +21,12 @@ export default function SpecialistsManager({
       const haystack = [
         vendor.name,
         vendor.bestFor,
+        vendor.websiteSummaryDa,
         vendor.sectorFit,
         vendor.specialtyHighlights.join(" "),
+        vendor.websiteSignalTags.join(" "),
+        vendor.bestMatchAreas.join(" "),
+        vendor.capabilityAreaLabels.join(" "),
       ]
         .join(" ")
         .toLowerCase();
@@ -48,6 +52,15 @@ export default function SpecialistsManager({
         vendor.key === vendorKey ? { ...vendor, ...patch } : vendor,
       ),
     );
+  }
+
+  function parseNullableNumber(value: string) {
+    if (!value.trim()) {
+      return null;
+    }
+
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
   }
 
   async function saveVendor(vendor: EditableVendor) {
@@ -134,7 +147,7 @@ export default function SpecialistsManager({
                     {vendor.name}
                   </h2>
                   <p className="mt-2 max-w-3xl text-sm leading-6 text-soft">
-                    {vendor.bestFor}
+                    {vendor.websiteSummaryDa || vendor.bestFor}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -143,6 +156,9 @@ export default function SpecialistsManager({
                   </span>
                   <span className="border border-line bg-paper px-3 py-1 text-xs font-semibold text-soft">
                     {vendor.sizeFit.join(", ")}
+                  </span>
+                  <span className="border border-line bg-paper px-3 py-1 text-xs font-semibold text-soft">
+                    Profil {vendor.profileTier}
                   </span>
                 </div>
               </div>
@@ -177,6 +193,23 @@ export default function SpecialistsManager({
                     <option value="technical">Technical</option>
                     <option value="soc">SOC</option>
                     <option value="audit">Audit</option>
+                  </select>
+                </label>
+
+                <label className="grid gap-2 text-sm">
+                  <span className="font-semibold text-ink">Profilniveau</span>
+                  <select
+                    value={vendor.profileTier}
+                    onChange={(event) =>
+                      updateVendor(vendor.key, {
+                        profileTier: event.target.value as EditableVendor["profileTier"],
+                      })
+                    }
+                    className="border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
+                  >
+                    <option value="directory">Directory</option>
+                    <option value="verified">Verified</option>
+                    <option value="subscription">Subscription</option>
                   </select>
                 </label>
 
@@ -217,6 +250,20 @@ export default function SpecialistsManager({
                   />
                 </label>
 
+                <label className="grid gap-2 text-sm md:col-span-2">
+                  <span className="font-semibold text-ink">Website-resume (DK)</span>
+                  <textarea
+                    value={vendor.websiteSummaryDa}
+                    onChange={(event) =>
+                      updateVendor(vendor.key, {
+                        websiteSummaryDa: event.target.value,
+                      })
+                    }
+                    rows={3}
+                    className="border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
+                  />
+                </label>
+
                 <label className="grid gap-2 text-sm">
                   <span className="font-semibold text-ink">Market fit</span>
                   <input
@@ -238,6 +285,22 @@ export default function SpecialistsManager({
                           .split(",")
                           .map((item) => item.trim())
                           .filter(Boolean) as EditableVendor["sizeFit"],
+                      })
+                    }
+                    className="border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
+                  />
+                </label>
+
+                <label className="grid gap-2 text-sm md:col-span-2">
+                  <span className="font-semibold text-ink">Website-tags</span>
+                  <input
+                    value={vendor.websiteSignalTags.join(", ")}
+                    onChange={(event) =>
+                      updateVendor(vendor.key, {
+                        websiteSignalTags: event.target.value
+                          .split(",")
+                          .map((item) => item.trim())
+                          .filter(Boolean),
                       })
                     }
                     className="border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
@@ -286,7 +349,117 @@ export default function SpecialistsManager({
                     className="border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
                   />
                 </label>
+
+                <label className="grid gap-2 text-sm">
+                  <span className="font-semibold text-ink">Website-signal</span>
+                  <input
+                    type="number"
+                    value={vendor.websiteSignalScore}
+                    onChange={(event) =>
+                      updateVendor(vendor.key, {
+                        websiteSignalScore: Number(event.target.value) || 0,
+                      })
+                    }
+                    className="border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
+                  />
+                </label>
+
+                <label className="grid gap-2 text-sm">
+                  <span className="font-semibold text-ink">Website-dybde</span>
+                  <input
+                    type="number"
+                    value={vendor.websiteDepthScore}
+                    onChange={(event) =>
+                      updateVendor(vendor.key, {
+                        websiteDepthScore: Number(event.target.value) || 0,
+                      })
+                    }
+                    className="border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
+                  />
+                </label>
+
+                <label className="grid gap-2 text-sm">
+                  <span className="font-semibold text-ink">Sager pr. år</span>
+                  <input
+                    type="number"
+                    value={vendor.casesPerYear ?? ""}
+                    onChange={(event) =>
+                      updateVendor(vendor.key, {
+                        casesPerYear: parseNullableNumber(event.target.value),
+                      })
+                    }
+                    className="border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
+                  />
+                </label>
+
+                <label className="grid gap-2 text-sm">
+                  <span className="font-semibold text-ink">Dedikerede specialister</span>
+                  <input
+                    type="number"
+                    value={vendor.dedicatedSpecialists ?? ""}
+                    onChange={(event) =>
+                      updateVendor(vendor.key, {
+                        dedicatedSpecialists: parseNullableNumber(
+                          event.target.value,
+                        ),
+                      })
+                    }
+                    className="border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
+                  />
+                </label>
+
+                <label className="grid gap-2 text-sm">
+                  <span className="font-semibold text-ink">Manuel boost</span>
+                  <input
+                    type="number"
+                    value={vendor.manualBoostScore}
+                    onChange={(event) =>
+                      updateVendor(vendor.key, {
+                        manualBoostScore: Number(event.target.value) || 0,
+                      })
+                    }
+                    className="border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
+                  />
+                </label>
               </div>
+
+              <div className="mt-5 grid gap-3 border border-line bg-paper p-4 text-xs text-soft md:grid-cols-4">
+                <p>
+                  <span className="font-semibold text-ink">Website evidence:</span>{" "}
+                  {vendor.websiteEvidenceScore}
+                </p>
+                <p>
+                  <span className="font-semibold text-ink">Profil-completeness:</span>{" "}
+                  {vendor.profileCompletenessScore}
+                </p>
+                <p>
+                  <span className="font-semibold text-ink">Capability breadth:</span>{" "}
+                  {vendor.capabilityBreadthScore}
+                </p>
+                <p>
+                  <span className="font-semibold text-ink">Sider scannet:</span>{" "}
+                  {vendor.pagesScanned}
+                </p>
+              </div>
+
+              {vendor.sourceUrls.length > 0 ? (
+                <div className="mt-4 space-y-2">
+                  <p className="text-sm font-semibold text-ink">Kildesider</p>
+                  <div className="flex flex-wrap gap-2">
+                    {vendor.sourceUrls.map((sourceUrl) => (
+                      <a
+                        key={`${vendor.key}-${sourceUrl}`}
+                        href={sourceUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex border border-line bg-white px-3 py-2 text-xs text-ink transition hover:bg-paper"
+                      >
+                        {sourceUrl}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
 
               <div className="mt-5 flex flex-wrap gap-3">
                 <button

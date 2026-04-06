@@ -114,7 +114,7 @@ export default function SpecialistsPage() {
                             {vendor.sizeFit.join(", ")}
                           </td>
                           <td className="px-4 py-4 text-soft">
-                            {vendor.bestFor}
+                            {vendor.websiteSummaryDa || vendor.bestFor}
                           </td>
                           <td className="px-4 py-4">
                             <a
