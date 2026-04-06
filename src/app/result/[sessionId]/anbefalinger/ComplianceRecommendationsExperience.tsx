@@ -79,7 +79,7 @@ export default function ComplianceRecommendationsExperience({
         </p>
       </section>
 
-      <RecommendedExpertSections result={result} sessionId={sessionId} />
+      <RecommendedExpertSections result={result} />
     </div>
   );
 }

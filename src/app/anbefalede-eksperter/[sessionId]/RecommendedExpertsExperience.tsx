@@ -84,7 +84,7 @@ export default function RecommendedExpertsExperience({
         </div>
 
       </section>
-      <RecommendedExpertSections result={result} sessionId={sessionId} />
+      <RecommendedExpertSections result={result} />
     </div>
   );
 }
