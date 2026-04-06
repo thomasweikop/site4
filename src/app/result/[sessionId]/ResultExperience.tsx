@@ -195,7 +195,7 @@ export default function ResultExperience({
               Analysens resultat
             </p>
             <h1 className="mt-4 max-w-4xl text-balance font-display text-4xl leading-none text-ink md:text-[3.15rem]">
-              Resultat af initial NIS2 test
+              Summary af initial NIS2 test
             </h1>
             <p className="mt-5 text-base leading-7 text-soft">
               Den initielle analyse peger på de områder hvor virksomheden bør
