@@ -79,7 +79,7 @@ function AdditionalSpecialistsPanel({
   const [isExpanded, setIsExpanded] = useState(false);
   const visibleColumns = isExpanded
     ? columns
-    : columns.map((column) => column.slice(0, 5));
+    : columns.map((column) => column.slice(0, 4));
 
   return (
     <div className="border border-line bg-paper p-4">
@@ -112,7 +112,7 @@ function AdditionalSpecialistsPanel({
               </ul>
             ))}
           </div>
-          {columns.some((column) => column.length > 5) ? (
+          {columns.some((column) => column.length > 4) ? (
             <div className="mt-3 flex justify-center">
               <button
                 type="button"
