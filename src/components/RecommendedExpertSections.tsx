@@ -214,7 +214,7 @@ export default function RecommendedExpertSections({
           id={area.key}
           className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8"
         >
-          <div className="relative md:pr-[16rem]">
+          <div className="relative md:min-h-[13.5rem] md:pr-[16rem]">
             <div>
               <h2 className="text-3xl font-semibold tracking-[-0.03em] text-ink">
                 {area.label}
