@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import PercentageRing from "@/components/PercentageRing";
 import { getMatrixKeysForAnalysisArea } from "@/lib/analysisAreaMatrix";
 import type { ScanResult } from "@/lib/nis2Scan";
@@ -59,6 +61,95 @@ function splitIntoColumns<T>(items: T[], columnCount: number) {
     columns[index % columnCount].push(item);
   });
   return columns.filter((column) => column.length > 0);
+}
+
+type AdditionalSpecialistsPanelProps = {
+  areaKey: string;
+  columns: Array<
+    Array<{
+      vendor: ScanResult["vendorFits"][number]["vendor"];
+    }>
+  >;
+};
+
+function AdditionalSpecialistsPanel({
+  areaKey,
+  columns,
+}: AdditionalSpecialistsPanelProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const visibleColumns = isExpanded
+    ? columns
+    : columns.map((column) => column.slice(0, 5));
+
+  return (
+    <div className="border border-line bg-paper p-4">
+      <p className="text-sm font-semibold text-ink">
+        Flere specialister i samme kategori
+      </p>
+      {visibleColumns.length > 0 ? (
+        <>
+          <div
+            id={`${areaKey}-specialists-panel`}
+            className="mt-3 grid gap-x-6 gap-y-1 text-[0.48rem] leading-3 text-soft md:grid-cols-5"
+          >
+            {visibleColumns.map((column, columnIndex) => (
+              <ul
+                key={`${areaKey}-column-${columnIndex}`}
+                className="space-y-1 text-left"
+              >
+                {column.map((item) => (
+                  <li key={`${areaKey}-${item.vendor.name}`}>
+                    <a
+                      href={item.vendor.website}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline decoration-[#1b4f45]/20 underline-offset-2 transition hover:text-[#0d4b43]"
+                    >
+                      {item.vendor.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ))}
+          </div>
+          {columns.some((column) => column.length > 5) ? (
+            <div className="mt-3 flex justify-center">
+              <button
+                type="button"
+                onClick={() => setIsExpanded((current) => !current)}
+                className="inline-flex h-6 w-8 items-center justify-center text-[#1b4f45] transition hover:text-[#0d4b43]"
+                aria-expanded={isExpanded}
+                aria-controls={`${areaKey}-specialists-panel`}
+              >
+                <svg
+                  width="20"
+                  height="12"
+                  viewBox="0 0 20 12"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`transition-transform ${
+                    isExpanded ? "rotate-180" : ""
+                  }`}
+                >
+                  <path
+                    d="M1 1L10 10L19 1"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+          ) : null}
+        </>
+      ) : (
+        <p className="mt-3 text-[0.7rem] leading-5 text-soft">
+          Der er ikke flere profiler i denne kategori endnu.
+        </p>
+      )}
+    </div>
+  );
 }
 
 type RecommendedExpertSectionsProps = {
@@ -121,7 +212,7 @@ export default function RecommendedExpertSections({
           id={area.key}
           className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8"
         >
-          <div className="grid items-start gap-4 md:grid-cols-[minmax(0,1fr)_9rem]">
+          <div className="grid items-start gap-4 md:grid-cols-[minmax(0,1fr)_8.5rem]">
             <div>
               <h2 className="text-3xl font-semibold tracking-[-0.03em] text-ink">
                 {area.label}
@@ -130,7 +221,7 @@ export default function RecommendedExpertSections({
                 {area.description}
               </p>
             </div>
-            <div className="flex w-[9rem] flex-col items-center justify-self-center">
+            <div className="flex w-[8.5rem] flex-col items-center justify-self-center">
               <p className="mb-3 text-center text-[0.76rem] font-medium uppercase tracking-[0.28em] text-[#6fa3cf]">
                 {area.complianceLabel}
               </p>
@@ -146,7 +237,7 @@ export default function RecommendedExpertSections({
 
           <div className="mt-6 space-y-3">
             {primarySpecialist ? (
-              <article className="grid items-start gap-6 border border-line bg-paper p-5 md:grid-cols-[minmax(0,1fr)_9rem]">
+              <article className="grid items-start gap-6 border border-line bg-paper p-5 md:grid-cols-[minmax(0,1fr)_8.5rem]">
                 <div className="flex min-h-[13.5rem] flex-col gap-4">
                   <div className="flex flex-wrap items-center gap-3">
                     <p className="text-[1.55rem] font-semibold leading-tight tracking-[-0.04em] text-ink">
@@ -189,7 +280,7 @@ export default function RecommendedExpertSections({
                   </a>
                 </div>
 
-                <div className="flex w-[9rem] justify-center justify-self-center">
+                <div className="flex w-[8.5rem] justify-center justify-self-center">
                   <MatchScoreDisplay score={primarySpecialist.fitScore} />
                 </div>
               </article>
@@ -232,38 +323,10 @@ export default function RecommendedExpertSections({
               </div>
             ) : null}
 
-            <div className="border border-line bg-paper p-4">
-              <p className="text-sm font-semibold text-ink">
-                Flere specialister i samme kategori
-              </p>
-              {additionalColumns.length > 0 ? (
-                <div className="mt-3 grid gap-x-6 gap-y-2 text-[0.52rem] leading-3.5 text-soft md:grid-cols-5">
-                  {additionalColumns.map((column, columnIndex) => (
-                    <ul
-                      key={`${area.key}-column-${columnIndex}`}
-                      className="space-y-1 text-left"
-                    >
-                      {column.map((item) => (
-                        <li key={`${area.key}-${item.vendor.name}`}>
-                          <a
-                            href={item.vendor.website}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="underline decoration-[#1b4f45]/20 underline-offset-2 transition hover:text-[#0d4b43]"
-                          >
-                            {item.vendor.name}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-3 text-[0.76rem] leading-5 text-soft">
-                  Der er ikke flere profiler i denne kategori endnu.
-                </p>
-              )}
-            </div>
+            <AdditionalSpecialistsPanel
+              areaKey={area.key}
+              columns={additionalColumns}
+            />
           </div>
         </section>
       );
