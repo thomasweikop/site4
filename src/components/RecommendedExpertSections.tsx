@@ -126,7 +126,7 @@ export default function RecommendedExpertSections({
           id={area.key}
           className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8"
         >
-          <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="grid items-start gap-4 md:grid-cols-[minmax(0,1fr)_9rem]">
             <div>
               <h2 className="text-3xl font-semibold tracking-[-0.03em] text-ink">
                 {area.label}
@@ -138,13 +138,15 @@ export default function RecommendedExpertSections({
                 {area.complianceLabel}
               </p>
             </div>
-            <PercentageRing
-              percentage={area.percentage}
-              label={area.label}
-              size={128}
-              strokeWidth={12}
-              valueScale={0.52}
-            />
+            <div className="flex w-[9rem] justify-center justify-self-center">
+              <PercentageRing
+                percentage={area.percentage}
+                label={area.label}
+                size={128}
+                strokeWidth={12}
+                valueScale={0.52}
+              />
+            </div>
           </div>
 
           <div className="mt-6 space-y-3">
@@ -192,7 +194,7 @@ export default function RecommendedExpertSections({
                   </a>
                 </div>
 
-                <div className="flex flex-col items-end justify-start">
+                <div className="flex w-[9rem] justify-center justify-self-center">
                   <MatchScoreDisplay score={primarySpecialist.fitScore} />
                 </div>
               </article>
