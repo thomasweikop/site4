@@ -220,7 +220,8 @@ export default function RecommendedExpertSections({
                 {area.label}
               </h2>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-soft md:text-base">
-                Observation: {area.description}
+                <span className="font-semibold text-ink">Observation:</span>{" "}
+                {area.description}
               </p>
             </div>
             <div className="mx-auto mt-4 flex w-[12.25rem] flex-col items-center md:hidden">

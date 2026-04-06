@@ -229,7 +229,10 @@ export default function ResultExperience({
                       </div>
 
                       <p className="mt-4 text-sm leading-6 text-soft">
-                        Observation: {area.description}
+                        <span className="font-semibold text-ink">
+                          Observation:
+                        </span>{" "}
+                        {area.description}
                       </p>
 
                       <div className="mt-5">
