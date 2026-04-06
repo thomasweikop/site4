@@ -153,11 +153,11 @@ export default function RecommendedExpertSections({
                   </a>
                 </div>
 
-                <div className="flex flex-col items-end justify-start text-right">
-                  <p className="text-[0.56rem] font-semibold uppercase tracking-[0.2em] text-[#60707a]">
+                <div className="flex flex-col items-center justify-start text-center md:items-end md:text-center">
+                  <p className="text-[1.15rem] font-semibold leading-none tracking-[-0.03em] text-ink">
                     Match score
                   </p>
-                  <p className="mt-2 text-[3.55rem] font-semibold leading-none tracking-[-0.06em] text-[#5b85ac]">
+                  <p className="mt-1 text-[1.15rem] font-semibold leading-none tracking-[-0.03em] text-ink">
                     {primarySpecialist.fitScore}
                   </p>
                 </div>
@@ -193,11 +193,11 @@ export default function RecommendedExpertSections({
                       </a>
                     </div>
 
-                    <div className="flex flex-col items-end justify-start text-right">
-                      <p className="text-[0.52rem] font-semibold uppercase tracking-[0.2em] text-[#60707a]">
+                    <div className="flex flex-col items-center justify-start text-center md:items-end md:text-center">
+                      <p className="text-[0.95rem] font-semibold leading-none tracking-[-0.02em] text-ink">
                         Match score
                       </p>
-                      <p className="mt-2 text-[2.55rem] font-semibold leading-none tracking-[-0.05em] text-[#5b85ac]">
+                      <p className="mt-1 text-[0.95rem] font-semibold leading-none tracking-[-0.02em] text-ink">
                         {item.fitScore}
                       </p>
                     </div>
@@ -211,7 +211,7 @@ export default function RecommendedExpertSections({
                 Flere specialister i samme kategori
               </p>
               {additionalColumns.length > 0 ? (
-                <div className="mt-3 grid gap-x-6 gap-y-2 text-[0.6rem] leading-4 text-soft md:grid-cols-5">
+                <div className="mt-3 grid gap-x-6 gap-y-2 text-[0.52rem] leading-3.5 text-soft md:grid-cols-5">
                   {additionalColumns.map((column, columnIndex) => (
                     <ul
                       key={`${area.key}-column-${columnIndex}`}
