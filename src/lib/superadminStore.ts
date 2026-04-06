@@ -75,6 +75,19 @@ export type EditableVendor = {
   logoNotes: string;
 };
 
+export type LogoReviewStatusFilter = "all" | EditableVendor["logoStatus"];
+
+export type LogoReviewPageData = {
+  vendors: EditableVendor[];
+  counts: Record<EditableVendor["logoStatus"], number>;
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+  pageSize: number;
+  query: string;
+  statusFilter: LogoReviewStatusFilter;
+};
+
 export type EditableQuestion = {
   id: string;
   category: string;
@@ -576,6 +589,94 @@ export async function listEditableVendors() {
     key: vendor.key,
     baseKey: vendor.baseKey,
   }));
+}
+
+const LOGO_STATUS_ORDER: Record<EditableVendor["logoStatus"], number> = {
+  candidate: 0,
+  missing: 1,
+  rejected: 2,
+  approved: 3,
+};
+
+export async function getLogoReviewPageData(options?: {
+  query?: string;
+  statusFilter?: LogoReviewStatusFilter;
+  page?: number;
+  pageSize?: number;
+}): Promise<LogoReviewPageData> {
+  const {
+    query = "",
+    statusFilter = "all",
+    page = 1,
+    pageSize = 20,
+  } = options ?? {};
+
+  const vendors = await listEditableVendors();
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const filteredVendors = [...vendors]
+    .filter((vendor) => {
+      if (statusFilter !== "all" && vendor.logoStatus !== statusFilter) {
+        return false;
+      }
+
+      if (!normalizedQuery) {
+        return true;
+      }
+
+      const haystack = [
+        vendor.name,
+        vendor.website,
+        vendor.logoCandidateUrl,
+        vendor.logoOfficialSourceUrl,
+        vendor.logoNotes,
+        vendor.websiteSummaryDa,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return haystack.includes(normalizedQuery);
+    })
+    .sort((left, right) => {
+      const statusDiff =
+        LOGO_STATUS_ORDER[left.logoStatus] - LOGO_STATUS_ORDER[right.logoStatus];
+
+      if (statusDiff !== 0) {
+        return statusDiff;
+      }
+
+      return left.name.localeCompare(right.name, "da");
+    });
+
+  const counts = vendors.reduce(
+    (accumulator, vendor) => {
+      accumulator[vendor.logoStatus] += 1;
+      return accumulator;
+    },
+    {
+      missing: 0,
+      candidate: 0,
+      approved: 0,
+      rejected: 0,
+    } satisfies Record<EditableVendor["logoStatus"], number>,
+  );
+
+  const totalCount = filteredVendors.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const currentPage = Math.min(Math.max(1, page), totalPages);
+  const start = (currentPage - 1) * pageSize;
+  const pagedVendors = filteredVendors.slice(start, start + pageSize);
+
+  return {
+    vendors: pagedVendors,
+    counts,
+    totalCount,
+    totalPages,
+    currentPage,
+    pageSize,
+    query,
+    statusFilter,
+  };
 }
 
 export async function updateEditableVendor(

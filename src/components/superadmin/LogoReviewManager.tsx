@@ -1,13 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import type { EditableVendor } from "@/lib/superadminStore";
+import Link from "next/link";
+import { useState } from "react";
+import type {
+  EditableVendor,
+  LogoReviewPageData,
+} from "@/lib/superadminStore";
 
-type LogoReviewManagerProps = {
-  initialVendors: EditableVendor[];
-};
-
-const PAGE_SIZE = 20;
+type LogoReviewManagerProps = LogoReviewPageData;
 
 const STATUS_LABELS: Record<EditableVendor["logoStatus"], string> = {
   missing: "Mangler",
@@ -16,82 +16,18 @@ const STATUS_LABELS: Record<EditableVendor["logoStatus"], string> = {
   rejected: "Afvist",
 };
 
-const STATUS_ORDER: Record<EditableVendor["logoStatus"], number> = {
-  candidate: 0,
-  missing: 1,
-  rejected: 2,
-  approved: 3,
-};
-
 export default function LogoReviewManager({
-  initialVendors,
+  vendors: initialVendors,
+  counts,
+  totalCount,
+  totalPages,
+  currentPage,
+  query,
+  statusFilter,
 }: LogoReviewManagerProps) {
   const [vendors, setVendors] = useState(initialVendors);
-  const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [page, setPage] = useState(1);
   const [savingKey, setSavingKey] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-
-  const filteredVendors = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-
-    return [...vendors]
-      .filter((vendor) => {
-        if (statusFilter !== "all" && vendor.logoStatus !== statusFilter) {
-          return false;
-        }
-
-        if (!normalizedQuery) {
-          return true;
-        }
-
-        const haystack = [
-          vendor.name,
-          vendor.website,
-          vendor.logoCandidateUrl,
-          vendor.logoOfficialSourceUrl,
-          vendor.logoNotes,
-          vendor.websiteSummaryDa,
-        ]
-          .join(" ")
-          .toLowerCase();
-
-        return haystack.includes(normalizedQuery);
-      })
-      .sort((left, right) => {
-        const statusDiff =
-          STATUS_ORDER[left.logoStatus] - STATUS_ORDER[right.logoStatus];
-
-        if (statusDiff !== 0) {
-          return statusDiff;
-        }
-
-        return left.name.localeCompare(right.name, "da");
-      });
-  }, [query, statusFilter, vendors]);
-
-  const totalPages = Math.max(1, Math.ceil(filteredVendors.length / PAGE_SIZE));
-  const currentPage = Math.min(page, totalPages);
-  const pagedVendors = filteredVendors.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE,
-  );
-
-  const counts = useMemo(() => {
-    return vendors.reduce(
-      (accumulator, vendor) => {
-        accumulator[vendor.logoStatus] += 1;
-        return accumulator;
-      },
-      {
-        missing: 0,
-        candidate: 0,
-        approved: 0,
-        rejected: 0,
-      } satisfies Record<EditableVendor["logoStatus"], number>,
-    );
-  }, [vendors]);
 
   function updateVendor(
     vendorKey: string,
@@ -148,6 +84,25 @@ export default function LogoReviewManager({
     );
   }
 
+  function buildPageHref(nextPage: number) {
+    const params = new URLSearchParams();
+
+    if (query.trim()) {
+      params.set("q", query.trim());
+    }
+
+    if (statusFilter !== "all") {
+      params.set("status", statusFilter);
+    }
+
+    if (nextPage > 1) {
+      params.set("page", String(nextPage));
+    }
+
+    const search = params.toString();
+    return search ? `/superadmin/logoer?${search}` : "/superadmin/logoer";
+  }
+
   return (
     <div className="space-y-6">
       <section className="border border-line bg-white p-8 shadow-[var(--shadow)]">
@@ -163,31 +118,38 @@ export default function LogoReviewManager({
           sig.
         </p>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-[minmax(0,1fr)_240px]">
-          <input
-            value={query}
-            onChange={(event) => {
-              setQuery(event.target.value);
-              setPage(1);
-            }}
-            placeholder="Søg virksomhed, noter eller kilde"
-            className="w-full border border-line bg-paper px-4 py-3 text-sm text-ink outline-none transition focus:border-[#2a5a4f]"
-          />
-          <select
-            value={statusFilter}
-            onChange={(event) => {
-              setStatusFilter(event.target.value);
-              setPage(1);
-            }}
-            className="w-full border border-line bg-paper px-4 py-3 text-sm text-ink outline-none transition focus:border-[#2a5a4f]"
-          >
-            <option value="all">Alle logo-statusser</option>
-            <option value="missing">Mangler</option>
-            <option value="candidate">Kandidat fundet</option>
-            <option value="approved">Godkendt</option>
-            <option value="rejected">Afvist</option>
-          </select>
-        </div>
+        <form
+          method="GET"
+          action="/superadmin/logoer"
+          className="mt-6 space-y-4"
+        >
+          <input type="hidden" name="page" value="1" />
+          <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_240px_auto]">
+            <input
+              name="q"
+              defaultValue={query}
+              placeholder="Søg virksomhed, noter eller kilde"
+              className="w-full border border-line bg-paper px-4 py-3 text-sm text-ink outline-none transition focus:border-[#2a5a4f]"
+            />
+            <select
+              name="status"
+              defaultValue={statusFilter}
+              className="w-full border border-line bg-paper px-4 py-3 text-sm text-ink outline-none transition focus:border-[#2a5a4f]"
+            >
+              <option value="all">Alle logo-statusser</option>
+              <option value="missing">Mangler</option>
+              <option value="candidate">Kandidat fundet</option>
+              <option value="approved">Godkendt</option>
+              <option value="rejected">Afvist</option>
+            </select>
+            <button
+              type="submit"
+              className="inline-flex items-center justify-center bg-[#050a1f] px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#101937]"
+            >
+              Opdater liste
+            </button>
+          </div>
+        </form>
 
         <div className="mt-6 grid gap-3 md:grid-cols-4">
           {(
@@ -211,27 +173,36 @@ export default function LogoReviewManager({
 
         <div className="mt-6 flex flex-col gap-3 border-t border-line pt-5 text-sm text-soft md:flex-row md:items-center md:justify-between">
           <p>
-            Viser {pagedVendors.length} på side {currentPage} af {totalPages}
+            Viser {vendors.length} på side {currentPage} af {totalPages} ·{" "}
+            {totalCount} matcher nuværende filter
           </p>
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={() => setPage((value) => Math.max(1, value - 1))}
-              disabled={currentPage === 1}
-              className="inline-flex border border-line bg-white px-4 py-2 font-semibold text-ink transition hover:bg-paper disabled:opacity-40"
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href={buildPageHref(currentPage - 1)}
+              aria-disabled={currentPage === 1}
+              className={`inline-flex border border-line bg-white px-4 py-2 font-semibold text-ink transition hover:bg-paper ${
+                currentPage === 1 ? "pointer-events-none opacity-40" : ""
+              }`}
             >
               Forrige 20
-            </button>
-            <button
-              type="button"
-              onClick={() =>
-                setPage((value) => Math.min(totalPages, value + 1))
-              }
-              disabled={currentPage === totalPages}
-              className="inline-flex border border-line bg-white px-4 py-2 font-semibold text-ink transition hover:bg-paper disabled:opacity-40"
+            </Link>
+            <Link
+              href={buildPageHref(currentPage + 1)}
+              aria-disabled={currentPage === totalPages}
+              className={`inline-flex border border-line bg-white px-4 py-2 font-semibold text-ink transition hover:bg-paper ${
+                currentPage === totalPages
+                  ? "pointer-events-none opacity-40"
+                  : ""
+              }`}
             >
               Næste 20
-            </button>
+            </Link>
+            <Link
+              href="/superadmin/logoer"
+              className="inline-flex border border-line bg-white px-4 py-2 font-semibold text-ink transition hover:bg-paper"
+            >
+              Nulstil filtre
+            </Link>
           </div>
         </div>
 
@@ -239,7 +210,7 @@ export default function LogoReviewManager({
       </section>
 
       <div className="space-y-4">
-        {pagedVendors.map((vendor) => {
+        {vendors.map((vendor) => {
           const pending = savingKey === vendor.key;
 
           return (

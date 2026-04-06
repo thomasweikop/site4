@@ -6,8 +6,8 @@ export const dynamic = "force-dynamic";
 
 export default async function SuperadminLogPage() {
   const [sessions, adminLogs] = await Promise.all([
-    listDbReportSessions(250),
-    listSuperadminLogs(250),
+    listDbReportSessions(25),
+    listSuperadminLogs(60),
   ]);
 
   return (
@@ -29,7 +29,8 @@ export default async function SuperadminLogPage() {
         <div className="border border-line bg-white p-6 shadow-[var(--shadow)]">
           <h2 className="text-xl font-semibold text-ink">Brugersessions</h2>
           <p className="mt-2 text-sm leading-6 text-soft">
-            Viser {sessions.length} seneste sessions fra det offentlige flow.
+            Viser de {sessions.length} seneste sessions fra det offentlige flow
+            for at holde siden hurtig og stabil.
           </p>
         </div>
 
@@ -156,7 +157,8 @@ export default async function SuperadminLogPage() {
         <div className="border border-line bg-white p-6 shadow-[var(--shadow)]">
           <h2 className="text-xl font-semibold text-ink">Admin-hændelser</h2>
           <p className="mt-2 text-sm leading-6 text-soft">
-            Login, logout og redigeringer udført i superadmin.
+            Viser de {adminLogs.length} seneste login-, logout- og
+            redigeringshændelser i superadmin.
           </p>
         </div>
 
