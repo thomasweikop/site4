@@ -98,6 +98,8 @@ export default function RecommendedExpertSections({
   result,
 }: RecommendedExpertSectionsProps) {
   const groupedSpecialists = getAreaSpecialists(result);
+  const matchScoreBoxClass =
+    "flex w-full min-h-[9.25rem] max-w-[11rem] flex-col items-center justify-center border border-[#6a7a85] bg-[#485f75] px-4 py-4 text-center";
 
   return (
     <div className="space-y-6">
@@ -131,32 +133,40 @@ export default function RecommendedExpertSections({
             <PercentageRing
               percentage={area.percentage}
               label={area.label}
-              size={126}
+              size={124}
               strokeWidth={12}
-              valueScale={0.38}
+              valueScale={0.46}
               captionLines={["COMPLIANCE", "SCORE"]}
             />
           </div>
 
-          <div className="mt-6 space-y-4">
+          <div className="mt-6 space-y-3">
             {primarySpecialist ? (
-              <article className="grid gap-5 border border-line bg-paper p-5 md:grid-cols-[minmax(14rem,18rem)_minmax(0,1fr)_minmax(12rem,13rem)]">
+              <article className="grid items-start gap-5 border border-line bg-paper p-5 md:grid-cols-[minmax(13rem,16rem)_minmax(0,1fr)_minmax(11rem,12rem)]">
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-center gap-3">
-                    <p className="text-[1.9rem] font-semibold leading-none tracking-[-0.04em] text-ink">
+                    <p className="text-[1.55rem] font-semibold leading-tight tracking-[-0.04em] text-ink">
                       {primarySpecialist.vendor.name}
                     </p>
                     <span className="bg-[#73acd6] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] !text-white">
                       Anbefalet
                     </span>
                   </div>
+                  <a
+                    href={primarySpecialist.vendor.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-block text-sm font-medium text-[#1b4f45] underline decoration-[#1b4f45]/30 underline-offset-4 transition hover:text-[#0d4b43]"
+                  >
+                    Website
+                  </a>
                 </div>
 
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm font-semibold text-ink">Specialer</p>
-                  <ul className="mt-2 space-y-1 text-xs leading-5 text-soft md:text-sm">
+                  <ul className="mt-2 space-y-1 text-[0.8rem] leading-6 text-soft">
                     {primarySpecialist.vendor.specialtyHighlights
-                      .slice(0, 5)
+                      .slice(0, 4)
                       .map((line) => (
                         <li
                           key={`${primarySpecialist.vendor.name}-${line}`}
@@ -169,23 +179,15 @@ export default function RecommendedExpertSections({
                   </ul>
                 </div>
 
-                <div className="flex flex-col items-start gap-3 md:items-end">
-                  <div className="flex w-full max-w-[12.75rem] flex-col items-center justify-center border border-[#22384d] bg-[#22384d] px-4 py-4 text-center">
-                    <p className="text-[0.56rem] font-semibold uppercase tracking-[0.2em] !text-white/80">
+                <div className="flex flex-col items-start gap-2 md:items-end">
+                  <div className={matchScoreBoxClass}>
+                    <p className="text-[0.56rem] font-semibold uppercase tracking-[0.2em] !text-white/90">
                       Match score
                     </p>
-                    <p className="mt-2 text-[3.5rem] font-semibold leading-none tracking-[-0.06em] !text-white">
-                      {primarySpecialist.fitScore}%
+                    <p className="mt-2 text-[3.35rem] font-semibold leading-none tracking-[-0.06em] !text-white">
+                      {primarySpecialist.fitScore}
                     </p>
                   </div>
-                  <a
-                    href={primarySpecialist.vendor.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-sm font-medium text-[#1b4f45] underline decoration-[#1b4f45]/30 underline-offset-4 transition hover:text-[#0d4b43]"
-                  >
-                    Website
-                  </a>
                   <a
                     href={primarySpecialist.vendor.website}
                     target="_blank"
@@ -199,20 +201,28 @@ export default function RecommendedExpertSections({
             ) : null}
 
             {secondarySpecialists.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {secondarySpecialists.map((item) => (
                   <article
                     key={`${area.key}-${item.vendor.name}`}
-                    className="grid gap-5 border border-line bg-paper p-4 md:grid-cols-[minmax(14rem,18rem)_minmax(0,1fr)_minmax(12rem,13rem)]"
+                    className="grid items-start gap-5 border border-line bg-paper p-4 md:grid-cols-[minmax(13rem,16rem)_minmax(0,1fr)_minmax(11rem,12rem)]"
                   >
-                    <div className="space-y-3">
-                      <p className="text-[1.45rem] font-semibold leading-tight tracking-[-0.03em] text-ink">
+                    <div className="space-y-2">
+                      <p className="text-[1.25rem] font-semibold leading-tight tracking-[-0.03em] text-ink">
                         {item.vendor.name}
                       </p>
+                      <a
+                        href={item.vendor.website}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-block text-sm font-medium text-[#1b4f45] underline decoration-[#1b4f45]/30 underline-offset-4 transition hover:text-[#0d4b43]"
+                      >
+                        Website
+                      </a>
                     </div>
 
-                    <div>
-                      <div className="grid gap-x-5 gap-y-2 text-[0.82rem] leading-5 text-soft md:grid-cols-5">
+                    <div className="min-w-0">
+                      <div className="grid gap-x-4 gap-y-1.5 text-[0.72rem] leading-5 text-soft md:grid-cols-5">
                         <div>
                           <p className="font-semibold text-ink">Områder</p>
                           <p>
@@ -242,23 +252,15 @@ export default function RecommendedExpertSections({
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-start gap-3 md:items-end">
-                      <div className="flex w-full max-w-[12.75rem] flex-col items-center justify-center border border-[#22384d] bg-[#22384d] px-4 py-4 text-center">
-                        <p className="text-[0.56rem] font-semibold uppercase tracking-[0.2em] !text-white/80">
+                    <div className="flex flex-col items-start gap-2 md:items-end">
+                      <div className={matchScoreBoxClass}>
+                        <p className="text-[0.56rem] font-semibold uppercase tracking-[0.2em] !text-white/90">
                           Match score
                         </p>
-                        <p className="mt-2 text-[3rem] font-semibold leading-none tracking-[-0.05em] !text-white">
-                          {item.fitScore}%
+                        <p className="mt-2 text-[2.7rem] font-semibold leading-none tracking-[-0.05em] !text-white">
+                          {item.fitScore}
                         </p>
                       </div>
-                      <a
-                        href={item.vendor.website}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-sm font-medium text-[#1b4f45] underline decoration-[#1b4f45]/30 underline-offset-4 transition hover:text-[#0d4b43]"
-                      >
-                        Website
-                      </a>
                       <a
                         href={item.vendor.website}
                         target="_blank"
@@ -278,9 +280,12 @@ export default function RecommendedExpertSections({
                 Flere specialister i samme kategori
               </p>
               {additionalColumns.length > 0 ? (
-                <div className="mt-3 grid gap-x-5 gap-y-2 text-[0.76rem] leading-5 text-soft md:grid-cols-5">
+                <div className="mt-3 grid gap-x-6 gap-y-2 text-[0.64rem] leading-4.5 text-soft md:grid-cols-5">
                   {additionalColumns.map((column, columnIndex) => (
-                    <ul key={`${area.key}-column-${columnIndex}`} className="space-y-1">
+                    <ul
+                      key={`${area.key}-column-${columnIndex}`}
+                      className="space-y-1 text-left"
+                    >
                       {column.map((vendorName) => (
                         <li key={`${area.key}-${vendorName}`}>{vendorName}</li>
                       ))}

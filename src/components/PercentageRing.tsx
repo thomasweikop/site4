@@ -14,7 +14,7 @@ export default function PercentageRing({
   strokeWidth = 10,
   label = "Score",
   captionLines,
-  valueScale = 0.33,
+  valueScale = 0.4,
   showPercentSymbol = false,
 }: PercentageRingProps) {
   const normalizedPercentage = Math.max(0, Math.min(100, percentage));
@@ -24,7 +24,7 @@ export default function PercentageRing({
     circumference - (normalizedPercentage / 100) * circumference;
   const center = size / 2;
   const hasCaption = Array.isArray(captionLines) && captionLines.length > 0;
-  const captionFontSize = size * 0.06;
+  const captionFontSize = size * 0.052;
   const captionBaseY = center + size * 0.18;
 
   return (
@@ -47,7 +47,7 @@ export default function PercentageRing({
           cy={center}
           r={radius}
           fill="none"
-          stroke="#73acd6"
+          stroke="#6fa3cf"
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -59,7 +59,7 @@ export default function PercentageRing({
           y={hasCaption ? "44%" : "50%"}
           dominantBaseline={hasCaption ? "auto" : "middle"}
           textAnchor="middle"
-          fill="#1a5148"
+          fill="#5b85ac"
           fontSize={size * valueScale}
           fontWeight="700"
           style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
@@ -73,7 +73,7 @@ export default function PercentageRing({
                 x="50%"
                 y={captionBaseY + index * (captionFontSize + 2)}
                 textAnchor="middle"
-                fill="#5d6e68"
+                fill="#718188"
                 fontSize={captionFontSize}
                 fontWeight="700"
                 letterSpacing="0.12em"
