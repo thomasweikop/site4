@@ -124,22 +124,12 @@ export default function ResultExperience({
               på egne besvarelser. Resultatet kan bruges til at prioritere de
               første dialoger, initiativer og specialistspor.
             </p>
-          </div>
-
-          <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
-            <h2 className="text-balance font-display text-[2rem] leading-none text-ink md:text-[2.35rem]">
-              Klar til at generere analysen
-            </h2>
-            <p className="mt-4 max-w-3xl text-sm leading-6 text-soft">
-              Fortsæt til en separat side, hvor virksomhedsoplysningerne
-              udfyldes, og hvor analysen kan genereres og sendes til email.
-            </p>
             <div className="mt-6">
               <Link
                 href={analysisGenerationHref}
                 className="inline-flex bg-sage px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
               >
-                Fortsæt til analyse
+                Fortsæt til analyse resultatet
               </Link>
             </div>
           </div>

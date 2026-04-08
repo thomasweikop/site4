@@ -17,6 +17,8 @@ type ReportUnlockFormProps = {
   intro?: string;
   submitLabel?: string;
   successPath?: string;
+  className?: string;
+  hideHeading?: boolean;
 };
 
 const EMPTY_LEAD: UnlockLead = {
@@ -36,6 +38,8 @@ export default function ReportUnlockForm({
   intro = "Resultatet sendes til email, og derefter kan virksomheden fortsætte til analysens resultat og de næste anbefalede skridt.",
   submitLabel = "Send",
   successPath,
+  className = "border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8",
+  hideHeading = false,
 }: ReportUnlockFormProps) {
   const router = useRouter();
   const [lead, setLead] = useState<UnlockLead>(EMPTY_LEAD);
@@ -105,16 +109,22 @@ export default function ReportUnlockForm({
   return (
     <form
       onSubmit={onSubmit}
-      className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8"
+      className={className}
     >
-      <h2 className="text-balance font-display text-[2rem] leading-none text-ink md:text-[2.35rem]">
-        {heading}
-      </h2>
-      <p className="mt-4 text-sm leading-6 text-soft">
-        {intro}
-      </p>
+      {!hideHeading ? (
+        <>
+          <h2 className="text-balance font-display text-[2rem] leading-none text-ink md:text-[2.35rem]">
+            {heading}
+          </h2>
+          {intro ? (
+            <p className="mt-4 text-sm leading-6 text-soft">
+              {intro}
+            </p>
+          ) : null}
+        </>
+      ) : null}
 
-      <div className="mt-6 grid gap-4">
+      <div className={`${hideHeading ? "" : "mt-6"} grid gap-4`}>
         <div>
           <label
             htmlFor="unlock-company"

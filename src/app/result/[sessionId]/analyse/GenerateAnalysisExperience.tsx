@@ -81,76 +81,62 @@ export default function GenerateAnalysisExperience({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1.08fr)_18rem] xl:items-start">
       <section className="border border-line bg-white p-8 shadow-[var(--shadow)] md:p-10">
         <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
           Generer analyse
         </p>
         <h1 className="mt-4 max-w-5xl text-balance font-display text-4xl leading-none text-ink md:text-[3.15rem]">
-          Udfyld oplysningerne og generer virksomhedens analyse
+          Udfyld informationer herunder så analysen skabes på det rette grundlag
         </h1>
-        <p className="mt-4 max-w-4xl text-sm leading-7 text-soft md:text-base">
-          Udfyld navn, virksomhed, email og titel. Derefter sendes analysen til
-          email, og virksomheden føres videre til den fulde analyseside.
-        </p>
+
+        <div className="mt-8">
+          <ReportUnlockForm
+            sessionId={sessionId}
+            result={result}
+            onUnlocked={(lead) => {
+              markReportUnlocked(sessionId, lead);
+            }}
+            submitLabel="Generer analyse"
+            successPath={resultPath}
+            hideHeading
+            className="p-0 shadow-none"
+          />
+        </div>
       </section>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)]">
-        <ReportUnlockForm
-          sessionId={sessionId}
-          result={result}
-          onUnlocked={(lead) => {
-            markReportUnlocked(sessionId, lead);
-          }}
-          heading="Generer analyse"
-          intro="Skriv navn, virksomhed, email og titel. Når formularen er sendt, bliver analysen sendt til email, og du sendes videre til den fulde analyseside."
-          submitLabel="Generer analyse"
-          successPath={resultPath}
-        />
-
-        <section className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
-          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-            Eksempel på analyse
-          </p>
-          <h2 className="mt-4 text-balance font-display text-[2rem] leading-none text-ink md:text-[2.35rem]">
-            Sådan ser analysen ud bagefter
-          </h2>
-          <p className="mt-4 text-sm leading-7 text-soft">
-            Områderne er sorteret efter lavest compliance score først. Områder
-            med meget høj score vises som +90.
-          </p>
-
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            {result.analysisAreas.map((area) => (
-              <article
-                key={area.key}
-                className="border border-line bg-paper p-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="max-w-[13rem] text-base font-semibold leading-tight text-ink">
-                    {area.label}
-                  </h3>
-                  <PercentageRing
-                    percentage={area.percentage}
-                    label={`${area.label} score`}
-                    size={68}
-                    strokeWidth={9}
-                    valueScale={0.4}
-                    displayValue={area.percentage >= 90 ? "+90" : area.percentage}
-                  />
-                </div>
-                <p className="mt-4 text-xs leading-6 text-soft">
-                  <span className="font-semibold text-ink">Observation:</span>{" "}
-                  {area.description}
-                </p>
-                <p className="mt-4 text-xs font-semibold text-[#1b4f45]">
-                  Læs mere
-                </p>
-              </article>
-            ))}
+      <section className="border border-line bg-white p-4 shadow-[var(--shadow)]">
+        <div className="scale-[0.82] origin-top-left">
+          <div className="w-[18rem] border border-line bg-[#f7f3ea] p-3">
+            <div className="grid gap-2 grid-cols-2">
+              {result.analysisAreas.slice(0, 6).map((area) => (
+                <article
+                  key={area.key}
+                  className="border border-line bg-white p-2"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="max-w-[6.5rem] text-[0.58rem] font-semibold leading-tight text-ink">
+                      {area.label}
+                    </h3>
+                    <PercentageRing
+                      percentage={area.percentage}
+                      label={`${area.label} score`}
+                      size={34}
+                      strokeWidth={5}
+                      valueScale={0.32}
+                      displayValue={area.percentage >= 90 ? "+90" : area.percentage}
+                    />
+                  </div>
+                  <p className="mt-2 text-[0.42rem] leading-[0.7rem] text-soft">
+                    <span className="font-semibold text-ink">Observation:</span>{" "}
+                    {area.description}
+                  </p>
+                </article>
+              ))}
+            </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }
