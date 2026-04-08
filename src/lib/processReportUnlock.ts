@@ -1,5 +1,6 @@
 import { sendMail } from "@/lib/mail/sendMail";
 import {
+  buildActionRequestUrl,
   buildResultUrl,
 } from "@/lib/reportLinks";
 import { markDbReportUnlocked } from "@/lib/reportSessionStore";
@@ -75,6 +76,7 @@ export async function processReportUnlock(input: ProcessReportUnlockInput) {
   ];
   const trimmedExecutiveSummary = trimExecutiveSummary(input.executiveSummary);
   const resultUrl = buildResultUrl(sessionId);
+  const actionRequestUrl = buildActionRequestUrl(sessionId);
 
   const safeCompany = escapeHtml(company || "Ikke angivet");
   const safeName = escapeHtml(name);
@@ -176,7 +178,9 @@ export async function processReportUnlock(input: ProcessReportUnlockInput) {
     `Email: ${email}`,
     "",
     "Anbefalingerne er lavet som et første modenhedsbillede og bør læses som beslutningsgrundlag for videre prioritering.",
-    "Vi hjælper gerne med assessment samt udvælgelse af specialister. Du kan skrive til os på support@complycheck.dk.",
+    "Vi hjælper gerne med assessment samt udvælgelse af specialister.",
+    "Kontakt os via formularen her:",
+    actionRequestUrl,
     "",
     "Christian",
     "Team ComplyCheck.dk",
@@ -188,6 +192,9 @@ export async function processReportUnlock(input: ProcessReportUnlockInput) {
     "display:inline-block;padding:12px 18px;border:1px solid #cfd6cc;font-weight:600;text-decoration:none;margin-right:12px;margin-top:8px;";
   const resultButton = resultUrl
     ? `<a href="${escapeHtml(resultUrl)}" style="${buttonBaseStyle}background:#073832;color:#ffffff;border-color:#073832;">Se resultat af analysen</a>`
+    : "";
+  const actionRequestLink = actionRequestUrl
+    ? `<a href="${escapeHtml(actionRequestUrl)}">${escapeHtml(actionRequestUrl)}</a>`
     : "";
 
   const userHtml = `
@@ -207,7 +214,8 @@ export async function processReportUnlock(input: ProcessReportUnlockInput) {
     <strong>Titel:</strong> ${safeTitle}<br />
     <strong>Email:</strong> ${safeEmail}</p>
     <p>Anbefalingerne er lavet som et første modenhedsbillede og bør læses som beslutningsgrundlag for videre prioritering.</p>
-    <p>Vi hjælper gerne med assessment samt udvælgelse af specialister. Du kan skrive til os på support@complycheck.dk.</p>
+    <p>Vi hjælper gerne med assessment samt udvælgelse af specialister.</p>
+    <p>Kontakt os via formularen her:<br />${actionRequestLink}</p>
     <p>Christian<br />Team ComplyCheck.dk</p>
   `;
 
