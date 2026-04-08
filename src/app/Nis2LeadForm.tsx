@@ -149,7 +149,7 @@ export default function Nis2LeadForm({
             value={form.company}
             onChange={(event) => update("company", event.target.value)}
             className="w-full border border-line bg-paper px-5 py-4 text-base text-ink outline-none transition focus:border-[#2a5a4f]"
-            placeholder="Fx Weikop A/S"
+            placeholder="Virksomhed A/S"
           />
         </div>
 
