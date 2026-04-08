@@ -114,6 +114,12 @@ export default function TheplanManager({
             Download Excel med theplan-basen
           </a>
           <a
+            href="/api/superadmin/theplan/export?kind=all"
+            className="inline-flex items-center justify-center bg-[#2a5a4f] px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#234b42]"
+          >
+            Download alt samlet
+          </a>
+          <a
             href="/api/superadmin/theplan/export?kind=flows"
             className="inline-flex items-center justify-center border border-line bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:bg-paper"
           >

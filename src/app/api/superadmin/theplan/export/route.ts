@@ -47,6 +47,34 @@ function buildWorkbook(
     };
   }
 
+  if (kind === "all") {
+    XLSX.utils.book_append_sheet(
+      workbook,
+      XLSX.utils.json_to_sheet(toSheetRows(dataset.leads)),
+      "Theplan Base",
+    );
+    XLSX.utils.book_append_sheet(
+      workbook,
+      XLSX.utils.json_to_sheet(toSheetRows(dataset.contacts)),
+      "Kontaktspor",
+    );
+    XLSX.utils.book_append_sheet(
+      workbook,
+      XLSX.utils.json_to_sheet(toSheetRows(dataset.warmSignals)),
+      "Flows",
+    );
+    XLSX.utils.book_append_sheet(
+      workbook,
+      XLSX.utils.json_to_sheet(toSheetRows(dataset.drafts)),
+      "Tekster",
+    );
+
+    return {
+      workbook,
+      filename: "theplan-alt-samlet.xlsx",
+    };
+  }
+
   XLSX.utils.book_append_sheet(
     workbook,
     XLSX.utils.json_to_sheet(toSheetRows(dataset.warmSignals)),
@@ -72,7 +100,9 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const kind = searchParams.get("kind") === "base" ? "base" : "flows";
+  const requestedKind = searchParams.get("kind");
+  const kind =
+    requestedKind === "base" || requestedKind === "all" ? requestedKind : "flows";
   const dataset = await getTheplanDataset();
   const { workbook, filename } = buildWorkbook(kind, dataset);
   const buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
