@@ -9,12 +9,14 @@ import type {
   TheplanOutreachLead,
   TheplanWarmSignal,
 } from "@/lib/theplanStore";
+import type { SuperadminLogEntry } from "@/lib/superadminStore";
 
 type TheplanManagerProps = {
   initialLeads: TheplanOutreachLead[];
   initialContacts: TheplanContactEnrichment[];
   initialWarmSignals: TheplanWarmSignal[];
   initialDrafts: TheplanDraft[];
+  importLogs: SuperadminLogEntry[];
 };
 
 function SectionBadge({
@@ -39,6 +41,7 @@ export default function TheplanManager({
   initialContacts,
   initialWarmSignals,
   initialDrafts,
+  importLogs,
 }: TheplanManagerProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
@@ -243,11 +246,79 @@ export default function TheplanManager({
                     <p className="mt-1 text-sm text-soft">
                       {change.sheets.join(", ")} · {change.updatedFields.join(", ")}
                     </p>
+                    <div className="mt-3 space-y-2">
+                      {change.fieldDiffs.slice(0, 6).map((diff) => (
+                        <div key={`${change.vendorKey}-${diff.field}`} className="text-sm">
+                          <p className="font-semibold text-ink">{diff.field}</p>
+                          <p className="mt-1 text-soft">
+                            Fra: {diff.previousValue}
+                          </p>
+                          <p className="text-[#2a5a4f]">
+                            Til: {diff.nextValue}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
           ) : null}
+        </div>
+      </section>
+
+      <section className="border border-line bg-white p-8 shadow-[var(--shadow)]">
+        <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[#697b9e]">
+          Importhistorik
+        </p>
+        <h2 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-ink">
+          Seneste Excel-importer
+        </h2>
+        <p className="mt-3 text-sm leading-6 text-soft">
+          Her kan du se de seneste importer af theplan-filer direkte fra superadmin-loggen.
+        </p>
+
+        <div className="mt-5 space-y-3">
+          {importLogs.length === 0 ? (
+            <div className="border border-line bg-paper px-4 py-4 text-sm text-soft">
+              Ingen importer logget endnu.
+            </div>
+          ) : (
+            importLogs.slice(0, 12).map((log) => (
+              <div
+                key={log.id}
+                className="border border-line bg-paper px-4 py-4"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-ink">
+                      {log.entityId || "Excel-import"}
+                    </p>
+                    <p className="mt-1 text-sm text-soft">
+                      {new Date(log.createdAt).toLocaleString("da-DK")} ·{" "}
+                      {log.actorEmail || "ukendt"}
+                    </p>
+                  </div>
+                  <div className="text-sm text-soft">
+                    <p>
+                      Rækker: {String(log.payload?.rowsSeen ?? "-")}
+                    </p>
+                    <p>
+                      Virksomheder: {String(log.payload?.changedRecords ?? "-")}
+                    </p>
+                    <p>
+                      Felter: {String(log.payload?.changedFields ?? "-")}
+                    </p>
+                  </div>
+                </div>
+                <p className="mt-3 text-sm text-soft">
+                  Sheets: {Array.isArray(log.payload?.sheetsFound)
+                    ? log.payload?.sheetsFound.join(", ")
+                    : "-"}
+                </p>
+              </div>
+            ))
+          )}
         </div>
       </section>
 

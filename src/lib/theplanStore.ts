@@ -142,6 +142,11 @@ export type TheplanImportChange = {
   company: string;
   sheets: string[];
   updatedFields: string[];
+  fieldDiffs: Array<{
+    field: string;
+    previousValue: string;
+    nextValue: string;
+  }>;
 };
 
 export type TheplanImportResult = {
@@ -788,6 +793,11 @@ export async function previewTheplanImport(
       sheets: Set<string>;
       updatedFields: Set<string>;
       patch: TheplanOverride;
+      fieldDiffs: Array<{
+        field: string;
+        previousValue: string;
+        nextValue: string;
+      }>;
     }
   >();
 
@@ -826,6 +836,7 @@ export async function previewTheplanImport(
           sheets: new Set<string>(),
           updatedFields: new Set<string>(),
           patch: {},
+          fieldDiffs: [],
         };
 
       for (const field of sheetConfig.fields) {
@@ -842,6 +853,11 @@ export async function previewTheplanImport(
         change.patch[field as keyof TheplanOverride] = imported as never;
         change.updatedFields.add(field);
         change.sheets.add(sheet.name);
+        change.fieldDiffs.push({
+          field,
+          previousValue: JSON.stringify(current[field] ?? ""),
+          nextValue: JSON.stringify(imported),
+        });
       }
 
       if (change.updatedFields.size > 0) {
@@ -855,6 +871,7 @@ export async function previewTheplanImport(
     company: change.company,
     sheets: [...change.sheets],
     updatedFields: [...change.updatedFields],
+    fieldDiffs: change.fieldDiffs,
     patch: change.patch,
   }));
 
@@ -893,6 +910,7 @@ export async function applyTheplanImport(
       company: item.company,
       sheets: item.sheets,
       updatedFields: item.updatedFields,
+      fieldDiffs: item.fieldDiffs,
     })),
   } satisfies TheplanImportResult;
 }
