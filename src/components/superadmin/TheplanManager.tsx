@@ -17,6 +17,7 @@ type TheplanManagerProps = {
   initialWarmSignals: TheplanWarmSignal[];
   initialDrafts: TheplanDraft[];
   importLogs: SuperadminLogEntry[];
+  rolledBackImportLogIds: number[];
 };
 
 function SectionBadge({
@@ -42,6 +43,7 @@ export default function TheplanManager({
   initialWarmSignals,
   initialDrafts,
   importLogs,
+  rolledBackImportLogIds,
 }: TheplanManagerProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
@@ -92,6 +94,10 @@ export default function TheplanManager({
   const highConfidenceContacts = initialContacts.filter(
     (item) => item.confidence === "high",
   ).length;
+  const rolledBackLogIdSet = useMemo(
+    () => new Set(rolledBackImportLogIds),
+    [rolledBackImportLogIds],
+  );
 
   function formatImportSummary(result: TheplanImportResult) {
     return `${result.changedRecords} virksomheder og ${result.changedFields} felter påvirkes på tværs af ${result.sheetsFound.join(", ") || "ingen sheets"}.`;
@@ -326,7 +332,10 @@ export default function TheplanManager({
               Ingen importer logget endnu.
             </div>
           ) : (
-            importLogs.slice(0, 12).map((log) => (
+            importLogs.slice(0, 12).map((log) => {
+              const wasRolledBack = rolledBackLogIdSet.has(log.id);
+
+              return (
               <div
                 key={log.id}
                 className="border border-line bg-paper px-4 py-4"
@@ -351,6 +360,9 @@ export default function TheplanManager({
                     <p>
                       Felter: {String(log.payload?.changedFields ?? "-")}
                     </p>
+                    <p>
+                      Status: {wasRolledBack ? "Rollbacket" : "Aktiv import"}
+                    </p>
                   </div>
                 </div>
                 <p className="mt-3 text-sm text-soft">
@@ -362,14 +374,19 @@ export default function TheplanManager({
                   <button
                     type="button"
                     onClick={() => rollbackImport(log.id)}
-                    disabled={rollbackingLogId === log.id}
+                    disabled={rollbackingLogId === log.id || wasRolledBack}
                     className="inline-flex items-center justify-center border border-line bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-white disabled:opacity-50"
                   >
-                    {rollbackingLogId === log.id ? "Rollbacker..." : "Rollback denne import"}
+                    {wasRolledBack
+                      ? "Allerede rollbacket"
+                      : rollbackingLogId === log.id
+                        ? "Rollbacker..."
+                        : "Rollback denne import"}
                   </button>
                 </div>
               </div>
-            ))
+              );
+            })
           )}
         </div>
       </section>

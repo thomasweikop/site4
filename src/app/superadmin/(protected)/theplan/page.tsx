@@ -11,6 +11,12 @@ export default async function SuperadminTheplanPage() {
   ]);
 
   const importLogs = logs.filter((log) => log.action === "imported_theplan_excel");
+  const rolledBackImportLogIds = new Set(
+    logs
+      .filter((log) => log.action === "rolled_back_theplan_import")
+      .map((log) => Number(log.payload?.sourceLogId))
+      .filter((value) => Number.isFinite(value)),
+  );
 
   return (
     <TheplanManager
@@ -19,6 +25,7 @@ export default async function SuperadminTheplanPage() {
       initialWarmSignals={dataset.warmSignals}
       initialDrafts={dataset.drafts}
       importLogs={importLogs}
+      rolledBackImportLogIds={[...rolledBackImportLogIds]}
     />
   );
 }
