@@ -146,6 +146,8 @@ export type TheplanImportChange = {
     field: string;
     previousValue: string;
     nextValue: string;
+    previousRaw: unknown;
+    nextRaw: unknown;
   }>;
 };
 
@@ -797,6 +799,8 @@ export async function previewTheplanImport(
         field: string;
         previousValue: string;
         nextValue: string;
+        previousRaw: unknown;
+        nextRaw: unknown;
       }>;
     }
   >();
@@ -857,6 +861,8 @@ export async function previewTheplanImport(
           field,
           previousValue: JSON.stringify(current[field] ?? ""),
           nextValue: JSON.stringify(imported),
+          previousRaw: current[field] ?? "",
+          nextRaw: imported,
         });
       }
 
@@ -913,4 +919,37 @@ export async function applyTheplanImport(
       fieldDiffs: item.fieldDiffs,
     })),
   } satisfies TheplanImportResult;
+}
+
+export async function rollbackTheplanImport(
+  changes: Array<{
+    vendorKey: string;
+    fieldDiffs: Array<{
+      field: string;
+      previousRaw: unknown;
+    }>;
+  }>,
+  actorEmail: string,
+) {
+  let rolledBackRecords = 0;
+  let rolledBackFields = 0;
+
+  for (const change of changes) {
+    const patch = Object.fromEntries(
+      change.fieldDiffs.map((fieldDiff) => [fieldDiff.field, fieldDiff.previousRaw]),
+    ) as TheplanOverride;
+
+    if (Object.keys(patch).length === 0) {
+      continue;
+    }
+
+    await updateTheplanOverride(change.vendorKey, patch, actorEmail);
+    rolledBackRecords += 1;
+    rolledBackFields += change.fieldDiffs.length;
+  }
+
+  return {
+    rolledBackRecords,
+    rolledBackFields,
+  };
 }

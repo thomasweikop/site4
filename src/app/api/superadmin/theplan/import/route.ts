@@ -56,6 +56,7 @@ export async function POST(request: Request) {
         changedRecords: result.changedRecords,
         changedFields: result.changedFields,
         sheetsFound: result.sheetsFound,
+        changes: result.changes,
       },
     });
   }

@@ -51,6 +51,8 @@ export default function TheplanManager({
   const [importMessage, setImportMessage] = useState<string | null>(null);
   const [preview, setPreview] = useState<TheplanImportResult | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const [rollbackMessage, setRollbackMessage] = useState<string | null>(null);
+  const [rollbackingLogId, setRollbackingLogId] = useState<number | null>(null);
 
   const filteredWarmSignals = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -139,6 +141,41 @@ export default function TheplanManager({
       setImportMessage("Netværksfejl under import.");
     } finally {
       setIsPending(false);
+    }
+  }
+
+  async function rollbackImport(logId: number) {
+    setRollbackMessage(null);
+    setRollbackingLogId(logId);
+
+    try {
+      const response = await fetch("/api/superadmin/theplan/rollback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ logId }),
+      });
+
+      const payload = (await response.json()) as {
+        error?: string;
+        result?: {
+          rolledBackRecords: number;
+          rolledBackFields: number;
+        };
+      };
+
+      if (!response.ok || !payload.result) {
+        setRollbackMessage(payload.error || "Kunne ikke rollbacke importen.");
+        return;
+      }
+
+      setRollbackMessage(
+        `Rollback gennemført. ${payload.result.rolledBackRecords} virksomheder og ${payload.result.rolledBackFields} felter er ført tilbage.`,
+      );
+      router.refresh();
+    } catch {
+      setRollbackMessage("Netværksfejl under rollback.");
+    } finally {
+      setRollbackingLogId(null);
     }
   }
 
@@ -279,6 +316,11 @@ export default function TheplanManager({
         </p>
 
         <div className="mt-5 space-y-3">
+          {rollbackMessage ? (
+            <div className="border border-line bg-paper px-4 py-4 text-sm text-[#2a5a4f]">
+              {rollbackMessage}
+            </div>
+          ) : null}
           {importLogs.length === 0 ? (
             <div className="border border-line bg-paper px-4 py-4 text-sm text-soft">
               Ingen importer logget endnu.
@@ -316,6 +358,16 @@ export default function TheplanManager({
                     ? log.payload?.sheetsFound.join(", ")
                     : "-"}
                 </p>
+                <div className="mt-4">
+                  <button
+                    type="button"
+                    onClick={() => rollbackImport(log.id)}
+                    disabled={rollbackingLogId === log.id}
+                    className="inline-flex items-center justify-center border border-line bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-white disabled:opacity-50"
+                  >
+                    {rollbackingLogId === log.id ? "Rollbacker..." : "Rollback denne import"}
+                  </button>
+                </div>
               </div>
             ))
           )}
