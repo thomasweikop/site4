@@ -9,7 +9,7 @@ import { MATRIX_COLUMNS } from "@/lib/nis2BuildPack";
 import type { ScanResult } from "@/lib/nis2Scan";
 
 export function getAreaSpecialists(result: ScanResult) {
-  return result.topAnalysisAreas.map((area) => {
+  return result.analysisAreas.map((area) => {
     const matrixKeys = getMatrixKeysForAnalysisArea(area.key);
     const specialists: typeof result.vendorFits = [];
     const areaCompanyNames = new Set<string>();
@@ -59,17 +59,11 @@ type RecommendedExpertSectionsProps = {
 
 function AreaSpecialistsTable({
   areaKey,
-  areaLabel,
-  areaPercentage,
-  areaDescription,
   item,
   secondarySpecialists,
   additionalSpecialists,
 }: {
   areaKey: string;
-  areaLabel: string;
-  areaPercentage: number;
-  areaDescription: string;
   item: ScanResult["vendorFits"][number] | null;
   secondarySpecialists: ScanResult["vendorFits"];
   additionalSpecialists: ScanResult["vendorFits"];
@@ -176,39 +170,6 @@ function AreaSpecialistsTable({
               </tr>
             ))}
           </tbody>
-          <tfoot>
-            <tr className="border-t border-line bg-[#f8f4ec] align-top">
-              <td className="px-4 py-4" />
-              <th className="px-4 py-4 text-sm font-semibold text-ink">
-                Compliance niveau for dette område
-              </th>
-              {areaColumns.map((column) => (
-                <td
-                  key={`${areaKey}-${column.key}-score`}
-                  className="px-4 py-4 text-center text-base font-semibold text-ink"
-                >
-                  {areaPercentage} %
-                </td>
-              ))}
-              <td className="px-4 py-4 text-center text-sm font-semibold text-ink">
-                {areaPercentage} %
-              </td>
-              <td className="px-4 py-4" />
-            </tr>
-            <tr className="border-t border-line bg-white align-top">
-              <td className="px-4 py-4" />
-              <th className="px-4 py-4 text-sm font-semibold text-ink">
-                Begrundelse for vurdering
-              </th>
-              <td
-                colSpan={areaColumns.length + 2}
-                className="max-w-4xl px-4 py-4 text-sm leading-7 text-soft"
-              >
-                <span className="font-semibold text-ink">{areaLabel}:</span>{" "}
-                {areaDescription}
-              </td>
-            </tr>
-          </tfoot>
         </table>
       </div>
 
@@ -235,6 +196,16 @@ export default function RecommendedExpertSections({
 
   return (
     <div className="space-y-6">
+      <div className="px-1">
+        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
+          Sortering
+        </p>
+        <p className="mt-2 text-sm leading-7 text-soft md:text-base">
+          Alle analyseområder vises nedenfor. De laveste compliance-scorer står
+          først, efterfulgt af de øvrige områder.
+        </p>
+      </div>
+
       {groupedSpecialists.map(
         ({
           area,
@@ -260,15 +231,13 @@ export default function RecommendedExpertSections({
                 </div>
 
                 <div className="mx-auto flex w-full max-w-[11rem] flex-col items-center md:mx-0 md:ml-auto">
-                  <p className="mb-1 text-center text-[0.72rem] font-medium uppercase tracking-[0.28em] text-[#4d86ba]">
-                    COMPLIANCE SCORE
-                  </p>
                   <PercentageRing
                     percentage={area.percentage}
                     label="COMPLIANCE SCORE"
                     size={96}
                     strokeWidth={12}
-                    valueScale={0.52}
+                    valueScale={0.46}
+                    displayValue={area.percentage >= 90 ? "+90" : area.percentage}
                   />
                 </div>
               </div>
@@ -276,9 +245,6 @@ export default function RecommendedExpertSections({
               <div className="mt-4">
                 <AreaSpecialistsTable
                   areaKey={area.key}
-                  areaLabel={area.label}
-                  areaPercentage={area.percentage}
-                  areaDescription={area.description}
                   item={primarySpecialist}
                   secondarySpecialists={secondarySpecialists}
                   additionalSpecialists={additionalSpecialists}

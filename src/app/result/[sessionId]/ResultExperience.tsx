@@ -182,10 +182,14 @@ export default function ResultExperience({
             <div className="mt-6 space-y-3">
               <div>
                 <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-                  Vigtigste konklusioner
+                  Alle områder
+                </p>
+                <p className="mt-2 text-sm leading-7 text-soft">
+                  Områderne er sorteret efter lavest compliance score først.
+                  Områder med meget høj score vises som +90.
                 </p>
                 <div className="mt-3 grid gap-4 lg:grid-cols-3">
-                  {result.topAnalysisAreas.map((area) => (
+                  {result.analysisAreas.map((area) => (
                     <article
                       key={area.key}
                       className="border border-line bg-paper p-5"
@@ -201,6 +205,10 @@ export default function ResultExperience({
                           label="COMPLIANCE SCORE"
                           size={84}
                           strokeWidth={11}
+                          valueScale={0.43}
+                          displayValue={
+                            area.percentage >= 90 ? "+90" : area.percentage
+                          }
                         />
                       </div>
 

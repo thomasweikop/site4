@@ -6,6 +6,7 @@ type PercentageRingProps = {
   captionLines?: string[];
   valueScale?: number;
   showPercentSymbol?: boolean;
+  displayValue?: string | number;
 };
 
 export default function PercentageRing({
@@ -16,6 +17,7 @@ export default function PercentageRing({
   captionLines,
   valueScale = 0.4,
   showPercentSymbol = false,
+  displayValue,
 }: PercentageRingProps) {
   const normalizedPercentage = Math.max(0, Math.min(100, percentage));
   const radius = (size - strokeWidth) / 2;
@@ -26,6 +28,8 @@ export default function PercentageRing({
   const hasCaption = Array.isArray(captionLines) && captionLines.length > 0;
   const captionFontSize = size * 0.052;
   const captionBaseY = center + size * 0.18;
+  const renderedValue =
+    displayValue ?? (showPercentSymbol ? `${normalizedPercentage}%` : normalizedPercentage);
 
   return (
     <div
@@ -55,16 +59,16 @@ export default function PercentageRing({
           transform={`rotate(-90 ${center} ${center})`}
         />
         <text
-          x="50%"
-          y={hasCaption ? "44%" : "50%"}
-          dominantBaseline={hasCaption ? "auto" : "middle"}
+          x={center}
+          y={hasCaption ? center - size * 0.06 : center + size * 0.015}
+          dominantBaseline="middle"
           textAnchor="middle"
           fill="#6fa3cf"
           fontSize={size * valueScale}
           fontWeight="700"
           style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
         >
-          {showPercentSymbol ? `${normalizedPercentage}%` : normalizedPercentage}
+          {renderedValue}
         </text>
         {hasCaption
           ? captionLines.map((line, index) => (

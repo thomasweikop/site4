@@ -65,16 +65,16 @@ export default function RecommendedExpertsExperience({
           Anbefaling på specialister
         </p>
         <h1 className="mt-4 text-balance font-display text-4xl leading-none text-ink md:text-[3.15rem]">
-          Specialister med relevant erfaring indenfor de vigtigste områder
+          Specialister med relevant erfaring på tværs af alle analyseområder
         </h1>
         <p className="mt-4 max-w-4xl text-sm leading-7 text-soft md:text-base">
-          Hvert område nedenfor vises som en sammenlignelig tabel, så det er
-          lettere at se hvem der dækker de vigtigste behov, og hvor stærkt
-          matchet er for virksomheden.
+          Hvert område nedenfor vises som en sammenlignelig tabel. De laveste
+          compliance-scorer står først, så det er lettere at se hvor dialogen
+          bør starte.
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">
-          {result.topAnalysisAreas.map((area) => (
+          {result.analysisAreas.map((area) => (
             <span
               key={area.key}
               className="border border-line bg-paper px-4 py-2 text-sm text-ink"
