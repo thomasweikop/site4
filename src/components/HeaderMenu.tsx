@@ -9,6 +9,7 @@ const NIS2_SITE_ITEMS = [
   { href: "/", label: "Forside" },
   { href: "/#hvordan", label: "Om testen" },
   { href: "/specialists", label: "Specialister" },
+  { href: "/kontakt", label: "Kontakt" },
   { href: "/about-nis2", label: "Om NIS2" },
   { href: "/for-partners", label: "For partnere" },
   { href: "/privacy", label: "Privatliv" },
