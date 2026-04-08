@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { ScanResult } from "@/lib/nis2Scan";
 import type { UnlockLead } from "@/lib/nis2Session";
 import {
@@ -12,6 +13,10 @@ type ReportUnlockFormProps = {
   sessionId: string;
   result: ScanResult;
   onUnlocked: (lead: UnlockLead) => void;
+  heading?: string;
+  intro?: string;
+  submitLabel?: string;
+  successPath?: string;
 };
 
 const EMPTY_LEAD: UnlockLead = {
@@ -27,7 +32,12 @@ export default function ReportUnlockForm({
   sessionId,
   result,
   onUnlocked,
+  heading = "Se konkrete anbefalinger",
+  intro = "Resultatet sendes til email, og derefter kan virksomheden fortsætte til analysens resultat og de næste anbefalede skridt.",
+  submitLabel = "Send",
+  successPath,
 }: ReportUnlockFormProps) {
+  const router = useRouter();
   const [lead, setLead] = useState<UnlockLead>(EMPTY_LEAD);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,6 +91,10 @@ export default function ReportUnlockForm({
       }
 
       onUnlocked(lead);
+
+      if (successPath) {
+        router.push(successPath);
+      }
     } catch {
       setError("Netværksfejl under afsendelse.");
     } finally {
@@ -94,11 +108,10 @@ export default function ReportUnlockForm({
       className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8"
     >
       <h2 className="text-balance font-display text-[2rem] leading-none text-ink md:text-[2.35rem]">
-        Se konkrete anbefalinger
+        {heading}
       </h2>
       <p className="mt-4 text-sm leading-6 text-soft">
-        Resultatet sendes til email, og derefter kan virksomheden fortsætte til
-        analysens resultat og de næste anbefalede skridt.
+        {intro}
       </p>
 
       <div className="mt-6 grid gap-4">
@@ -177,7 +190,7 @@ export default function ReportUnlockForm({
         disabled={pending}
         className="mt-6 inline-flex bg-sage px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43] disabled:cursor-not-allowed disabled:bg-[#8a95a8] disabled:!text-white"
       >
-        {pending ? "Sender..." : "Send"}
+        {pending ? "Sender..." : submitLabel}
       </button>
 
       {error ? <p className="mt-4 text-sm text-[#b64848]">{error}</p> : null}

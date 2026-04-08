@@ -193,6 +193,10 @@ export function buildComplianceRecommendationsPath(sessionId: string) {
   return `/result/${sessionId}/anbefalinger`;
 }
 
+export function buildAnalysisGenerationPath(sessionId: string) {
+  return `/result/${sessionId}/analyse`;
+}
+
 export function buildComplianceRecommendationsUrl(sessionId: string) {
   return `${getSiteUrl()}${buildComplianceRecommendationsPath(sessionId)}`;
 }

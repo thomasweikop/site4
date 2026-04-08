@@ -1,18 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import PercentageRing from "@/components/PercentageRing";
 import {
+  buildAnalysisGenerationPath,
   buildAreaDetailPath,
   buildComplianceRecommendationsPath,
 } from "@/lib/reportLinks";
-import ReportUnlockForm from "@/components/ReportUnlockForm";
 import {
   getSessionReport,
-  markReportUnlocked,
   type StoredReportSession,
-  type UnlockLead,
 } from "@/lib/nis2Session";
 import type { ScanResult } from "@/lib/nis2Scan";
 import { useStoredReportSession } from "@/lib/useStoredReportSession";
@@ -51,9 +48,7 @@ export default function ResultExperience({
     sessionId,
     initialSession,
   );
-  const [sessionOverride, setSessionOverride] =
-    useState<StoredReportSession | null>(null);
-  const session = sessionOverride ?? storedSession;
+  const session = storedSession;
 
   if (!clientReady) {
     return (
@@ -97,31 +92,10 @@ export default function ResultExperience({
 
   const unlocked = Boolean(session.unlockedAt);
   const result = getSessionReport(session);
-  const company = session.unlockLead?.company?.trim() || "Virksomheden";
   const statusNarrative = buildStatusNarrative(result);
   const complianceRecommendationsHref =
     buildComplianceRecommendationsPath(sessionId);
-
-  function handleUnlocked(lead: UnlockLead) {
-    const updated = markReportUnlocked(sessionId, lead);
-
-    if (updated) {
-      setSessionOverride(updated);
-      return;
-    }
-
-    if (!session) {
-      return;
-    }
-
-    const unlockedAt = new Date().toISOString();
-    setSessionOverride({
-      ...session,
-      updatedAt: unlockedAt,
-      unlockedAt,
-      unlockLead: lead,
-    });
-  }
+  const analysisGenerationHref = buildAnalysisGenerationPath(sessionId);
 
   return (
     <div className="space-y-6">
@@ -152,11 +126,23 @@ export default function ResultExperience({
             </p>
           </div>
 
-          <ReportUnlockForm
-            sessionId={sessionId}
-            result={result}
-            onUnlocked={handleUnlocked}
-          />
+          <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
+            <h2 className="text-balance font-display text-[2rem] leading-none text-ink md:text-[2.35rem]">
+              Klar til at generere analysen
+            </h2>
+            <p className="mt-4 max-w-3xl text-sm leading-6 text-soft">
+              Fortsæt til en separat side, hvor virksomhedsoplysningerne
+              udfyldes, og hvor analysen kan genereres og sendes til email.
+            </p>
+            <div className="mt-6">
+              <Link
+                href={analysisGenerationHref}
+                className="inline-flex bg-sage px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
+              >
+                Fortsæt til analyse
+              </Link>
+            </div>
+          </div>
         </section>
       ) : null}
 
