@@ -37,7 +37,7 @@ export type ReportSnapshot = {
   }>;
 };
 
-const DEFAULT_SITE_URL = "https://nis.weikop.me";
+const DEFAULT_SITE_URL = "https://www.complycheck.dk";
 
 function toBase64Url(value: string) {
   if (typeof window === "undefined") {

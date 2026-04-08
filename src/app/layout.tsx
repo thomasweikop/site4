@@ -14,7 +14,7 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://nis.weikop.me"),
+  metadataBase: new URL("https://www.complycheck.dk"),
   title: "NIS2 Screening | ComplyCheck",
   description:
     "Få et nøgternt første billede af virksomhedens NIS2-parathed med en kort screening, vægtet score og de mest oplagte næste skridt.",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     description:
       "Få et nøgternt første billede af virksomhedens NIS2-parathed, de største gaps og de næste prioriterede skridt.",
     type: "website",
-    url: "https://nis.weikop.me",
+    url: "https://www.complycheck.dk",
     locale: "da_DK",
     siteName: "ComplyCheck",
   },

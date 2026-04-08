@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://nis.weikop.me/sitemap.xml",
+    sitemap: "https://www.complycheck.dk/sitemap.xml",
   };
 }
