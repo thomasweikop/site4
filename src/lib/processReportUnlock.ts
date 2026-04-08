@@ -69,6 +69,10 @@ export async function processReportUnlock(input: ProcessReportUnlockInput) {
   const weakestDimensions = (input.weakestDimensions ?? []).filter(Boolean);
   const blockers = (input.blockers ?? []).filter(Boolean);
   const nextSteps = (input.nextSteps ?? []).filter(Boolean);
+  const nextStepsWithContact = [
+    ...nextSteps,
+    "Tag kontakt ekspert på området.",
+  ];
   const trimmedExecutiveSummary = trimExecutiveSummary(input.executiveSummary);
   const resultUrl = buildResultUrl(sessionId);
 
@@ -99,7 +103,7 @@ export async function processReportUnlock(input: ProcessReportUnlockInput) {
     buildList("Profil", profileSummary),
     buildList("Laveste dimensioner", weakestDimensions),
     buildList("Blockers", blockers),
-    buildList("Initielle anbefalinger", nextSteps),
+    buildList("Initielle anbefalinger", nextStepsWithContact),
     resultUrl ? `Resultat: ${resultUrl}` : "",
     "",
     "Besked:",
@@ -126,7 +130,7 @@ export async function processReportUnlock(input: ProcessReportUnlockInput) {
     ${buildHtmlList("Profil", profileSummary)}
     ${buildHtmlList("Laveste dimensioner", weakestDimensions)}
     ${buildHtmlList("Blockers", blockers)}
-    ${buildHtmlList("Initielle anbefalinger", nextSteps)}
+    ${buildHtmlList("Initielle anbefalinger", nextStepsWithContact)}
     ${
       resultUrl
         ? `<p><strong>Resultat:</strong> <a href="${escapeHtml(resultUrl)}">${escapeHtml(resultUrl)}</a></p>`
@@ -153,27 +157,29 @@ export async function processReportUnlock(input: ProcessReportUnlockInput) {
   const userText = [
     `Hej ${name},`,
     "",
-    `NIS2 anbefalinger for ${company}`,
+    "Du har gennemført en initial NIS2 test.",
+    "Her får du et kort resume og link til analysen.",
     "",
-    `Virksomhed: ${company}`,
-    `Samlet score: ${input.score ?? "Ukendt"}%`,
+    trimmedExecutiveSummary ? `Resume: ${trimmedExecutiveSummary}` : "",
     "",
-    trimmedExecutiveSummary,
+    buildList("Initielle anbefalinger", nextStepsWithContact),
     "",
     buildList("Laveste dimensioner", weakestDimensions),
-    buildList("Eventuelle blockers", blockers),
-    buildList("Initielle anbefalinger", nextSteps),
     "",
-    "Vis analysens resultat",
+    "Se resultat af analysen",
     resultUrl,
     "",
-    "Kontakt information:",
+    "Information om virksomheden:",
     `Virksomhed: ${company}`,
     `Navn: ${name}`,
     `Titel: ${title || "Ikke angivet"}`,
     `Email: ${email}`,
     "",
-    "Anbefalingerne er lavet som et første modenhedsbillede og bør læses som beslutningsgrundlag for næste prioritering.",
+    "Anbefalingerne er lavet som et første modenhedsbillede og bør læses som beslutningsgrundlag for videre prioritering.",
+    "Vi hjælper gerne med assessment samt udvælgelse af specialister. Du kan skrive til os på support@complycheck.dk.",
+    "",
+    "Christian",
+    "Team ComplyCheck.dk",
   ]
     .filter(Boolean)
     .join("\n");
@@ -181,29 +187,28 @@ export async function processReportUnlock(input: ProcessReportUnlockInput) {
   const buttonBaseStyle =
     "display:inline-block;padding:12px 18px;border:1px solid #cfd6cc;font-weight:600;text-decoration:none;margin-right:12px;margin-top:8px;";
   const resultButton = resultUrl
-    ? `<a href="${escapeHtml(resultUrl)}" style="${buttonBaseStyle}background:#073832;color:#ffffff;border-color:#073832;">Vis analysens resultat</a>`
+    ? `<a href="${escapeHtml(resultUrl)}" style="${buttonBaseStyle}background:#073832;color:#ffffff;border-color:#073832;">Se resultat af analysen</a>`
     : "";
 
   const userHtml = `
     <p>Hej ${safeName},</p>
-    <p><strong>NIS2 anbefalinger for ${safeCompany}</strong></p>
-    <p><strong>Virksomhed:</strong> ${safeCompany}</p>
-    <p><strong>Samlet score:</strong> ${input.score ?? "Ukendt"}%</p>
+    <p>Du har gennemført en initial NIS2 test.<br />Her får du et kort resume og link til analysen.</p>
     ${
       trimmedExecutiveSummary
         ? `<p><strong>Resume:</strong> ${escapeHtml(trimmedExecutiveSummary)}</p>`
         : ""
     }
+    ${buildHtmlList("Initielle anbefalinger", nextStepsWithContact)}
     ${buildHtmlList("Laveste dimensioner", weakestDimensions)}
-    ${buildHtmlList("Eventuelle blockers", blockers)}
-    ${buildHtmlList("Initielle anbefalinger", nextSteps)}
     <p>${resultButton}</p>
-    <p><strong>Kontakt information:</strong><br />
+    <p><strong>Information om virksomheden:</strong><br />
     <strong>Virksomhed:</strong> ${safeCompany}<br />
     <strong>Navn:</strong> ${safeName}<br />
     <strong>Titel:</strong> ${safeTitle}<br />
     <strong>Email:</strong> ${safeEmail}</p>
-    <p>Anbefalingerne er lavet som et første modenhedsbillede og bør læses som beslutningsgrundlag for næste prioritering.</p>
+    <p>Anbefalingerne er lavet som et første modenhedsbillede og bør læses som beslutningsgrundlag for videre prioritering.</p>
+    <p>Vi hjælper gerne med assessment samt udvælgelse af specialister. Du kan skrive til os på support@complycheck.dk.</p>
+    <p>Christian<br />Team ComplyCheck.dk</p>
   `;
 
   const userResult = await sendMail({
