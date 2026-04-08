@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "release:check": "node scripts/release-preflight.mjs"
+    "release:check": "node scripts/release-preflight.mjs",
+    "theplan:outreach": "node scripts/theplan-build-outreach.mjs",
+    "theplan:contacts": "node scripts/theplan-enrich-contacts.mjs"
   },
   "dependencies": {
     "next": "16.2.2",
