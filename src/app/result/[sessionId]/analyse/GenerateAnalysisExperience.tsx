@@ -106,10 +106,13 @@ export default function GenerateAnalysisExperience({
       </section>
 
       <section className="border border-line bg-white p-4 shadow-[var(--shadow)]">
+        <p className="font-display text-[1.45rem] leading-none text-ink">
+          EKSEMPEL PÅ ANALYSE
+        </p>
         <div className="scale-[0.82] origin-top-left">
           <div className="w-[18rem] border border-line bg-[#f7f3ea] p-3">
             <div className="grid gap-2 grid-cols-2">
-              {result.analysisAreas.slice(0, 6).map((area) => (
+              {result.analysisAreas.slice(0, 10).map((area) => (
                 <article
                   key={area.key}
                   className="border border-line bg-white p-2"

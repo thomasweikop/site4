@@ -13,30 +13,6 @@ import {
 import { processReportUnlock } from "@/lib/processReportUnlock";
 import { createDbReportSession, isReportDatabaseConfigured } from "@/lib/reportSessionStore";
 
-const COMPANY_NAMES = [
-  "Nordic Components A/S",
-  "Blue Harbor Logistics",
-  "Atlas Digital Drift",
-  "Greenline Manufacturing",
-  "Crown Health Systems",
-];
-
-const PERSON_NAMES = [
-  "Thomas Weikop",
-  "Anna Nielsen",
-  "Mads Holm",
-  "Louise Jensen",
-  "Frederik Madsen",
-];
-
-const TITLES = [
-  "IT-chef",
-  "CISO",
-  "COO",
-  "Compliance ansvarlig",
-  "Driftschef",
-];
-
 function pickRandom<T>(items: readonly T[]) {
   return items[Math.floor(Math.random() * items.length)];
 }
@@ -65,9 +41,9 @@ export async function GET(request: Request) {
   const sessionId = randomUUID();
   const profile = buildRandomProfile();
   const answers = buildRandomAnswers();
-  const company = pickRandom(COMPANY_NAMES);
-  const name = pickRandom(PERSON_NAMES);
-  const title = pickRandom(TITLES);
+  const company = "xyz";
+  const name = "xyz";
+  const title = "xyz";
   const email = "a@weikop.dk";
 
   const session = await createDbReportSession({
