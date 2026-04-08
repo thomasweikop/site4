@@ -93,8 +93,8 @@ function AdditionalSpecialistsPanel({
             id={`${areaKey}-specialists-panel`}
             className={`mt-3 gap-x-4 gap-y-1 text-soft ${
               isExpanded
-                ? "grid text-[0.5rem] leading-[0.78rem] md:grid-cols-5"
-                : "grid text-[0.5rem] leading-[0.78rem]"
+                ? "grid text-[0.38rem] leading-[0.62rem] md:grid-cols-5"
+                : "grid text-[0.38rem] leading-[0.62rem]"
             }`}
           >
             {visibleColumns.map((column, columnIndex) => (
@@ -170,16 +170,56 @@ function MatchScoreDisplay({ score }: MatchScoreDisplayProps) {
   const normalizedScore = Math.max(0, Math.min(100, score));
 
   return (
-    <div className="flex w-full max-w-[10rem] flex-col items-stretch">
-      <div className="border border-[#2a5851] bg-[#fffdfa] px-4 py-3 text-center">
-        <div className="text-[0.62rem] font-medium uppercase tracking-[0.34em] text-[#174f46]">
-          MATCH SCORE
-        </div>
-        <div className="mt-1 text-[2.3rem] font-semibold leading-none tracking-[-0.06em] text-[#0f4b42]">
-          {normalizedScore}
-        </div>
+    <div className="w-full max-w-[10rem] border border-[#2a5851] bg-[#fffdfa] px-4 py-3 text-center">
+      <div className="text-[0.62rem] font-medium uppercase tracking-[0.34em] text-[#174f46]">
+        MATCH SCORE
+      </div>
+      <div className="mt-1 text-[2.25rem] font-semibold leading-none tracking-[-0.06em] text-[#0f4b42]">
+        {normalizedScore}
       </div>
     </div>
+  );
+}
+
+function SimpleSpecialistCard({
+  areaKey,
+  item,
+}: {
+  areaKey: string;
+  item: ScanResult["vendorFits"][number];
+}) {
+  return (
+    <article className="grid gap-4 border border-[#d6dfda] bg-[#fcf9f3] px-5 py-4 md:grid-cols-[minmax(0,1fr)_10rem] md:items-center">
+      <div className="min-w-0">
+        <div className="flex min-w-0 flex-wrap items-center gap-3">
+          <TrackedWebsiteLink
+            href={item.vendor.website}
+            vendorName={item.vendor.name}
+            source="recommended_experts_card_name"
+            areaKey={areaKey}
+            className="min-w-0 text-[1.02rem] font-semibold leading-tight tracking-[-0.03em] text-ink transition hover:text-[#0d4b43] md:text-[1.04rem]"
+          >
+            {item.vendor.name}
+          </TrackedWebsiteLink>
+          <span className="shrink-0 bg-[#73acd6] px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.16em] !text-white">
+            Anbefalet
+          </span>
+        </div>
+      </div>
+
+      <div className="mx-auto flex w-full max-w-[10rem] flex-col items-stretch gap-3 md:mx-0 md:ml-auto">
+        <MatchScoreDisplay score={item.fitScore} />
+        <TrackedWebsiteLink
+          href={item.vendor.website}
+          vendorName={item.vendor.name}
+          source="recommended_experts_card"
+          areaKey={areaKey}
+          className="inline-flex w-full justify-center bg-sage px-4 py-2.5 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
+        >
+          Website
+        </TrackedWebsiteLink>
+      </div>
+    </article>
   );
 }
 
@@ -198,14 +238,6 @@ export default function RecommendedExpertSections({
           additionalSpecialists,
         }) => {
           const additionalColumns = splitIntoColumns(additionalSpecialists, 5);
-          const featuredSpecialists = [
-            primarySpecialist,
-            ...secondarySpecialists,
-          ].filter(
-            (
-              item,
-            ): item is NonNullable<typeof primarySpecialist> => item !== null,
-          );
 
           return (
             <section
@@ -213,9 +245,9 @@ export default function RecommendedExpertSections({
               id={area.key}
               className="border border-line bg-white p-5 shadow-[var(--shadow)] md:p-6"
             >
-              <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_10rem] md:items-start md:gap-4">
-                <div>
-                  <h2 className="text-3xl font-semibold tracking-[-0.03em] text-ink">
+              <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_11rem] md:items-start">
+                <div className="min-w-0">
+                  <h2 className="text-[2rem] font-semibold tracking-[-0.03em] text-ink md:text-[2.2rem]">
                     {area.label}
                   </h2>
                   <p className="mt-3 max-w-3xl text-sm leading-7 text-soft md:text-base">
@@ -224,7 +256,7 @@ export default function RecommendedExpertSections({
                   </p>
                 </div>
 
-                <div className="mx-auto flex w-[10rem] flex-col items-center md:mx-0 md:ml-auto">
+                <div className="mx-auto flex w-full max-w-[11rem] flex-col items-center md:mx-0 md:ml-auto">
                   <p className="mb-1 text-center text-[0.72rem] font-medium uppercase tracking-[0.28em] text-[#4d86ba]">
                     COMPLIANCE SCORE
                   </p>
@@ -238,42 +270,20 @@ export default function RecommendedExpertSections({
                 </div>
               </div>
 
-              <div className="mt-3 space-y-2">
-                {featuredSpecialists.map((item) => (
-                  <article
-                    key={`${area.key}-${item.vendor.name}`}
-                    className="grid gap-4 border border-[#d6dfda] bg-[#fcf9f3] px-5 py-4 md:grid-cols-[minmax(0,1fr)_10rem] md:items-center"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex min-w-0 flex-wrap items-center gap-3">
-                        <TrackedWebsiteLink
-                          href={item.vendor.website}
-                          vendorName={item.vendor.name}
-                          source="recommended_experts_featured"
-                          areaKey={area.key}
-                          className="min-w-0 text-[1.08rem] font-semibold leading-tight tracking-[-0.03em] text-ink underline decoration-[#1b4f45]/20 underline-offset-4 transition hover:text-[#0d4b43] md:text-[1.14rem]"
-                        >
-                          {item.vendor.name}
-                        </TrackedWebsiteLink>
-                        <span className="shrink-0 bg-[#73acd6] px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.16em] !text-white">
-                          Anbefalet
-                        </span>
-                      </div>
-                    </div>
+              <div className="mt-2 space-y-2">
+                {primarySpecialist ? (
+                  <SimpleSpecialistCard
+                    areaKey={area.key}
+                    item={primarySpecialist}
+                  />
+                ) : null}
 
-                    <div className="mx-auto flex w-[10rem] flex-col items-stretch gap-2 self-end md:mx-0 md:ml-auto">
-                      <MatchScoreDisplay score={item.fitScore} />
-                      <TrackedWebsiteLink
-                        href={item.vendor.website}
-                        vendorName={item.vendor.name}
-                        source="recommended_experts_featured"
-                        areaKey={area.key}
-                        className="inline-flex w-full justify-center bg-sage px-4 py-2.5 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
-                      >
-                        Website
-                      </TrackedWebsiteLink>
-                    </div>
-                  </article>
+                {secondarySpecialists.map((item) => (
+                  <SimpleSpecialistCard
+                    key={`${area.key}-${item.vendor.name}`}
+                    areaKey={area.key}
+                    item={item}
+                  />
                 ))}
 
                 <AdditionalSpecialistsPanel
@@ -288,7 +298,7 @@ export default function RecommendedExpertSections({
 
       <div className="px-1 text-xs leading-6 text-[#6a7b76]">
         Match score er et samlet estimat af hvor godt specialistens primære
-        profil, dækkede NIS2-områder, market fit, branchematch og øvrige
+        profil, dækkede NIS2-områder, branchematch og øvrige
         kompetencesignal passer til virksomhedens aktuelle behov i den
         indledende screening. Scoren er vejledende og bør bruges som et
         prioriteringssignal, ikke som en endelig faglig vurdering.
