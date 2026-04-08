@@ -13,7 +13,7 @@ export default function SiteFooter() {
             For partnere
           </Link>
           <Link href="/privacy" className="transition hover:text-ink">
-            Privacy
+            Privatliv
           </Link>
         </div>
       </div>

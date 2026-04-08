@@ -3,7 +3,7 @@ import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 
 export const metadata: Metadata = {
-  title: "Privacy | ComplyCheck",
+  title: "Privatliv | ComplyCheck",
   description:
     "Kort beskrivelse af hvordan kontaktoplysninger og screeningsdata håndteres i ComplyCheck MVP'en.",
 };
@@ -16,7 +16,7 @@ export default function PrivacyPage() {
       <section className="px-6 py-12 md:px-8 lg:px-10">
         <div className="mx-auto max-w-4xl border border-line bg-white p-8 shadow-[var(--shadow)] md:p-10">
           <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-            Privacy
+            Privatliv
           </p>
           <h1 className="mt-4 font-display text-4xl leading-none text-ink md:text-[3.2rem]">
             Hvordan data håndteres i denne MVP

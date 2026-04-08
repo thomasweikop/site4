@@ -7,12 +7,11 @@ type HeaderMenuProps = {
 
 const NIS2_SITE_ITEMS = [
   { href: "/", label: "Forside" },
-  { href: "/#hvordan", label: "Hvordan" },
-  { href: "/scan", label: "Start scan" },
+  { href: "/#hvordan", label: "Om testen" },
   { href: "/specialists", label: "Specialister" },
   { href: "/about-nis2", label: "Om NIS2" },
   { href: "/for-partners", label: "For partnere" },
-  { href: "/privacy", label: "Privacy" },
+  { href: "/privacy", label: "Privatliv" },
 ] as const;
 
 const OTHER_SITE_ITEMS = [
@@ -32,11 +31,11 @@ export default function HeaderMenu({
   const panelClassName = inverse
     ? "border border-white/12 bg-[#0b2723] text-white shadow-[var(--shadow)]"
     : "border border-line bg-white text-ink shadow-[var(--shadow)]";
-  const sectionLabelClassName = inverse ? "text-white/56" : "text-soft";
+  const sectionLabelClassName = inverse ? "text-white/56" : "text-[#bcc4c0]";
   const itemClassName = inverse
     ? "text-white transition hover:bg-white/6"
     : "text-ink transition hover:bg-paper";
-  const placeholderClassName = inverse ? "text-white/68" : "text-soft";
+  const placeholderClassName = inverse ? "text-white/56" : "text-[#c5cbc8]";
   const dividerClassName = inverse ? "border-white/12" : "border-line";
 
   return (
@@ -106,7 +105,7 @@ export default function HeaderMenu({
             href="/superadmin/login"
             className={`block px-4 py-3 text-sm font-semibold ${itemClassName}`}
           >
-            Superadmin login
+            Login
           </Link>
         </div>
       </details>
