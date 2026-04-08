@@ -1,7 +1,7 @@
 import { sendMail } from "@/lib/mail/sendMail";
 import {
-  buildActionRequestUrl,
   buildResultUrl,
+  getSiteUrl,
 } from "@/lib/reportLinks";
 import { markDbReportUnlocked } from "@/lib/reportSessionStore";
 import { createSuperadminLog } from "@/lib/superadminStore";
@@ -76,7 +76,7 @@ export async function processReportUnlock(input: ProcessReportUnlockInput) {
   ];
   const trimmedExecutiveSummary = trimExecutiveSummary(input.executiveSummary);
   const resultUrl = buildResultUrl(sessionId);
-  const actionRequestUrl = buildActionRequestUrl(sessionId);
+  const actionRequestUrl = `${getSiteUrl()}/kontakt`;
 
   const safeCompany = escapeHtml(company || "Ikke angivet");
   const safeName = escapeHtml(name);
