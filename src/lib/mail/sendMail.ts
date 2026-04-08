@@ -8,8 +8,6 @@ type SendMailArgs = {
   replyToName?: string;
 };
 
-const REPLY_TO_EMAIL = "thomas.weikop@gmail.com";
-const REPLY_TO_NAME = "Thomas Weikop";
 const DEFAULT_FROM_NAME = "ComplyCheck";
 
 type SendMailResult = {
@@ -28,6 +26,20 @@ function maskEmail(email: string) {
   return `${maskedLocal}@${maskedDomain}`;
 }
 
+function getDefaultReplyToEmail() {
+  return (
+    process.env.MAILERSEND_REPLY_TO_EMAIL ||
+    process.env.NIS2_CONTACT_EMAIL ||
+    process.env.MAILERSEND_FROM_EMAIL ||
+    process.env.INVITE_FROM_EMAIL ||
+    "support@complycheck.dk"
+  );
+}
+
+function getDefaultReplyToName() {
+  return process.env.MAILERSEND_REPLY_TO_NAME || DEFAULT_FROM_NAME;
+}
+
 async function sendViaMailerSend(args: SendMailArgs): Promise<SendMailResult> {
   const token = process.env.MAILERSEND_API_TOKEN;
   const fromEmail = process.env.MAILERSEND_FROM_EMAIL || process.env.INVITE_FROM_EMAIL;
@@ -37,8 +49,8 @@ async function sendViaMailerSend(args: SendMailArgs): Promise<SendMailResult> {
     return { sent: false, reason: "missing_mailersend_config" };
   }
 
-  const replyToEmail = args.replyToEmail?.trim() || REPLY_TO_EMAIL;
-  const replyToName = args.replyToName?.trim() || REPLY_TO_NAME;
+  const replyToEmail = args.replyToEmail?.trim() || getDefaultReplyToEmail();
+  const replyToName = args.replyToName?.trim() || getDefaultReplyToName();
 
   const response = await fetch("https://api.mailersend.com/v1/email", {
     method: "POST",
@@ -77,7 +89,7 @@ async function sendViaResend(args: SendMailArgs): Promise<SendMailResult> {
   }
 
   const fromName = args.fromName?.trim();
-  const replyToEmail = args.replyToEmail?.trim() || REPLY_TO_EMAIL;
+  const replyToEmail = args.replyToEmail?.trim() || getDefaultReplyToEmail();
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
