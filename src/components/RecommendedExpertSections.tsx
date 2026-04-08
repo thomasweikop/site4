@@ -189,15 +189,15 @@ function SimpleSpecialistCard({
   item: ScanResult["vendorFits"][number];
 }) {
   return (
-    <article className="grid gap-4 border border-[#d6dfda] bg-[#fcf9f3] px-5 py-4 md:grid-cols-[minmax(0,1fr)_10rem] md:items-center">
+    <article className="grid gap-4 border border-[#d6dfda] bg-[#fcf9f3] px-6 py-5 md:grid-cols-[minmax(0,1fr)_16rem] md:items-center">
       <div className="min-w-0">
-        <div className="flex min-w-0 flex-wrap items-center gap-3">
+        <div className="flex min-w-0 flex-wrap items-center gap-4">
           <TrackedWebsiteLink
             href={item.vendor.website}
             vendorName={item.vendor.name}
             source="recommended_experts_card_name"
             areaKey={areaKey}
-            className="min-w-0 text-[1.02rem] font-semibold leading-tight tracking-[-0.03em] text-ink transition hover:text-[#0d4b43] md:text-[1.04rem]"
+            className="min-w-0 text-[1.02rem] font-semibold leading-tight tracking-[-0.03em] text-ink transition hover:text-[#0d4b43] md:text-[1.06rem]"
           >
             {item.vendor.name}
           </TrackedWebsiteLink>
@@ -207,14 +207,16 @@ function SimpleSpecialistCard({
         </div>
       </div>
 
-      <div className="mx-auto flex w-full max-w-[10rem] flex-col items-stretch gap-3 md:mx-0 md:ml-auto">
-        <MatchScoreDisplay score={item.fitScore} />
+      <div className="mx-auto flex w-full max-w-[16rem] flex-col items-stretch gap-3 md:mx-0 md:ml-auto">
+        <div className="ml-auto w-full max-w-[15.5rem]">
+          <MatchScoreDisplay score={item.fitScore} />
+        </div>
         <TrackedWebsiteLink
           href={item.vendor.website}
           vendorName={item.vendor.name}
           source="recommended_experts_card"
           areaKey={areaKey}
-          className="inline-flex w-full justify-center bg-sage px-4 py-2.5 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
+          className="ml-auto inline-flex w-full max-w-[15.5rem] justify-center bg-sage px-4 py-2.5 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
         >
           Website
         </TrackedWebsiteLink>
@@ -270,7 +272,7 @@ export default function RecommendedExpertSections({
                 </div>
               </div>
 
-              <div className="mt-2 space-y-2">
+              <div className="mt-1 space-y-2">
                 {primarySpecialist ? (
                   <SimpleSpecialistCard
                     areaKey={area.key}
