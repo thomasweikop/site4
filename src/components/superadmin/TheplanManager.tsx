@@ -105,6 +105,21 @@ export default function TheplanManager({
           />
           <SectionBadge label="Trin 4 drafts" value={initialDrafts.length} />
         </div>
+
+        <div className="mt-6 flex flex-wrap gap-3">
+          <a
+            href="/api/superadmin/theplan/export?kind=base"
+            className="inline-flex items-center justify-center bg-[#050a1f] px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#101937]"
+          >
+            Download Excel med theplan-basen
+          </a>
+          <a
+            href="/api/superadmin/theplan/export?kind=flows"
+            className="inline-flex items-center justify-center border border-line bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:bg-paper"
+          >
+            Download flows og tekster
+          </a>
+        </div>
       </section>
 
       <section className="border border-line bg-white p-8 shadow-[var(--shadow)]">
