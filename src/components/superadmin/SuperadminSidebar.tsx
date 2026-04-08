@@ -15,6 +15,7 @@ type NavItem = {
 
 const NAV_ITEMS = [
   { href: "/superadmin", label: "Overblik" },
+  { href: "/superadmin/theplan", label: "Theplan" },
   { href: "/superadmin/log", label: "Log" },
   { href: "/superadmin/specialister", label: "Specialister" },
   { href: "/superadmin/logoer", label: "Logoer" },

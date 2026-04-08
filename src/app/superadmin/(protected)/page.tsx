@@ -8,6 +8,11 @@ export const metadata: Metadata = {
 
 const CARDS = [
   {
+    href: "/superadmin/theplan",
+    label: "Theplan",
+    copy: "Outreach cockpit med leads, kontaktspor, warm signals og konkrete drafts.",
+  },
+  {
     href: "/superadmin/log",
     label: "Log",
     copy: "Hændelser fra brugere og superadmin på tværs af flow og redigeringer.",
