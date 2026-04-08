@@ -150,12 +150,10 @@ function AreaSpecialistsTable({
                     {row.vendor.matrixAreas[column.key] ? (
                       <span
                         aria-label={`${row.vendor.name} dækker ${column.label}`}
-                        className="inline-flex h-4 w-4 items-center justify-center border border-[#839990] bg-[#173f39] text-[0.55rem] text-white"
-                      >
-                        ■
-                      </span>
+                        className="inline-flex h-3.5 w-3.5 rounded-full bg-[#73acd6]"
+                      />
                     ) : (
-                      <span className="inline-flex h-4 w-4 border border-[#ccd7d2] bg-white" />
+                      <span className="inline-flex h-3.5 w-3.5 rounded-full border border-[#d6dfda] bg-transparent" />
                     )}
                   </td>
                 ))}
