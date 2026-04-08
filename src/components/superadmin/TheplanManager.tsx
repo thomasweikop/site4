@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import type {
   TheplanContactEnrichment,
   TheplanDraft,
+  TheplanImportResult,
   TheplanOutreachLead,
   TheplanWarmSignal,
 } from "@/lib/theplanStore";
@@ -38,9 +40,14 @@ export default function TheplanManager({
   initialWarmSignals,
   initialDrafts,
 }: TheplanManagerProps) {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [tierFilter, setTierFilter] = useState("all");
   const [channelFilter, setChannelFilter] = useState("all");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [importMessage, setImportMessage] = useState<string | null>(null);
+  const [preview, setPreview] = useState<TheplanImportResult | null>(null);
+  const [isPending, setIsPending] = useState(false);
 
   const filteredWarmSignals = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -80,6 +87,57 @@ export default function TheplanManager({
   const highConfidenceContacts = initialContacts.filter(
     (item) => item.confidence === "high",
   ).length;
+
+  function formatImportSummary(result: TheplanImportResult) {
+    return `${result.changedRecords} virksomheder og ${result.changedFields} felter påvirkes på tværs af ${result.sheetsFound.join(", ") || "ingen sheets"}.`;
+  }
+
+  async function runImport(mode: "preview" | "apply") {
+    if (!selectedFile) {
+      setImportMessage("Vælg først en Excel-fil.");
+      return;
+    }
+
+    setImportMessage(null);
+
+    const formData = new FormData();
+    formData.set("mode", mode);
+    formData.set("file", selectedFile);
+
+    setIsPending(true);
+
+    try {
+      const response = await fetch("/api/superadmin/theplan/import", {
+        method: "POST",
+        body: formData,
+      });
+
+      const payload = (await response.json()) as {
+        error?: string;
+        result?: TheplanImportResult;
+      };
+
+      if (!response.ok || !payload.result) {
+        setImportMessage(payload.error || "Kunne ikke læse Excel-importen.");
+        return;
+      }
+
+      setPreview(payload.result);
+      setImportMessage(
+        mode === "apply"
+          ? `Import gennemført. ${formatImportSummary(payload.result)}`
+          : `Preview klar. ${formatImportSummary(payload.result)}`,
+      );
+
+      if (mode === "apply") {
+        router.refresh();
+      }
+    } catch {
+      setImportMessage("Netværksfejl under import.");
+    } finally {
+      setIsPending(false);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -125,6 +183,71 @@ export default function TheplanManager({
           >
             Download flows og tekster
           </a>
+        </div>
+
+        <div className="mt-8 border border-line bg-paper p-5">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[#697b9e]">
+            Upload Excel og opdatér theplan
+          </p>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-soft">
+            Upload en tidligere eksporteret Excel-fil, få en preview af ændringerne,
+            og bekræft derefter importen. Importen kan opdatere base, kontaktspor,
+            flows og tekster direkte i superadmin.
+          </p>
+          <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center">
+            <input
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={(event) =>
+                setSelectedFile(event.target.files?.[0] ?? null)
+              }
+              className="block w-full text-sm text-ink file:mr-4 file:border-0 file:bg-[#050a1f] file:px-4 file:py-3 file:font-semibold file:text-white"
+            />
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => runImport("preview")}
+                disabled={isPending}
+                className="inline-flex items-center justify-center border border-line bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:bg-white disabled:opacity-50"
+              >
+                {isPending ? "Arbejder..." : "Preview import"}
+              </button>
+              <button
+                type="button"
+                onClick={() => runImport("apply")}
+                disabled={isPending || !preview}
+                className="inline-flex items-center justify-center bg-[#2a5a4f] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#234b42] disabled:opacity-50"
+              >
+                {isPending ? "Importerer..." : "Bekræft import"}
+              </button>
+            </div>
+          </div>
+          {importMessage ? (
+            <p className="mt-4 text-sm text-[#2a5a4f]">{importMessage}</p>
+          ) : null}
+          {preview ? (
+            <div className="mt-5 space-y-3">
+              <div className="grid gap-3 md:grid-cols-4">
+                <SectionBadge label="Sheets fundet" value={preview.sheetsFound.length} />
+                <SectionBadge label="Rækker læst" value={preview.rowsSeen} />
+                <SectionBadge label="Virksomheder ændres" value={preview.changedRecords} />
+                <SectionBadge label="Felter ændres" value={preview.changedFields} />
+              </div>
+              <div className="space-y-2">
+                {preview.changes.slice(0, 12).map((change) => (
+                  <div
+                    key={change.vendorKey}
+                    className="border border-line bg-white px-4 py-3"
+                  >
+                    <p className="text-sm font-semibold text-ink">{change.company}</p>
+                    <p className="mt-1 text-sm text-soft">
+                      {change.sheets.join(", ")} · {change.updatedFields.join(", ")}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
       </section>
 
