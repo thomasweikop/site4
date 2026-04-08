@@ -95,7 +95,26 @@ export default function TheplanManager({
   );
   const [savingStatusKey, setSavingStatusKey] = useState<string | null>(null);
   const [loggingKey, setLoggingKey] = useState<string | null>(null);
+  const [savingDraftKey, setSavingDraftKey] = useState<string | null>(null);
+  const [sendingEmailKey, setSendingEmailKey] = useState<string | null>(null);
   const [flowMessage, setFlowMessage] = useState<string | null>(null);
+  const [emailRecipients, setEmailRecipients] = useState<Record<string, string>>(
+    () =>
+      Object.fromEntries(
+        initialDrafts.map((draft) => {
+          const warmSignal = initialWarmSignals.find(
+            (item) => item.vendorKey === draft.vendorKey,
+          );
+          return [draft.vendorKey, warmSignal?.primaryEmail || ""];
+        }),
+      ),
+  );
+  const [emailSubjects, setEmailSubjects] = useState<Record<string, string>>(
+    () => Object.fromEntries(initialDrafts.map((draft) => [draft.vendorKey, draft.suggestedSubject])),
+  );
+  const [emailBodies, setEmailBodies] = useState<Record<string, string>>(
+    () => Object.fromEntries(initialDrafts.map((draft) => [draft.vendorKey, draft.emailDraft])),
+  );
 
   const filteredWarmSignals = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -152,6 +171,18 @@ export default function TheplanManager({
     }
     return map;
   }, [communicationLog]);
+  const sentEmailLog = useMemo(
+    () =>
+      communicationLog.filter(
+        (entry) => entry.channel === "email" && entry.direction === "outbound",
+      ),
+    [communicationLog],
+  );
+
+  const warmSignalsByVendorKey = useMemo(
+    () => new Map(initialWarmSignals.map((item) => [item.vendorKey, item])),
+    [initialWarmSignals],
+  );
 
   function formatImportSummary(result: TheplanImportResult) {
     return `${result.changedRecords} virksomheder og ${result.changedFields} felter påvirkes på tværs af ${result.sheetsFound.join(", ") || "ingen sheets"}.`;
@@ -291,8 +322,9 @@ export default function TheplanManager({
             company: draft.company,
             channel,
             direction: "outbound" as const,
-            subject: draft.suggestedSubject,
-            content: draft.emailDraft,
+            recipientEmail: emailRecipients[draft.vendorKey] ?? "",
+            subject: emailSubjects[draft.vendorKey] ?? draft.suggestedSubject,
+            content: emailBodies[draft.vendorKey] ?? draft.emailDraft,
           }
         : channel === "linkedin"
           ? {
@@ -335,6 +367,87 @@ export default function TheplanManager({
       setFlowMessage("Netværksfejl under kommunikationslog.");
     } finally {
       setLoggingKey(null);
+    }
+  }
+
+  async function saveEmailDraft(draft: TheplanDraft) {
+    setFlowMessage(null);
+    setSavingDraftKey(draft.vendorKey);
+
+    try {
+      const response = await fetch("/api/superadmin/theplan/draft", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          vendorKey: draft.vendorKey,
+          company: draft.company,
+          recipientEmail: emailRecipients[draft.vendorKey] ?? "",
+          subject: emailSubjects[draft.vendorKey] ?? "",
+          emailDraft: emailBodies[draft.vendorKey] ?? "",
+        }),
+      });
+
+      const payload = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        setFlowMessage(payload.error || "Kunne ikke gemme email-udkastet.");
+        return;
+      }
+
+      setFlowMessage(`Kontakt og mailtekst gemt for ${draft.company}.`);
+      router.refresh();
+    } catch {
+      setFlowMessage("Netværksfejl under gem af email-udkast.");
+    } finally {
+      setSavingDraftKey(null);
+    }
+  }
+
+  async function sendEmail(draft: TheplanDraft) {
+    setFlowMessage(null);
+    setSendingEmailKey(draft.vendorKey);
+
+    try {
+      const response = await fetch("/api/superadmin/theplan/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          vendorKey: draft.vendorKey,
+          company: draft.company,
+          recipientEmail: emailRecipients[draft.vendorKey] ?? "",
+          subject: emailSubjects[draft.vendorKey] ?? "",
+          emailDraft: emailBodies[draft.vendorKey] ?? "",
+        }),
+      });
+
+      const payload = (await response.json()) as {
+        error?: string;
+        entry?: TheplanCommunicationEntry;
+        status?: TheplanCompanyStatus;
+      };
+
+      if (!response.ok || !payload.entry) {
+        setFlowMessage(payload.error || "Kunne ikke sende emailen.");
+        return;
+      }
+
+      setCommunicationLog((current) => [payload.entry!, ...current]);
+      if (payload.status) {
+        setStatuses((current) => {
+          const filtered = current.filter((item) => item.vendorKey !== draft.vendorKey);
+          return [payload.status!, ...filtered];
+        });
+        setStatusDrafts((current) => ({
+          ...current,
+          [draft.vendorKey]: payload.status!.status,
+        }));
+      }
+      setFlowMessage(`Email sendt til ${payload.entry.recipientEmail || draft.company}.`);
+      router.refresh();
+    } catch {
+      setFlowMessage("Netværksfejl under afsendelse af email.");
+    } finally {
+      setSendingEmailKey(null);
     }
   }
 
@@ -460,6 +573,47 @@ export default function TheplanManager({
               </div>
             </div>
           ) : null}
+        </div>
+      </section>
+
+      <section className="border border-line bg-white p-8 shadow-[var(--shadow)]">
+        <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[#697b9e]">
+          Maillog
+        </p>
+        <h2 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-ink">
+          Alle sendte emails fra theplan
+        </h2>
+        <p className="mt-3 text-sm leading-6 text-soft">
+          Her kan du hurtigt se hvem der har modtaget en mail, hvornår den blev sendt,
+          og hvad emnelinjen var.
+        </p>
+
+        <div className="mt-5 space-y-3">
+          {sentEmailLog.length === 0 ? (
+            <div className="border border-line bg-paper px-4 py-4 text-sm text-soft">
+              Ingen emails sendt endnu fra theplan.
+            </div>
+          ) : (
+            sentEmailLog.slice(0, 20).map((entry) => (
+              <div key={entry.id} className="border border-line bg-paper px-4 py-4">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-ink">{entry.company}</p>
+                    <p className="mt-1 text-sm text-soft">
+                      Til: {entry.recipientEmail || "Ukendt modtager"}
+                    </p>
+                    <p className="mt-1 text-sm text-soft">
+                      Emne: {entry.subject || "Ingen emnelinje"}
+                    </p>
+                  </div>
+                  <div className="text-right text-xs text-soft">
+                    <p>{new Date(entry.createdAt).toLocaleString("da-DK")}</p>
+                    <p>{entry.actorEmail || "Ukendt afsender"}</p>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </section>
 
@@ -775,12 +929,60 @@ export default function TheplanManager({
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#697b9e]">
                       Email
                     </p>
-                    <p className="mt-3 text-sm font-semibold text-ink">
-                      {draft.suggestedSubject}
-                    </p>
-                    <pre className="mt-3 whitespace-pre-wrap text-sm leading-6 text-soft">
-                      {draft.emailDraft}
-                    </pre>
+                    <div className="mt-3 grid gap-3">
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-[0.18em] text-[#697b9e]">
+                          Modtager-email
+                        </label>
+                        <input
+                          value={emailRecipients[draft.vendorKey] ?? ""}
+                          onChange={(event) =>
+                            setEmailRecipients((current) => ({
+                              ...current,
+                              [draft.vendorKey]: event.target.value,
+                            }))
+                          }
+                          placeholder="navn@virksomhed.dk"
+                          className="mt-2 w-full border border-line bg-white px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
+                        />
+                        <p className="mt-2 text-xs text-soft">
+                          Fundet kontakt:{" "}
+                          {warmSignalsByVendorKey.get(draft.vendorKey)?.primaryEmail ||
+                            "Ingen email fundet endnu"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-[0.18em] text-[#697b9e]">
+                          Emne
+                        </label>
+                        <input
+                          value={emailSubjects[draft.vendorKey] ?? ""}
+                          onChange={(event) =>
+                            setEmailSubjects((current) => ({
+                              ...current,
+                              [draft.vendorKey]: event.target.value,
+                            }))
+                          }
+                          className="mt-2 w-full border border-line bg-white px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-[0.18em] text-[#697b9e]">
+                          Mailtekst
+                        </label>
+                        <textarea
+                          rows={14}
+                          value={emailBodies[draft.vendorKey] ?? ""}
+                          onChange={(event) =>
+                            setEmailBodies((current) => ({
+                              ...current,
+                              [draft.vendorKey]: event.target.value,
+                            }))
+                          }
+                          className="mt-2 w-full border border-line bg-white px-4 py-3 text-sm leading-6 text-ink outline-none focus:border-[#2a5a4f]"
+                        />
+                      </div>
+                    </div>
                   </div>
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#697b9e]">
@@ -839,6 +1041,24 @@ export default function TheplanManager({
                       >
                         {savingStatusKey === draft.vendorKey ? "Gemmer..." : "Gem status"}
                       </button>
+                      <button
+                        type="button"
+                        onClick={() => saveEmailDraft(draft)}
+                        disabled={savingDraftKey === draft.vendorKey}
+                        className="inline-flex items-center justify-center border border-line bg-white px-4 py-3 text-sm font-semibold text-ink transition hover:bg-paper disabled:opacity-50"
+                      >
+                        {savingDraftKey === draft.vendorKey
+                          ? "Gemmer kontakt..."
+                          : "Gem kontakt og tekst"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => sendEmail(draft)}
+                        disabled={sendingEmailKey === draft.vendorKey}
+                        className="inline-flex items-center justify-center bg-[#2a5a4f] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#234b42] disabled:opacity-50"
+                      >
+                        {sendingEmailKey === draft.vendorKey ? "Sender..." : "Send email"}
+                      </button>
                       <div className="flex flex-wrap gap-2">
                         <button
                           type="button"
@@ -890,6 +1110,11 @@ export default function TheplanManager({
                                   <p className="mt-1 text-sm text-soft">
                                     {entry.subject || "Ingen emnelinje"}
                                   </p>
+                                  {entry.recipientEmail ? (
+                                    <p className="mt-1 text-sm text-soft">
+                                      Til: {entry.recipientEmail}
+                                    </p>
+                                  ) : null}
                                 </div>
                                 <p className="text-xs text-soft">
                                   {new Date(entry.createdAt).toLocaleString("da-DK")}

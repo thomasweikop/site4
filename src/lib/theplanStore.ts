@@ -114,10 +114,13 @@ export type TheplanCommunicationEntry = {
   company: string;
   channel: "email" | "linkedin" | "call" | "note";
   direction: "outbound" | "inbound" | "internal";
+  recipientEmail?: string;
   subject: string;
   content: string;
   createdAt: string;
   actorEmail?: string;
+  provider?: "mailersend" | "resend";
+  providerMessageId?: string;
 };
 
 export type TheplanOverride = Partial<
@@ -179,10 +182,13 @@ type CommunicationRow = {
   company: string;
   channel: "email" | "linkedin" | "call" | "note";
   direction: "outbound" | "inbound" | "internal";
+  recipient_email: string | null;
   subject: string | null;
   content: string | null;
   created_at: string | Date;
   actor_email: string | null;
+  provider: "mailersend" | "resend" | null;
+  provider_message_id: string | null;
 };
 
 export type TheplanImportChange = {
@@ -332,11 +338,29 @@ async function ensureSchema() {
           company text not null,
           channel text not null,
           direction text not null,
+          recipient_email text null,
           subject text null,
           content text null,
           actor_email text null,
+          provider text null,
+          provider_message_id text null,
           created_at timestamptz not null default now()
         )
+      `;
+
+      await sql`
+        alter table superadmin_theplan_communication_log
+        add column if not exists recipient_email text null
+      `;
+
+      await sql`
+        alter table superadmin_theplan_communication_log
+        add column if not exists provider text null
+      `;
+
+      await sql`
+        alter table superadmin_theplan_communication_log
+        add column if not exists provider_message_id text null
       `;
 
       return true;
@@ -732,9 +756,12 @@ export async function listTheplanCommunicationLog(limit = 500) {
       company,
       channel,
       direction,
+      recipient_email,
       subject,
       content,
       actor_email,
+      provider,
+      provider_message_id,
       created_at
     from superadmin_theplan_communication_log
     order by created_at desc
@@ -747,10 +774,13 @@ export async function listTheplanCommunicationLog(limit = 500) {
     company: row.company,
     channel: row.channel,
     direction: row.direction,
+    recipientEmail: row.recipient_email ?? undefined,
     subject: row.subject ?? "",
     content: row.content ?? "",
     createdAt: toIsoString(row.created_at),
     actorEmail: row.actor_email ?? undefined,
+    provider: row.provider ?? undefined,
+    providerMessageId: row.provider_message_id ?? undefined,
   }));
 }
 
@@ -759,9 +789,12 @@ export async function createTheplanCommunicationLog(input: {
   company: string;
   channel: TheplanCommunicationEntry["channel"];
   direction: TheplanCommunicationEntry["direction"];
+  recipientEmail?: string;
   subject?: string;
   content?: string;
   actorEmail: string;
+  provider?: "mailersend" | "resend";
+  providerMessageId?: string | null;
 }) {
   const sql = getSql();
 
@@ -775,18 +808,24 @@ export async function createTheplanCommunicationLog(input: {
       company,
       channel,
       direction,
+      recipient_email,
       subject,
       content,
-      actor_email
+      actor_email,
+      provider,
+      provider_message_id
     )
     values (
       ${input.vendorKey},
       ${input.company},
       ${input.channel},
       ${input.direction},
+      ${input.recipientEmail?.trim().toLowerCase() || null},
       ${input.subject?.trim() || null},
       ${input.content?.trim() || null},
-      ${input.actorEmail.trim().toLowerCase()}
+      ${input.actorEmail.trim().toLowerCase()},
+      ${input.provider || null},
+      ${input.providerMessageId?.trim() || null}
     )
     returning
       id,
@@ -794,9 +833,12 @@ export async function createTheplanCommunicationLog(input: {
       company,
       channel,
       direction,
+      recipient_email,
       subject,
       content,
       actor_email,
+      provider,
+      provider_message_id,
       created_at
   `;
 
@@ -811,10 +853,13 @@ export async function createTheplanCommunicationLog(input: {
     company: row.company,
     channel: row.channel,
     direction: row.direction,
+    recipientEmail: row.recipient_email ?? undefined,
     subject: row.subject ?? "",
     content: row.content ?? "",
     createdAt: toIsoString(row.created_at),
     actorEmail: row.actor_email ?? undefined,
+    provider: row.provider ?? undefined,
+    providerMessageId: row.provider_message_id ?? undefined,
   } satisfies TheplanCommunicationEntry;
 }
 

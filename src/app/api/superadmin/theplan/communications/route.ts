@@ -18,6 +18,7 @@ export async function POST(request: Request) {
     company?: string;
     channel?: "email" | "linkedin" | "call" | "note";
     direction?: "outbound" | "inbound" | "internal";
+    recipientEmail?: string;
     subject?: string;
     content?: string;
   };
@@ -38,6 +39,7 @@ export async function POST(request: Request) {
     company: body.company,
     channel: body.channel,
     direction: body.direction,
+    recipientEmail: body.recipientEmail,
     subject: body.subject,
     content: body.content,
     actorEmail: admin.email,
@@ -58,6 +60,7 @@ export async function POST(request: Request) {
       company: body.company,
       channel: body.channel,
       direction: body.direction,
+      recipientEmail: body.recipientEmail ?? "",
       subject: body.subject ?? "",
     },
   });
