@@ -103,18 +103,6 @@ export default function Home() {
                   </svg>
                   Start test
                 </Link>
-                <a
-                  href="#hvordan"
-                  className="text-sm font-semibold text-white underline decoration-white/26 underline-offset-4 transition hover:text-white/82"
-                >
-                  Læs hvordan det virker
-                </a>
-                <Link
-                  href="/scan?random=1"
-                  className="text-sm font-semibold text-white underline decoration-white/26 underline-offset-4 transition hover:text-white/82"
-                >
-                  Test tilfældigt resultat
-                </Link>
               </div>
 
               <div className="mt-12 flex flex-wrap gap-6 text-sm text-white/66">

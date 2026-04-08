@@ -1,14 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
+import Link from "next/link";
 import PercentageRing from "@/components/PercentageRing";
 import {
   buildAreaDetailPath,
   buildComplianceRecommendationsPath,
-  buildReportSnapshot,
-  buildSpecialistHelpPath,
-  encodeReportSnapshot,
 } from "@/lib/reportLinks";
 import ReportUnlockForm from "@/components/ReportUnlockForm";
 import {
@@ -43,14 +40,7 @@ function formatList(values: string[]) {
 
 function buildStatusNarrative(result: ScanResult) {
   const labels = result.topAnalysisAreas.map((area) => area.label.toLowerCase());
-  const severity =
-    result.band.id === "critical" || result.band.id === "high"
-      ? "kritiske"
-      : result.band.id === "medium"
-        ? "væsentlige"
-        : "fortsat tydelige";
-
-  return `Der er ${severity} mangler i ${formatList(labels)}.`;
+  return `Der er indikationer på mulige mangler i ${formatList(labels)}.`;
 }
 
 export default function ResultExperience({
@@ -63,9 +53,6 @@ export default function ResultExperience({
   );
   const [sessionOverride, setSessionOverride] =
     useState<StoredReportSession | null>(null);
-  const [specialistHelpDecision, setSpecialistHelpDecision] = useState<
-    "no" | null
-  >(null);
   const session = sessionOverride ?? storedSession;
 
   if (!clientReady) {
@@ -112,17 +99,6 @@ export default function ResultExperience({
   const result = getSessionReport(session);
   const company = session.unlockLead?.company?.trim() || "Virksomheden";
   const statusNarrative = buildStatusNarrative(result);
-
-  const reportSnapshot = buildReportSnapshot({
-    sessionId,
-    company,
-    result,
-  });
-  const encodedReportSnapshot = encodeReportSnapshot(reportSnapshot);
-  const specialistHelpHref = buildSpecialistHelpPath(
-    sessionId,
-    encodedReportSnapshot,
-  );
   const complianceRecommendationsHref =
     buildComplianceRecommendationsPath(sessionId);
 
@@ -187,7 +163,7 @@ export default function ResultExperience({
       {unlocked ? (
         <section className="space-y-6">
           <div className="border border-[#b6cfb6] bg-[#edf4ed] px-5 py-4 text-sm text-[#235b41] shadow-[var(--shadow)]">
-            Analysen er sendt til {session.unlockLead?.email}.
+            Test resultatet er sendt til {session.unlockLead?.email}.
           </div>
 
           <div className="border border-line bg-white p-8 shadow-[var(--shadow)] md:p-10">
@@ -203,12 +179,12 @@ export default function ResultExperience({
               effekt først.
             </p>
 
-            <div className="mt-8 space-y-4">
+            <div className="mt-6 space-y-3">
               <div>
                 <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
                   Vigtigste konklusioner
                 </p>
-                <div className="mt-4 grid gap-4 lg:grid-cols-3">
+                <div className="mt-3 grid gap-4 lg:grid-cols-3">
                   {result.topAnalysisAreas.map((area) => (
                     <article
                       key={area.key}
@@ -222,7 +198,7 @@ export default function ResultExperience({
                         </div>
                         <PercentageRing
                           percentage={area.percentage}
-                          label={area.label}
+                          label="COMPLIANCE SCORE"
                           size={84}
                           strokeWidth={11}
                         />
@@ -256,51 +232,6 @@ export default function ResultExperience({
               >
                 Fortsæt
               </Link>
-            </div>
-
-            <div className="mt-10 border border-line bg-white p-6 md:p-8">
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-                Specialist-hjælp
-              </p>
-              <h2 className="mt-4 text-balance font-display text-[2rem] leading-none text-ink md:text-[2.5rem]">
-                Ønsker virksomheden hjælp til at identificere specialister?
-              </h2>
-              <p className="mt-4 max-w-4xl text-sm leading-7 text-soft md:text-base">
-                Hvis virksomheden ønsker hjælp til at identificere specialister
-                der kan hjælpe videre på de vigtigste områder, kan ComplyCheck
-                samle næste specialistspor og sende det videre på email.
-              </p>
-              <ul className="mt-5 grid gap-2 text-sm leading-7 text-soft md:text-base">
-                {result.topAnalysisAreas.map((area) => (
-                  <li key={area.key} className="flex items-start gap-3">
-                    <span className="mt-[2px] text-ink">•</span>
-                    <span>{area.label}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link
-                  href={specialistHelpHref}
-                  className="inline-flex bg-[#4c555d] px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#3e464d]"
-                >
-                  Ja
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => setSpecialistHelpDecision("no")}
-                  className="inline-flex border border-line bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:bg-paper"
-                >
-                  Nej
-                </button>
-              </div>
-
-              {specialistHelpDecision === "no" ? (
-                <p className="mt-4 text-sm leading-6 text-soft">
-                  Det er helt fint. Specialist-hjælp kan altid vælges senere via
-                  den email der allerede er sendt til virksomheden.
-                </p>
-              ) : null}
             </div>
           </div>
         </section>

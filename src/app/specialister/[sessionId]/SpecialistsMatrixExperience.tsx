@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import TrackedWebsiteLink from "@/components/TrackedWebsiteLink";
 import {
   MATRIX_COLUMNS,
   VENDOR_TYPE_META,
@@ -11,9 +12,6 @@ import {
 } from "@/lib/nis2BuildPack";
 import type { StoredReportSession } from "@/lib/nis2Session";
 import { INDUSTRY_OPTIONS, type IndustryValue } from "@/lib/nis2Scan";
-import {
-  buildFollowupQuestionsPath,
-} from "@/lib/reportLinks";
 import { getMatrixKeysForAnalysisArea } from "@/lib/analysisAreaMatrix";
 import { useStoredReportSession } from "@/lib/useStoredReportSession";
 
@@ -201,63 +199,29 @@ export default function SpecialistsMatrixExperience({
   return (
     <div className="space-y-6">
       <section className="border border-line bg-white p-8 shadow-[var(--shadow)] md:p-10">
-        <div className="flex flex-wrap items-start justify-between gap-5">
-          <div className="max-w-4xl">
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-              Specialistoverblik
+        <div className="max-w-4xl">
+          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
+            Specialistoverblik
+          </p>
+          <h1 className="mt-4 text-balance font-display text-4xl leading-none text-ink md:text-[3.25rem]">
+            Søgning på relevante rådgivere
+          </h1>
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-soft md:text-base">
+            Brug filtrene til at indsnævre overblikket og finde de
+            leverandører, der er mest relevante for virksomhedens behov.
+          </p>
+          {selectedArea ? (
+            <p className="mt-4 text-sm leading-7 text-soft md:text-base">
+              Listen er filtreret til området{" "}
+              <span className="font-semibold text-ink">{selectedArea.label}</span>.
             </p>
-            <h1 className="mt-4 text-balance font-display text-4xl leading-none text-ink md:text-[3.25rem]">
-              Søgning på relevante rådgivere
-            </h1>
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-soft md:text-base">
-              Tabellen viser alle {result.vendorDirectoryCount} profiler i
-              kataloget. Brug filtrene til at indsnævre overblikket og gå
-              derefter videre til de anbefalede eksperter.
+          ) : null}
+          {initialAreaKey && hasManualSearchFilters ? (
+            <p className="mt-4 text-sm leading-7 text-soft md:text-base">
+              Egne søgefiltre er aktive, så områdefilteret fra den forrige side
+              er sat på pause.
             </p>
-            {selectedArea ? (
-              <p className="mt-4 text-sm leading-7 text-soft md:text-base">
-                Listen er filtreret til området{" "}
-                <span className="font-semibold text-ink">
-                  {selectedArea.label}
-                </span>
-                .
-              </p>
-            ) : null}
-            {initialAreaKey && hasManualSearchFilters ? (
-              <p className="mt-4 text-sm leading-7 text-soft md:text-base">
-                Egne søgefiltre er aktive, så områdefilteret fra den forrige
-                side er sat på pause.
-              </p>
-            ) : null}
-          </div>
-
-          <div className="grid min-w-[220px] gap-3">
-            <div className="border border-line bg-paper px-4 py-4">
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
-                Session
-              </p>
-              <p className="mt-2 text-sm font-semibold text-ink">
-                {session.id.slice(0, 8)}
-              </p>
-            </div>
-            <div className="border border-line bg-paper px-4 py-4">
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#4c655d]">
-                Topområder
-              </p>
-              <p className="mt-2 text-sm text-soft">
-                {result.priorityAreas.map((area) => area.label).join(", ")}
-              </p>
-            </div>
-            {initialAreaKey ? (
-              <button
-                type="button"
-                onClick={() => setAreaFilterKey(undefined)}
-                className="inline-flex justify-center border border-line bg-white px-4 py-3 text-sm font-semibold text-ink transition hover:bg-paper"
-              >
-                Nulstil områdefilter
-              </button>
-            ) : null}
-          </div>
+          ) : null}
         </div>
 
         <div className="mt-8 grid gap-3 xl:grid-cols-[repeat(4,minmax(0,1fr))_auto]">
@@ -318,9 +282,6 @@ export default function SpecialistsMatrixExperience({
             Kun anbefalede til mine topområder
           </label>
 
-          <div className="border border-line bg-white px-4 py-3 text-sm text-soft">
-            Viser {vendors.length} af {result.vendorFits.length} leverandører
-          </div>
         </div>
 
         <div className="mt-8 flex flex-wrap gap-3">
@@ -330,12 +291,6 @@ export default function SpecialistsMatrixExperience({
           >
             Søg
           </a>
-          <Link
-            href={buildFollowupQuestionsPath(sessionId)}
-            className="inline-flex border border-line bg-paper px-6 py-3 text-sm font-semibold text-ink transition hover:bg-white"
-          >
-            Spørgsmål til de ansvarlige
-          </Link>
           <Link
             href={`/result/${sessionId}`}
             className="inline-flex border border-line bg-white px-6 py-3 text-sm font-semibold text-soft transition hover:bg-paper"
@@ -354,7 +309,7 @@ export default function SpecialistsMatrixExperience({
             <thead className="bg-paper">
               <tr>
                 <th className="border-b border-line px-4 py-3 text-left font-semibold text-ink">
-                  Company
+                  Virksomhed
                 </th>
                 {MATRIX_COLUMNS.map((column) => (
                   <th
@@ -395,14 +350,16 @@ export default function SpecialistsMatrixExperience({
                     </td>
                   ))}
                   <td className="px-4 py-4">
-                    <a
+                    <TrackedWebsiteLink
                       href={item.vendor.website}
-                      target="_blank"
-                      rel="noreferrer"
+                      vendorName={item.vendor.name}
+                      source="specialists_matrix"
+                      sessionId={sessionId}
+                      areaKey={effectiveAreaFilterKey}
                       className="inline-flex border border-line bg-paper px-3 py-2 font-semibold text-ink transition hover:bg-white"
                     >
-                      Åbn website
-                    </a>
+                      Website
+                    </TrackedWebsiteLink>
                   </td>
                 </tr>
               ))}

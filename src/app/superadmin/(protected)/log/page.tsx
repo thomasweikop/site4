@@ -4,6 +4,59 @@ import { listSuperadminLogs } from "@/lib/superadminStore";
 
 export const dynamic = "force-dynamic";
 
+function formatAdminAction(log: Awaited<ReturnType<typeof listSuperadminLogs>>[number]) {
+  if (log.action === "vendor_website_click") {
+    const vendorName =
+      typeof log.payload?.vendorName === "string" ? log.payload.vendorName : "Ukendt leverandør";
+    const source =
+      typeof log.payload?.source === "string" ? log.payload.source : "ukendt kilde";
+
+    return `Klik på Website for ${vendorName}`;
+  }
+
+  return log.action;
+}
+
+function formatAdminDetails(log: Awaited<ReturnType<typeof listSuperadminLogs>>[number]) {
+  if (log.action === "vendor_website_click") {
+    return [
+      {
+        label: "Leverandør",
+        value:
+          typeof log.payload?.vendorName === "string"
+            ? log.payload.vendorName
+            : "Ukendt",
+      },
+      {
+        label: "Kilde",
+        value:
+          typeof log.payload?.source === "string" ? log.payload.source : "Ukendt",
+      },
+      {
+        label: "Session",
+        value:
+          typeof log.payload?.sessionId === "string"
+            ? log.payload.sessionId
+            : "Ingen session",
+      },
+      {
+        label: "Område",
+        value:
+          typeof log.payload?.areaKey === "string"
+            ? log.payload.areaKey
+            : "Ikke angivet",
+      },
+      {
+        label: "Website",
+        value:
+          typeof log.payload?.website === "string" ? log.payload.website : "Ukendt",
+      },
+    ];
+  }
+
+  return [];
+}
+
 export default async function SuperadminLogPage() {
   const [sessions, adminLogs] = await Promise.all([
     listDbReportSessions(25),
@@ -157,53 +210,75 @@ export default async function SuperadminLogPage() {
         <div className="border border-line bg-white p-6 shadow-[var(--shadow)]">
           <h2 className="text-xl font-semibold text-ink">Admin-hændelser</h2>
           <p className="mt-2 text-sm leading-6 text-soft">
-            Viser de {adminLogs.length} seneste login-, logout- og
-            redigeringshændelser i superadmin.
+            Viser de {adminLogs.length} seneste login-, logout-, redigerings-
+            og klik-hændelser i superadmin.
           </p>
         </div>
 
-        {adminLogs.map((log) => (
-          <details
-            key={log.id}
-            className="border border-line bg-white shadow-[var(--shadow)]"
-          >
-            <summary className="cursor-pointer list-none px-6 py-5 [&::-webkit-details-marker]:hidden">
-              <div className="grid gap-3 md:grid-cols-[120px_1fr_220px] md:items-start">
-                <div>
-                  <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[#697b9e]">
-                    Nummer
-                  </p>
-                  <p className="mt-2 text-2xl font-semibold text-ink">
-                    {log.id}
-                  </p>
-                </div>
+        {adminLogs.map((log) => {
+          const detailRows = formatAdminDetails(log);
 
-                <div>
-                  <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[#697b9e]">
-                    Handling
-                  </p>
-                  <p className="mt-2 text-lg font-semibold text-ink">
-                    {log.action}
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-soft">
-                    {log.actorEmail || "Ingen email"}
-                  </p>
-                </div>
+          return (
+            <details
+              key={log.id}
+              className="border border-line bg-white shadow-[var(--shadow)]"
+            >
+              <summary className="cursor-pointer list-none px-6 py-5 [&::-webkit-details-marker]:hidden">
+                <div className="grid gap-3 md:grid-cols-[120px_1fr_220px] md:items-start">
+                  <div>
+                    <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[#697b9e]">
+                      Nummer
+                    </p>
+                    <p className="mt-2 text-2xl font-semibold text-ink">
+                      {log.id}
+                    </p>
+                  </div>
 
-                <div className="text-sm leading-6 text-soft md:text-right">
-                  <p>{new Date(log.createdAt).toLocaleString("da-DK")}</p>
-                  <p className="mt-1">Type: {log.actorType}</p>
+                  <div>
+                    <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[#697b9e]">
+                      Handling
+                    </p>
+                    <p className="mt-2 text-lg font-semibold text-ink">
+                      {formatAdminAction(log)}
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-soft">
+                      {log.actorEmail || "Ingen email"}
+                    </p>
+                  </div>
+
+                  <div className="text-sm leading-6 text-soft md:text-right">
+                    <p>{new Date(log.createdAt).toLocaleString("da-DK")}</p>
+                    <p className="mt-1">Type: {log.actorType}</p>
+                  </div>
                 </div>
+              </summary>
+
+              <div className="border-t border-line px-6 py-6">
+                {detailRows.length > 0 ? (
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {detailRows.map((row) => (
+                      <article
+                        key={`${log.id}-${row.label}`}
+                        className="border border-line bg-paper p-4 text-sm leading-6 text-soft"
+                      >
+                        <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[#697b9e]">
+                          {row.label}
+                        </p>
+                        <p className="mt-2 break-all text-sm font-semibold text-ink">
+                          {row.value}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <pre className="overflow-x-auto whitespace-pre-wrap bg-paper p-4 text-xs leading-6 text-soft">
+                    {JSON.stringify(log.payload ?? {}, null, 2)}
+                  </pre>
+                )}
               </div>
-            </summary>
-
-            <div className="border-t border-line px-6 py-6">
-              <pre className="overflow-x-auto whitespace-pre-wrap bg-paper p-4 text-xs leading-6 text-soft">
-                {JSON.stringify(log.payload ?? {}, null, 2)}
-              </pre>
-            </div>
-          </details>
-        ))}
+            </details>
+          );
+        })}
       </section>
     </div>
   );

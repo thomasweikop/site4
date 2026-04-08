@@ -9,7 +9,6 @@ import type { ReportSnapshot } from "@/lib/reportLinks";
 import { buildComplianceRecommendationsPath } from "@/lib/reportLinks";
 import type { StoredReportSession } from "@/lib/nis2Session";
 import { useStoredReportSession } from "@/lib/useStoredReportSession";
-import SpecialistHelpRequestForm from "./SpecialistHelpRequestForm";
 
 type FullRecommendationExperienceProps = {
   sessionId: string;
@@ -87,33 +86,19 @@ export default function FullRecommendationExperience({
 
   return (
     <div className="space-y-6">
-      <section className="border border-line bg-white p-8 shadow-[var(--shadow)] md:p-10">
+      <div className="border border-line bg-white p-6 shadow-[var(--shadow)] md:p-8">
         <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
-          Specialist-hjælp
+          Næste skridt
         </p>
-        <h1 className="mt-4 max-w-5xl text-balance font-display text-4xl leading-none text-ink md:text-[3.2rem]">
-          Vælg hvilke specialistspor der skal prioriteres
+        <h1 className="mt-4 text-balance font-display text-[2rem] leading-none text-ink md:text-[2.35rem]">
+          Fortsæt til compliance anbefalinger
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-7 text-soft md:text-base">
-          Nedenfor vælges de områder og typer af specialist-hjælp som bør indgå
-          i næste søgning. Når virksomheden har valgt fokus, sender ComplyCheck
-          næste specialistoverblik på email.
+          Brug næste side til at se de mest relevante specialistspor og de
+          leverandører, der er bedst matchet til virksomhedens vigtigste
+          områder.
         </p>
-      </section>
-
-      <SpecialistHelpRequestForm
-        sessionId={sessionId}
-        initialCompany={session?.unlockLead?.company ?? snapshot?.company}
-        initialName={session?.unlockLead?.name}
-        initialTitle={session?.unlockLead?.title}
-        initialEmail={session?.unlockLead?.email}
-        areaOptions={areaOptions}
-        initialTrackTypes={
-          initialTrackTypes.length > 0
-            ? (initialTrackTypes as VendorType[])
-            : (Object.keys(VENDOR_TYPE_META).slice(0, 3) as VendorType[])
-        }
-      />
+      </div>
 
       <div className="flex flex-wrap gap-3">
         <Link

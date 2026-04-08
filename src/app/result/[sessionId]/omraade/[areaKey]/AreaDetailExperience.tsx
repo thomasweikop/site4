@@ -82,11 +82,11 @@ export default function AreaDetailExperience({
         {areaResult ? (
           <div className="mt-6 flex flex-wrap items-center gap-4">
             <div className="text-sm uppercase tracking-[0.18em] text-[#4c655d]">
-              {areaResult.complianceLabel}
+              COMPLIANCE SCORE
             </div>
             <PercentageRing
               percentage={areaResult.percentage}
-              label={areaDefinition.label}
+              label="COMPLIANCE SCORE"
               size={102}
               strokeWidth={11}
             />
