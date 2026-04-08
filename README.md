@@ -22,6 +22,29 @@ The intended deployment path is:
 3. Every push to the deployed branch triggers a new Vercel deployment.
 4. The contact form sends leads through MailerSend in the deployed environment.
 
+## Production contract
+
+For this repository, production means:
+
+- GitHub repo: `thomasweikop/site4`
+- Production branch: `main`
+- Vercel project: `nis2-prod`
+- Production delivery: Vercel
+- Production domains live under `complycheck.dk` and `weikop.me`
+
+Fly.io is part of the broader infrastructure toolbox, but it is not the
+default production target for this app unless that decision is changed
+explicitly.
+
+Use this command before a release push:
+
+```bash
+npm run release:check
+```
+
+It verifies the current branch, GitHub remote, linked Vercel project, and
+whether the worktree is clean enough for a production push.
+
 This repo now includes two guardrails for that flow:
 
 - `.github/workflows/ci.yml` runs lint + build on pushes and pull requests.
@@ -83,5 +106,4 @@ Without `DATABASE_URL`, the UI falls back to browser-local storage for sessions.
 
 ## Notes
 
-- A local repo remote is not configured in this workspace right now, so GitHub linkage still needs to be connected on your machine or in the hosted repo settings.
 - `npm run build` skips deploy-env validation outside Vercel, but Vercel builds will fail fast if MailerSend/contact configuration is missing.

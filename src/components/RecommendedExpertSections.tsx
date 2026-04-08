@@ -5,6 +5,7 @@ import { useState } from "react";
 import PercentageRing from "@/components/PercentageRing";
 import TrackedWebsiteLink from "@/components/TrackedWebsiteLink";
 import { getMatrixKeysForAnalysisArea } from "@/lib/analysisAreaMatrix";
+import { MATRIX_COLUMNS } from "@/lib/nis2BuildPack";
 import type { ScanResult } from "@/lib/nis2Scan";
 
 export function getAreaSpecialists(result: ScanResult) {
@@ -52,176 +53,180 @@ export function getAreaSpecialists(result: ScanResult) {
   });
 }
 
-function splitIntoColumns<T>(items: T[], columnCount: number) {
-  if (items.length === 0) {
-    return [];
-  }
-
-  const columns = Array.from({ length: columnCount }, () => [] as T[]);
-  items.forEach((item, index) => {
-    columns[index % columnCount].push(item);
-  });
-  return columns.filter((column) => column.length > 0);
-}
-
-type AdditionalSpecialistsPanelProps = {
-  areaKey: string;
-  columns: Array<
-    Array<{
-      vendor: ScanResult["vendorFits"][number]["vendor"];
-    }>
-  >;
-};
-
-function AdditionalSpecialistsPanel({
-  areaKey,
-  columns,
-}: AdditionalSpecialistsPanelProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const flatItems = columns.flat();
-  const collapsedItems = flatItems.slice(0, 4);
-  const visibleColumns = isExpanded ? columns : [collapsedItems];
-
-  return (
-    <div className="border border-line bg-paper p-4">
-      <p className="text-sm font-semibold text-ink">
-        Flere specialister i samme kategori
-      </p>
-      {visibleColumns.length > 0 ? (
-        <>
-          <div
-            id={`${areaKey}-specialists-panel`}
-            className={`mt-3 gap-x-4 gap-y-1 text-soft ${
-              isExpanded
-                ? "grid text-[0.38rem] leading-[0.62rem] md:grid-cols-5"
-                : "grid text-[0.38rem] leading-[0.62rem]"
-            }`}
-          >
-            {visibleColumns.map((column, columnIndex) => (
-              <ul
-                key={`${areaKey}-column-${columnIndex}`}
-                className="space-y-1 text-left"
-              >
-                {column.map((item) => (
-                  <li key={`${areaKey}-${item.vendor.name}`}>
-                    <TrackedWebsiteLink
-                      href={item.vendor.website}
-                      vendorName={item.vendor.name}
-                      source="recommended_experts_more"
-                      areaKey={areaKey}
-                      className="underline decoration-[#1b4f45]/20 underline-offset-2 transition hover:text-[#0d4b43]"
-                    >
-                      {item.vendor.name}
-                    </TrackedWebsiteLink>
-                  </li>
-                ))}
-              </ul>
-            ))}
-          </div>
-          {columns.some((column) => column.length > 4) ? (
-            <div className="mt-3 flex justify-center">
-              <button
-                type="button"
-                onClick={() => setIsExpanded((current) => !current)}
-                className="inline-flex h-6 w-8 items-center justify-center text-[#1b4f45] transition hover:text-[#0d4b43]"
-                aria-expanded={isExpanded}
-                aria-controls={`${areaKey}-specialists-panel`}
-              >
-                <svg
-                  width="20"
-                  height="12"
-                  viewBox="0 0 20 12"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`transition-transform ${
-                    isExpanded ? "rotate-180" : ""
-                  }`}
-                >
-                  <path
-                    d="M1 1L10 10L19 1"
-                    stroke="currentColor"
-                    strokeWidth="1.4"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            </div>
-          ) : null}
-        </>
-      ) : (
-        <p className="mt-3 text-[0.7rem] leading-5 text-soft">
-          Der er ikke flere profiler i denne kategori endnu.
-        </p>
-      )}
-    </div>
-  );
-}
-
 type RecommendedExpertSectionsProps = {
   result: ScanResult;
 };
 
-type MatchScoreDisplayProps = {
-  score: number;
-};
-
-function MatchScoreDisplay({ score }: MatchScoreDisplayProps) {
-  const normalizedScore = Math.max(0, Math.min(100, score));
-
-  return (
-    <div className="w-full max-w-[10rem] border border-[#2a5851] bg-[#fffdfa] px-4 py-3 text-center">
-      <div className="text-[0.62rem] font-medium uppercase tracking-[0.34em] text-[#174f46]">
-        MATCH SCORE
-      </div>
-      <div className="mt-1 text-[2.25rem] font-semibold leading-none tracking-[-0.06em] text-[#0f4b42]">
-        {normalizedScore}
-      </div>
-    </div>
-  );
-}
-
-function SimpleSpecialistCard({
+function AreaSpecialistsTable({
   areaKey,
+  areaLabel,
+  areaPercentage,
+  areaDescription,
   item,
+  secondarySpecialists,
+  additionalSpecialists,
 }: {
   areaKey: string;
-  item: ScanResult["vendorFits"][number];
+  areaLabel: string;
+  areaPercentage: number;
+  areaDescription: string;
+  item: ScanResult["vendorFits"][number] | null;
+  secondarySpecialists: ScanResult["vendorFits"];
+  additionalSpecialists: ScanResult["vendorFits"];
 }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const areaColumns = getMatrixKeysForAnalysisArea(areaKey)
+    .map((key) => MATRIX_COLUMNS.find((column) => column.key === key))
+    .filter((column) => column !== undefined);
+  const rankedRows = [
+    ...(item ? [item] : []),
+    ...secondarySpecialists,
+    ...additionalSpecialists,
+  ];
+  const visibleRows = isExpanded ? rankedRows : rankedRows.slice(0, 6);
+
+  if (rankedRows.length === 0) {
+    return (
+      <div className="border border-line bg-paper px-5 py-4">
+        <p className="text-sm leading-6 text-soft">
+          Der er ikke fundet specialister i denne kategori endnu.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <article className="grid gap-4 border border-[#d6dfda] bg-[#fcf9f3] px-6 py-5 md:grid-cols-[minmax(0,1fr)_16rem] md:items-center">
-      <div className="min-w-0">
-        <div className="flex min-w-0 flex-wrap items-center gap-4">
-          <TrackedWebsiteLink
-            href={item.vendor.website}
-            vendorName={item.vendor.name}
-            source="recommended_experts_card_name"
-            areaKey={areaKey}
-            className="min-w-0 text-[1.02rem] font-semibold leading-tight tracking-[-0.03em] text-ink transition hover:text-[#0d4b43] md:text-[1.06rem]"
-          >
-            {item.vendor.name}
-          </TrackedWebsiteLink>
-          <span className="shrink-0 bg-[#73acd6] px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.16em] !text-white">
-            Anbefalet
-          </span>
-        </div>
+    <div className="border border-line bg-paper">
+      <div className="overflow-x-auto">
+        <table className="min-w-full border-collapse text-left">
+          <thead>
+            <tr className="border-b border-line bg-[#f3efe6] align-top text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[#36574f]">
+              <th className="w-14 px-4 py-4">#</th>
+              <th className="min-w-[16rem] px-4 py-4">Specialist / rådgiver</th>
+              {areaColumns.map((column) => (
+                <th
+                  key={`${areaKey}-${column.key}`}
+                  className="min-w-[10rem] px-4 py-4"
+                >
+                  {column.label}
+                </th>
+              ))}
+              <th className="min-w-[9rem] px-4 py-4 text-center">Match score</th>
+              <th className="min-w-[9rem] px-4 py-4 text-center">Mere</th>
+            </tr>
+          </thead>
+          <tbody>
+            {visibleRows.map((row, index) => (
+              <tr
+                key={`${areaKey}-${row.vendor.name}`}
+                className="border-b border-line align-middle last:border-b-0"
+              >
+                <td className="px-4 py-4 text-lg font-medium text-ink">
+                  {index + 1}
+                </td>
+                <td className="px-4 py-4">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <TrackedWebsiteLink
+                      href={row.vendor.website}
+                      vendorName={row.vendor.name}
+                      source="recommended_experts_card_name"
+                      areaKey={areaKey}
+                      className="text-base font-semibold leading-tight text-ink underline decoration-[#1b4f45]/20 underline-offset-4 transition hover:text-[#0d4b43]"
+                    >
+                      {row.vendor.name}
+                    </TrackedWebsiteLink>
+                    {index === 0 ? (
+                      <span className="border border-[#b9cbc4] bg-white px-2 py-1 text-[0.64rem] font-semibold uppercase tracking-[0.14em] text-[#36574f]">
+                        Anbefalet
+                      </span>
+                    ) : null}
+                  </div>
+                </td>
+                {areaColumns.map((column) => (
+                  <td
+                    key={`${areaKey}-${row.vendor.name}-${column.key}`}
+                    className="px-4 py-4 text-center"
+                  >
+                    {row.vendor.matrixAreas[column.key] ? (
+                      <span
+                        aria-label={`${row.vendor.name} dækker ${column.label}`}
+                        className="inline-flex h-4 w-4 items-center justify-center border border-[#839990] bg-[#173f39] text-[0.55rem] text-white"
+                      >
+                        ■
+                      </span>
+                    ) : (
+                      <span className="inline-flex h-4 w-4 border border-[#ccd7d2] bg-white" />
+                    )}
+                  </td>
+                ))}
+                <td className="px-4 py-4 text-center">
+                  <div className="text-[2rem] font-semibold leading-none tracking-[-0.05em] text-ink">
+                    {Math.max(0, Math.min(100, row.fitScore))}
+                  </div>
+                </td>
+                <td className="px-4 py-4 text-center">
+                  <TrackedWebsiteLink
+                    href={row.vendor.website}
+                    vendorName={row.vendor.name}
+                    source="recommended_experts_card"
+                    areaKey={areaKey}
+                    className="inline-flex items-center justify-center text-sm font-semibold text-ink underline decoration-[#1b4f45]/20 underline-offset-4 transition hover:text-[#0d4b43]"
+                  >
+                    Læs mere
+                  </TrackedWebsiteLink>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="border-t border-line bg-[#f8f4ec] align-top">
+              <td className="px-4 py-4" />
+              <th className="px-4 py-4 text-sm font-semibold text-ink">
+                Compliance niveau for dette område
+              </th>
+              {areaColumns.map((column) => (
+                <td
+                  key={`${areaKey}-${column.key}-score`}
+                  className="px-4 py-4 text-center text-base font-semibold text-ink"
+                >
+                  {areaPercentage} %
+                </td>
+              ))}
+              <td className="px-4 py-4 text-center text-sm font-semibold text-ink">
+                {areaPercentage} %
+              </td>
+              <td className="px-4 py-4" />
+            </tr>
+            <tr className="border-t border-line bg-white align-top">
+              <td className="px-4 py-4" />
+              <th className="px-4 py-4 text-sm font-semibold text-ink">
+                Begrundelse for vurdering
+              </th>
+              <td
+                colSpan={areaColumns.length + 2}
+                className="max-w-4xl px-4 py-4 text-sm leading-7 text-soft"
+              >
+                <span className="font-semibold text-ink">{areaLabel}:</span>{" "}
+                {areaDescription}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
 
-      <div className="mx-auto flex w-full max-w-[16rem] flex-col items-stretch gap-3 md:mx-0 md:ml-auto">
-        <div className="ml-auto w-full max-w-[15.5rem]">
-          <MatchScoreDisplay score={item.fitScore} />
+      {rankedRows.length > 6 ? (
+        <div className="border-t border-line bg-white px-5 py-3">
+          <button
+            type="button"
+            onClick={() => setIsExpanded((current) => !current)}
+            className="text-sm font-semibold text-ink underline decoration-[#1b4f45]/20 underline-offset-4 transition hover:text-[#0d4b43]"
+            aria-expanded={isExpanded}
+          >
+            {isExpanded ? "Vis færre specialister" : "Vis flere specialister"}
+          </button>
         </div>
-        <TrackedWebsiteLink
-          href={item.vendor.website}
-          vendorName={item.vendor.name}
-          source="recommended_experts_card"
-          areaKey={areaKey}
-          className="ml-auto inline-flex w-full max-w-[15.5rem] justify-center bg-sage px-4 py-2.5 text-sm font-semibold !text-white transition hover:bg-[#0d4b43]"
-        >
-          Website
-        </TrackedWebsiteLink>
-      </div>
-    </article>
+      ) : null}
+    </div>
   );
 }
 
@@ -239,8 +244,6 @@ export default function RecommendedExpertSections({
           secondarySpecialists,
           additionalSpecialists,
         }) => {
-          const additionalColumns = splitIntoColumns(additionalSpecialists, 5);
-
           return (
             <section
               key={area.key}
@@ -272,25 +275,15 @@ export default function RecommendedExpertSections({
                 </div>
               </div>
 
-              <div className="mt-1 space-y-2">
-                {primarySpecialist ? (
-                  <SimpleSpecialistCard
-                    areaKey={area.key}
-                    item={primarySpecialist}
-                  />
-                ) : null}
-
-                {secondarySpecialists.map((item) => (
-                  <SimpleSpecialistCard
-                    key={`${area.key}-${item.vendor.name}`}
-                    areaKey={area.key}
-                    item={item}
-                  />
-                ))}
-
-                <AdditionalSpecialistsPanel
+              <div className="mt-4">
+                <AreaSpecialistsTable
                   areaKey={area.key}
-                  columns={additionalColumns}
+                  areaLabel={area.label}
+                  areaPercentage={area.percentage}
+                  areaDescription={area.description}
+                  item={primarySpecialist}
+                  secondarySpecialists={secondarySpecialists}
+                  additionalSpecialists={additionalSpecialists}
                 />
               </div>
             </section>

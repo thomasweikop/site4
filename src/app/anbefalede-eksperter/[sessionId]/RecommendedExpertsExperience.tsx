@@ -68,8 +68,9 @@ export default function RecommendedExpertsExperience({
           Specialister med relevant erfaring indenfor de vigtigste områder
         </h1>
         <p className="mt-4 max-w-4xl text-sm leading-7 text-soft md:text-base">
-          Hvert område nedenfor viser tre relevante specialister. Den bedst
-          matchende profil er markeret som anbefalet.
+          Hvert område nedenfor vises som en sammenlignelig tabel, så det er
+          lettere at se hvem der dækker de vigtigste behov, og hvor stærkt
+          matchet er for virksomheden.
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">
