@@ -1,6 +1,5 @@
 import { sendMail } from "@/lib/mail/sendMail";
 import {
-  buildComplianceRecommendationsUrl,
   buildResultUrl,
 } from "@/lib/reportLinks";
 import { markDbReportUnlocked } from "@/lib/reportSessionStore";
@@ -72,8 +71,6 @@ export async function processReportUnlock(input: ProcessReportUnlockInput) {
   const nextSteps = (input.nextSteps ?? []).filter(Boolean);
   const trimmedExecutiveSummary = trimExecutiveSummary(input.executiveSummary);
   const resultUrl = buildResultUrl(sessionId);
-  const complianceRecommendationsUrl =
-    buildComplianceRecommendationsUrl(sessionId);
 
   const safeCompany = escapeHtml(company || "Ikke angivet");
   const safeName = escapeHtml(name);
@@ -167,8 +164,8 @@ export async function processReportUnlock(input: ProcessReportUnlockInput) {
     buildList("Eventuelle blockers", blockers),
     buildList("Initielle anbefalinger", nextSteps),
     "",
-    "Vis compliance anbefalinger",
-    complianceRecommendationsUrl,
+    "Vis analysens resultat",
+    resultUrl,
     "",
     "Kontakt information:",
     `Virksomhed: ${company}`,
@@ -183,8 +180,8 @@ export async function processReportUnlock(input: ProcessReportUnlockInput) {
 
   const buttonBaseStyle =
     "display:inline-block;padding:12px 18px;border:1px solid #cfd6cc;font-weight:600;text-decoration:none;margin-right:12px;margin-top:8px;";
-  const complianceRecommendationsButton = complianceRecommendationsUrl
-    ? `<a href="${escapeHtml(complianceRecommendationsUrl)}" style="${buttonBaseStyle}background:#073832;color:#ffffff;border-color:#073832;">Vis compliance anbefalinger</a>`
+  const resultButton = resultUrl
+    ? `<a href="${escapeHtml(resultUrl)}" style="${buttonBaseStyle}background:#073832;color:#ffffff;border-color:#073832;">Vis analysens resultat</a>`
     : "";
 
   const userHtml = `
@@ -200,7 +197,7 @@ export async function processReportUnlock(input: ProcessReportUnlockInput) {
     ${buildHtmlList("Laveste dimensioner", weakestDimensions)}
     ${buildHtmlList("Eventuelle blockers", blockers)}
     ${buildHtmlList("Initielle anbefalinger", nextSteps)}
-    <p>${complianceRecommendationsButton}</p>
+    <p>${resultButton}</p>
     <p><strong>Kontakt information:</strong><br />
     <strong>Virksomhed:</strong> ${safeCompany}<br />
     <strong>Navn:</strong> ${safeName}<br />
