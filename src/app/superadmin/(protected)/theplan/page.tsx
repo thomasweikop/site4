@@ -1,13 +1,19 @@
 import TheplanManager from "@/components/superadmin/TheplanManager";
-import { getTheplanDataset } from "@/lib/theplanStore";
+import {
+  getTheplanDataset,
+  listTheplanCommunicationLog,
+  listTheplanStatuses,
+} from "@/lib/theplanStore";
 import { listSuperadminLogs } from "@/lib/superadminStore";
 
 export const dynamic = "force-dynamic";
 
 export default async function SuperadminTheplanPage() {
-  const [dataset, logs] = await Promise.all([
+  const [dataset, logs, statuses, communicationLog] = await Promise.all([
     getTheplanDataset(),
     listSuperadminLogs(100),
+    listTheplanStatuses(),
+    listTheplanCommunicationLog(500),
   ]);
 
   const importLogs = logs.filter((log) => log.action === "imported_theplan_excel");
@@ -26,6 +32,8 @@ export default async function SuperadminTheplanPage() {
       initialDrafts={dataset.drafts}
       importLogs={importLogs}
       rolledBackImportLogIds={[...rolledBackImportLogIds]}
+      initialStatuses={statuses}
+      initialCommunicationLog={communicationLog}
     />
   );
 }

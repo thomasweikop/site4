@@ -92,6 +92,34 @@ export type TheplanDraft = {
   linkedInDraft: string;
 };
 
+export type TheplanOutreachStatus =
+  | "not_contacted"
+  | "draft_ready"
+  | "contacted"
+  | "follow_up"
+  | "responded"
+  | "qualified";
+
+export type TheplanCompanyStatus = {
+  vendorKey: string;
+  status: TheplanOutreachStatus;
+  note: string;
+  updatedAt: string;
+  updatedBy?: string;
+};
+
+export type TheplanCommunicationEntry = {
+  id: number;
+  vendorKey: string;
+  company: string;
+  channel: "email" | "linkedin" | "call" | "note";
+  direction: "outbound" | "inbound" | "internal";
+  subject: string;
+  content: string;
+  createdAt: string;
+  actorEmail?: string;
+};
+
 export type TheplanOverride = Partial<
   TheplanOutreachLead &
     TheplanContactEnrichment &
@@ -135,6 +163,26 @@ type OverrideRow = {
   data: TheplanOverride;
   updated_at: string | Date;
   updated_by: string | null;
+};
+
+type StatusRow = {
+  record_key: string;
+  status: TheplanOutreachStatus;
+  note: string | null;
+  updated_at: string | Date;
+  updated_by: string | null;
+};
+
+type CommunicationRow = {
+  id: number;
+  vendor_key: string;
+  company: string;
+  channel: "email" | "linkedin" | "call" | "note";
+  direction: "outbound" | "inbound" | "internal";
+  subject: string | null;
+  content: string | null;
+  created_at: string | Date;
+  actor_email: string | null;
 };
 
 export type TheplanImportChange = {
@@ -264,6 +312,30 @@ async function ensureSchema() {
           data jsonb not null,
           updated_at timestamptz not null default now(),
           updated_by text null
+        )
+      `;
+
+      await sql`
+        create table if not exists superadmin_theplan_status (
+          record_key text primary key,
+          status text not null,
+          note text null,
+          updated_at timestamptz not null default now(),
+          updated_by text null
+        )
+      `;
+
+      await sql`
+        create table if not exists superadmin_theplan_communication_log (
+          id bigserial primary key,
+          vendor_key text not null,
+          company text not null,
+          channel text not null,
+          direction text not null,
+          subject text null,
+          content text null,
+          actor_email text null,
+          created_at timestamptz not null default now()
         )
       `;
 
@@ -555,6 +627,195 @@ export async function updateTheplanOverride(
   `;
 
   return rows[0]?.data;
+}
+
+function toIsoString(value: string | Date | null | undefined) {
+  if (!value) {
+    return new Date().toISOString();
+  }
+
+  return value instanceof Date ? value.toISOString() : value;
+}
+
+export async function listTheplanStatuses() {
+  const sql = getSql();
+
+  if (!sql || !(await ensureSchema())) {
+    return [] as TheplanCompanyStatus[];
+  }
+
+  const rows = await sql<StatusRow[]>`
+    select
+      record_key,
+      status,
+      note,
+      updated_at,
+      updated_by
+    from superadmin_theplan_status
+    order by updated_at desc
+  `;
+
+  return rows.map((row) => ({
+    vendorKey: row.record_key,
+    status: row.status,
+    note: row.note ?? "",
+    updatedAt: toIsoString(row.updated_at),
+    updatedBy: row.updated_by ?? undefined,
+  }));
+}
+
+export async function upsertTheplanStatus(input: {
+  vendorKey: string;
+  status: TheplanOutreachStatus;
+  note?: string;
+  actorEmail: string;
+}) {
+  const sql = getSql();
+
+  if (!sql || !(await ensureSchema())) {
+    return null;
+  }
+
+  const rows = await sql<StatusRow[]>`
+    insert into superadmin_theplan_status (
+      record_key,
+      status,
+      note,
+      updated_by
+    )
+    values (
+      ${input.vendorKey},
+      ${input.status},
+      ${input.note?.trim() || null},
+      ${input.actorEmail.trim().toLowerCase()}
+    )
+    on conflict (record_key) do update
+    set
+      status = excluded.status,
+      note = excluded.note,
+      updated_at = now(),
+      updated_by = excluded.updated_by
+    returning
+      record_key,
+      status,
+      note,
+      updated_at,
+      updated_by
+  `;
+
+  const row = rows[0];
+
+  if (!row) {
+    return null;
+  }
+
+  return {
+    vendorKey: row.record_key,
+    status: row.status,
+    note: row.note ?? "",
+    updatedAt: toIsoString(row.updated_at),
+    updatedBy: row.updated_by ?? undefined,
+  } satisfies TheplanCompanyStatus;
+}
+
+export async function listTheplanCommunicationLog(limit = 500) {
+  const sql = getSql();
+
+  if (!sql || !(await ensureSchema())) {
+    return [] as TheplanCommunicationEntry[];
+  }
+
+  const rows = await sql<CommunicationRow[]>`
+    select
+      id,
+      vendor_key,
+      company,
+      channel,
+      direction,
+      subject,
+      content,
+      actor_email,
+      created_at
+    from superadmin_theplan_communication_log
+    order by created_at desc
+    limit ${limit}
+  `;
+
+  return rows.map((row) => ({
+    id: row.id,
+    vendorKey: row.vendor_key,
+    company: row.company,
+    channel: row.channel,
+    direction: row.direction,
+    subject: row.subject ?? "",
+    content: row.content ?? "",
+    createdAt: toIsoString(row.created_at),
+    actorEmail: row.actor_email ?? undefined,
+  }));
+}
+
+export async function createTheplanCommunicationLog(input: {
+  vendorKey: string;
+  company: string;
+  channel: TheplanCommunicationEntry["channel"];
+  direction: TheplanCommunicationEntry["direction"];
+  subject?: string;
+  content?: string;
+  actorEmail: string;
+}) {
+  const sql = getSql();
+
+  if (!sql || !(await ensureSchema())) {
+    return null;
+  }
+
+  const rows = await sql<CommunicationRow[]>`
+    insert into superadmin_theplan_communication_log (
+      vendor_key,
+      company,
+      channel,
+      direction,
+      subject,
+      content,
+      actor_email
+    )
+    values (
+      ${input.vendorKey},
+      ${input.company},
+      ${input.channel},
+      ${input.direction},
+      ${input.subject?.trim() || null},
+      ${input.content?.trim() || null},
+      ${input.actorEmail.trim().toLowerCase()}
+    )
+    returning
+      id,
+      vendor_key,
+      company,
+      channel,
+      direction,
+      subject,
+      content,
+      actor_email,
+      created_at
+  `;
+
+  const row = rows[0];
+  if (!row) {
+    return null;
+  }
+
+  return {
+    id: row.id,
+    vendorKey: row.vendor_key,
+    company: row.company,
+    channel: row.channel,
+    direction: row.direction,
+    subject: row.subject ?? "",
+    content: row.content ?? "",
+    createdAt: toIsoString(row.created_at),
+    actorEmail: row.actor_email ?? undefined,
+  } satisfies TheplanCommunicationEntry;
 }
 
 function buildWarmSignals(

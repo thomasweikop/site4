@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { sendMail } from "@/lib/mail/sendMail";
+import { createSuperadminLog } from "@/lib/superadminStore";
 
 type ContactBody = {
   name?: string;
@@ -66,6 +67,20 @@ export async function POST(request: Request) {
   if (!result.sent) {
     return NextResponse.json({ error: "Mailen kunne ikke sendes." }, { status: 500 });
   }
+
+  await createSuperadminLog({
+    actorType: "user",
+    actorEmail: email,
+    action: "submitted_contact_form",
+    entityType: "contact_request",
+    entityId: email,
+    payload: {
+      name,
+      title,
+      email,
+      message,
+    },
+  });
 
   return NextResponse.json({ ok: true });
 }

@@ -3,10 +3,13 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type {
+  TheplanCommunicationEntry,
+  TheplanCompanyStatus,
   TheplanContactEnrichment,
   TheplanDraft,
   TheplanImportResult,
   TheplanOutreachLead,
+  TheplanOutreachStatus,
   TheplanWarmSignal,
 } from "@/lib/theplanStore";
 import type { SuperadminLogEntry } from "@/lib/superadminStore";
@@ -18,7 +21,18 @@ type TheplanManagerProps = {
   initialDrafts: TheplanDraft[];
   importLogs: SuperadminLogEntry[];
   rolledBackImportLogIds: number[];
+  initialStatuses: TheplanCompanyStatus[];
+  initialCommunicationLog: TheplanCommunicationEntry[];
 };
+
+const STATUS_OPTIONS: Array<{ value: TheplanOutreachStatus; label: string }> = [
+  { value: "not_contacted", label: "Ikke kontaktet" },
+  { value: "draft_ready", label: "Draft klar" },
+  { value: "contacted", label: "Kontaktet" },
+  { value: "follow_up", label: "Follow-up" },
+  { value: "responded", label: "Svaret" },
+  { value: "qualified", label: "Kvalificeret" },
+];
 
 function SectionBadge({
   label,
@@ -44,6 +58,8 @@ export default function TheplanManager({
   initialDrafts,
   importLogs,
   rolledBackImportLogIds,
+  initialStatuses,
+  initialCommunicationLog,
 }: TheplanManagerProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
@@ -55,6 +71,31 @@ export default function TheplanManager({
   const [isPending, setIsPending] = useState(false);
   const [rollbackMessage, setRollbackMessage] = useState<string | null>(null);
   const [rollbackingLogId, setRollbackingLogId] = useState<number | null>(null);
+  const [statuses, setStatuses] = useState(initialStatuses);
+  const [communicationLog, setCommunicationLog] = useState(initialCommunicationLog);
+  const [statusDrafts, setStatusDrafts] = useState<Record<string, TheplanOutreachStatus>>(
+    () =>
+      Object.fromEntries(
+        initialDrafts.map((draft) => [
+          draft.vendorKey,
+          initialStatuses.find((status) => status.vendorKey === draft.vendorKey)?.status ??
+            "draft_ready",
+        ]),
+      ),
+  );
+  const [statusNotes, setStatusNotes] = useState<Record<string, string>>(
+    () =>
+      Object.fromEntries(
+        initialDrafts.map((draft) => [
+          draft.vendorKey,
+          initialStatuses.find((status) => status.vendorKey === draft.vendorKey)?.note ??
+            "",
+        ]),
+      ),
+  );
+  const [savingStatusKey, setSavingStatusKey] = useState<string | null>(null);
+  const [loggingKey, setLoggingKey] = useState<string | null>(null);
+  const [flowMessage, setFlowMessage] = useState<string | null>(null);
 
   const filteredWarmSignals = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -98,6 +139,19 @@ export default function TheplanManager({
     () => new Set(rolledBackImportLogIds),
     [rolledBackImportLogIds],
   );
+  const statusesByVendorKey = useMemo(
+    () => new Map(statuses.map((item) => [item.vendorKey, item])),
+    [statuses],
+  );
+  const communicationByVendorKey = useMemo(() => {
+    const map = new Map<string, TheplanCommunicationEntry[]>();
+    for (const entry of communicationLog) {
+      const current = map.get(entry.vendorKey) ?? [];
+      current.push(entry);
+      map.set(entry.vendorKey, current);
+    }
+    return map;
+  }, [communicationLog]);
 
   function formatImportSummary(result: TheplanImportResult) {
     return `${result.changedRecords} virksomheder og ${result.changedFields} felter påvirkes på tværs af ${result.sheetsFound.join(", ") || "ingen sheets"}.`;
@@ -182,6 +236,105 @@ export default function TheplanManager({
       setRollbackMessage("Netværksfejl under rollback.");
     } finally {
       setRollbackingLogId(null);
+    }
+  }
+
+  async function saveStatus(draft: TheplanDraft) {
+    setFlowMessage(null);
+    setSavingStatusKey(draft.vendorKey);
+
+    try {
+      const response = await fetch("/api/superadmin/theplan/status", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          vendorKey: draft.vendorKey,
+          company: draft.company,
+          status: statusDrafts[draft.vendorKey] ?? "draft_ready",
+          note: statusNotes[draft.vendorKey] ?? "",
+        }),
+      });
+
+      const payload = (await response.json()) as {
+        error?: string;
+        record?: TheplanCompanyStatus;
+      };
+
+      if (!response.ok || !payload.record) {
+        setFlowMessage(payload.error || "Kunne ikke gemme status.");
+        return;
+      }
+
+      setStatuses((current) => {
+        const filtered = current.filter((item) => item.vendorKey !== draft.vendorKey);
+        return [payload.record!, ...filtered];
+      });
+      setFlowMessage(`Status gemt for ${draft.company}.`);
+    } catch {
+      setFlowMessage("Netværksfejl under statusopdatering.");
+    } finally {
+      setSavingStatusKey(null);
+    }
+  }
+
+  async function logCommunication(
+    draft: TheplanDraft,
+    channel: TheplanCommunicationEntry["channel"],
+  ) {
+    setFlowMessage(null);
+    setLoggingKey(draft.vendorKey);
+
+    const payload =
+      channel === "email"
+        ? {
+            vendorKey: draft.vendorKey,
+            company: draft.company,
+            channel,
+            direction: "outbound" as const,
+            subject: draft.suggestedSubject,
+            content: draft.emailDraft,
+          }
+        : channel === "linkedin"
+          ? {
+              vendorKey: draft.vendorKey,
+              company: draft.company,
+              channel,
+              direction: "outbound" as const,
+              subject: "LinkedIn outreach",
+              content: draft.linkedInDraft,
+            }
+          : {
+              vendorKey: draft.vendorKey,
+              company: draft.company,
+              channel,
+              direction: "internal" as const,
+              subject: "Intern note",
+              content: statusNotes[draft.vendorKey] ?? "",
+            };
+
+    try {
+      const response = await fetch("/api/superadmin/theplan/communications", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = (await response.json()) as {
+        error?: string;
+        entry?: TheplanCommunicationEntry;
+      };
+
+      if (!response.ok || !result.entry) {
+        setFlowMessage(result.error || "Kunne ikke logge kommunikationen.");
+        return;
+      }
+
+      setCommunicationLog((current) => [result.entry!, ...current]);
+      setFlowMessage(`Kommunikation logget for ${draft.company}.`);
+    } catch {
+      setFlowMessage("Netværksfejl under kommunikationslog.");
+    } finally {
+      setLoggingKey(null);
     }
   }
 
@@ -426,6 +579,9 @@ export default function TheplanManager({
         <p className="mt-4 text-sm text-soft">
           Viser {filteredWarmSignals.length} virksomheder i warm-signal prioriteringen.
         </p>
+        {flowMessage ? (
+          <p className="mt-3 text-sm text-[#2a5a4f]">{flowMessage}</p>
+        ) : null}
       </section>
 
       <section className="grid gap-6 xl:grid-cols-2">
@@ -602,6 +758,13 @@ export default function TheplanManager({
                     <span className="border border-line bg-white px-3 py-1 text-xs font-semibold text-soft">
                       {draft.outreachChannel}
                     </span>
+                    <span className="border border-line bg-white px-3 py-1 text-xs font-semibold text-soft">
+                      {STATUS_OPTIONS.find(
+                        (option) =>
+                          option.value ===
+                          (statusesByVendorKey.get(draft.vendorKey)?.status ?? "draft_ready"),
+                      )?.label ?? "Draft klar"}
+                    </span>
                   </div>
                 </div>
               </summary>
@@ -631,6 +794,114 @@ export default function TheplanManager({
                     <pre className="mt-2 whitespace-pre-wrap text-sm leading-6 text-soft">
                       {draft.followUpDraft}
                     </pre>
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
+                  <div className="border border-line bg-white p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#697b9e]">
+                      Outreach flow
+                    </p>
+                    <div className="mt-4 grid gap-3">
+                      <select
+                        value={statusDrafts[draft.vendorKey] ?? "draft_ready"}
+                        onChange={(event) =>
+                          setStatusDrafts((current) => ({
+                            ...current,
+                            [draft.vendorKey]: event.target.value as TheplanOutreachStatus,
+                          }))
+                        }
+                        className="w-full border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
+                      >
+                        {STATUS_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      <textarea
+                        rows={4}
+                        value={statusNotes[draft.vendorKey] ?? ""}
+                        onChange={(event) =>
+                          setStatusNotes((current) => ({
+                            ...current,
+                            [draft.vendorKey]: event.target.value,
+                          }))
+                        }
+                        placeholder="Intern note om dialogen med virksomheden"
+                        className="w-full border border-line bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-[#2a5a4f]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => saveStatus(draft)}
+                        disabled={savingStatusKey === draft.vendorKey}
+                        className="inline-flex items-center justify-center bg-[#050a1f] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#101937] disabled:opacity-50"
+                      >
+                        {savingStatusKey === draft.vendorKey ? "Gemmer..." : "Gem status"}
+                      </button>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => logCommunication(draft, "email")}
+                          disabled={loggingKey === draft.vendorKey}
+                          className="inline-flex items-center justify-center border border-line bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper disabled:opacity-50"
+                        >
+                          Log email sendt
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => logCommunication(draft, "linkedin")}
+                          disabled={loggingKey === draft.vendorKey}
+                          className="inline-flex items-center justify-center border border-line bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper disabled:opacity-50"
+                        >
+                          Log LinkedIn sendt
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => logCommunication(draft, "note")}
+                          disabled={loggingKey === draft.vendorKey}
+                          className="inline-flex items-center justify-center border border-line bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper disabled:opacity-50"
+                        >
+                          Log intern note
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border border-line bg-white p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#697b9e]">
+                      Kommunikationslog
+                    </p>
+                    <div className="mt-4 space-y-3">
+                      {(communicationByVendorKey.get(draft.vendorKey) ?? []).length === 0 ? (
+                        <div className="text-sm text-soft">
+                          Ingen kommunikation logget endnu.
+                        </div>
+                      ) : (
+                        (communicationByVendorKey.get(draft.vendorKey) ?? [])
+                          .slice(0, 6)
+                          .map((entry) => (
+                            <div key={entry.id} className="border border-line bg-paper px-4 py-3">
+                              <div className="flex flex-wrap items-start justify-between gap-3">
+                                <div>
+                                  <p className="text-sm font-semibold text-ink">
+                                    {entry.channel} · {entry.direction}
+                                  </p>
+                                  <p className="mt-1 text-sm text-soft">
+                                    {entry.subject || "Ingen emnelinje"}
+                                  </p>
+                                </div>
+                                <p className="text-xs text-soft">
+                                  {new Date(entry.createdAt).toLocaleString("da-DK")}
+                                </p>
+                              </div>
+                              <pre className="mt-3 whitespace-pre-wrap text-sm leading-6 text-soft">
+                                {entry.content}
+                              </pre>
+                            </div>
+                          ))
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

@@ -12,6 +12,7 @@ import {
 } from "@/lib/nis2Scan";
 import { processReportUnlock } from "@/lib/processReportUnlock";
 import { createDbReportSession, isReportDatabaseConfigured } from "@/lib/reportSessionStore";
+import { createSuperadminLog } from "@/lib/superadminStore";
 
 function pickRandom<T>(items: readonly T[]) {
   return items[Math.floor(Math.random() * items.length)];
@@ -81,6 +82,22 @@ export async function GET(request: Request) {
   if (!unlockOutcome.ok) {
     return NextResponse.redirect(`${origin}/result/${sessionId}/anbefalinger`, 307);
   }
+
+  await createSuperadminLog({
+    actorType: "system",
+    action: "generated_qtest",
+    entityType: "report_session",
+    entityId: sessionId,
+    payload: {
+      sessionId,
+      source: "footer-random-analysis",
+      company,
+      name,
+      title,
+      email,
+      profile,
+    },
+  });
 
   return NextResponse.redirect(`${origin}/result/${sessionId}`, 307);
 }
