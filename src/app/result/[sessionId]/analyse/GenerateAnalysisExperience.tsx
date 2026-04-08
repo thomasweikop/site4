@@ -106,7 +106,7 @@ export default function GenerateAnalysisExperience({
       </section>
 
       <section className="border border-line bg-white p-4 shadow-[var(--shadow)]">
-        <p className="font-display text-[1.45rem] leading-none text-ink">
+        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#4c655d]">
           EKSEMPEL PÅ ANALYSE
         </p>
         <div className="scale-[0.82] origin-top-left">
